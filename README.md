@@ -1,1 +1,1 @@
-# Compara-oDeEstruturasDeAcelera-oEmTempoReal
+# ComparacaoDeEstruturasDeAceleracaoEmTempoReal
