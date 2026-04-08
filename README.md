@@ -1,0 +1,1 @@
+# Compara-oDeEstruturasDeAcelera-oEmTempoReal
