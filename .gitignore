@@ -1,0 +1,58 @@
+# =========================
+# LaTeX intermediários
+# =========================
+*.aux
+*.bbl
+*.bcf
+*.blg
+*.idx
+*.ilg
+*.ind
+*.lof
+*.log
+*.lot
+*.out
+*.toc
+*.acn
+*.acr
+*.alg
+*.glg
+*.glo
+*.gls
+*.ist
+*.fls
+*.fdb_latexmk
+*.synctex.gz
+*.run.xml
+
+# =========================
+# Bibliografia (biber/bibtex)
+# =========================
+*.bbl
+*.blg
+*.bcf
+
+# =========================
+# Glossários
+# =========================
+*.glsdefs
+
+# =========================
+# Arquivos temporários
+# =========================
+*.tmp
+*.bak
+*.swp
+*~
+
+# =========================
+# PDFs gerados (opcional)
+# =========================
+# Se NÃO quiser versionar o PDF:
+main.pdf
+
+# =========================
+# Sistema operacional
+# =========================
+.DS_Store
+Thumbs.db
