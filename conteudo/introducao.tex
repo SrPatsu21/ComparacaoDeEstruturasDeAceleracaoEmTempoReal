@@ -1,25 +1,25 @@
 \chapter{INTRODUÇÃO}
 
-% As orientações aqui apresentadas são baseadas em um conjunto de normas elaboradas pela ABNT. Além das normas técnicas a Biblioteca também elaborou  um guia para elaboração de trabalhos acadêmicos que está disponível na sua Homepage. < http://biblioteca.ifc.edu.br/normalizacao-de-trabalhos//>. 
+% As orientações aqui apresentadas são baseadas em um conjunto de normas elaboradas pela ABNT. Além das normas técnicas a Biblioteca também elaborou  um guia para elaboração de trabalhos acadêmicos que está disponível na sua Homepage. < http://biblioteca.ifc.edu.br/normalizacao-de-trabalhos//>.
 
 \section{Problema de Pesquisa}
 
-Com o avanço de aplicações em tempo real, como renderização gráfica e simulações interativas, torna-se essencial o uso de estruturas de aceleração eficientes, como as estruturas de Bounding Volume Hierarchies (BVH). No entanto, os diferentes algoritmos, diferentes estratégias de construção e atualização dessas estruturas, como o rebuild completo e o refit incremental, apresentam comportamentos distintos dependendo do tipo de hardware utilizado e das características da cena.
+Com o avanço de aplicações em tempo real, como renderização gráfica e simulações interativas, torna-se essencial o uso de estruturas de aceleração eficientes, como as variantes de Bounding Volume Hierarchies (BVH). No entanto, diferentes algoritmos e estratégias de construção e atualização dessas estruturas, como o rebuild completo e o refit incremental, apresentam comportamentos distintos dependendo do tipo de hardware utilizado e das características da cena.
 
-Diante disso, surge o seguinte problema de pesquisa: qual abordagem de construção e atualização de BVH apresenta melhor desempenho em simulações de tempo real, considerando diferentes cenários de hardware dedicado e cenas dinâmica?
+Diante disso, surge o seguinte problema de pesquisa: qual abordagem de construção e atualização de BVH apresenta melhor desempenho em simulações de tempo real, considerando diferentes cenários de hardware dedicado e cenas dinâmicas?
 
 \section{Objetivos}
 
 \subsection{Objetivo Geral}
 
-Analisar e comparar diferentes estruturas de aceleração baseadas em BVH, avaliando seu desempenho em simulacoes de tempo real, quando utilizadas em conjunto com hardware dedicado.
+Analisar e comparar diferentes estruturas de aceleração baseadas em BVH, avaliando seu desempenho em simulações de tempo real, quando utilizadas em conjunto com hardware dedicado.
 
 \subsection{Objetivos Específicos}
 
 \begin{itemize}
-    \item Analisar as vantagens e desvantagens de diferentes estruturas BVH em simulacoes de tempo real;
+    \item Analisar as vantagens e desvantagens de diferentes estruturas BVH em simulações de tempo real;
     \item Avaliar a relevância das estruturas de aceleração em cenários com hardware dedicado;
-    \item Investigar abordagens de construção de BVH, incluindo rebuild completo e refit incremental, com senas dinâmica e semi-dinâmica;
+    \item Investigar abordagens de construção de BVH, incluindo rebuild completo e refit incremental, em cenas dinâmicas e semi-dinâmicas;
     \item Avaliar os trade-offs relacionados a:
     \begin{itemize}
         \item latência por frame;
@@ -33,11 +33,11 @@ Analisar e comparar diferentes estruturas de aceleração baseadas em BVH, avali
 
 A utilização de estruturas de aceleração, como BVH, é fundamental para viabilizar aplicações de alto desempenho em computação gráfica, especialmente em contextos de tempo real. Com a crescente adoção de hardware dedicado, como GPUs modernas e unidades específicas para ray tracing, torna-se necessário compreender como diferentes estratégias de construção e atualização dessas estruturas impactam o desempenho geral do sistema.
 
-Além disso, diferentes estruturas e abordagens como rebuild completo e refit incremental apresentam trade-offs relevantes, que podem influenciar diretamente a eficiência da aplicação dependendo do cenário de uso. A análise desses fatores é importante não apenas do ponto de vista teórico, mas também prático, contribuindo para a escolha de técnicas mais adequadas em aplicações reais.
+Além disso, abordagens como rebuild completo e refit incremental apresentam trade-offs relevantes, que podem influenciar diretamente a eficiência da aplicação dependendo do cenário de uso. A análise desses fatores é importante não apenas do ponto de vista teórico, mas também prático, contribuindo para a escolha de técnicas mais adequadas em aplicações reais.
 
 Dessa forma, este trabalho se justifica pela necessidade de avaliar e comparar essas abordagens, considerando múltiplas métricas de desempenho, a fim de fornecer subsídios para o desenvolvimento de sistemas mais eficientes em ambientes de tempo real.
 
 As siglas utilizadas devem ser inseridas no arquivo acronimos.tex. E o uso dá de algumas formas, como \gls{ifc}. Ou \acrlong{ifc}. Ou \glspl{ifc}.
-% 
+%
 %--------- FIM INTRODUÇÃO------------
 %
