@@ -4,5 +4,5 @@
 
 ```shell
 docker run --rm -v $(pwd):/data -w /data texlive/texlive \
-bash -c "pdflatex main.tex; pdflatex main.tex; biber main || true; pdflatex main.tex; pdflatex main.tex"
+bash -c "pdflatex main.tex; bibtex main; pdflatex main.tex; pdflatex main.tex"
 ```
