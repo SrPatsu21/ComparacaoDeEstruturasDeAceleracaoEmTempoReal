@@ -2,9 +2,13 @@
 
 \section{Exposição do Tema ou Matéria}
 
-A fundamentação teórica em um Trabalho de Conclusão de Curso (TCC) é uma parte essencial que fornece o embasamento conceitual e teórico para o estudo realizado. Ela consiste na revisão da literatura existente sobre o tema abordado no trabalho, onde são apresentadas teorias, modelos, conceitos e descobertas relevantes que sustentam a pesquisa.
+% A fundamentação teórica em um Trabalho de Conclusão de Curso (TCC) é uma parte essencial que fornece o embasamento conceitual e teórico para o estudo realizado. Ela consiste na revisão da literatura existente sobre o tema abordado no trabalho, onde são apresentadas teorias, modelos, conceitos e descobertas relevantes que sustentam a pesquisa.
 
-\gls{bvh} é \cite{bauszat2010minimal}
+Ray tracing é um dos métodos fundamentais para a síntese de imagens em computação gráfica.
+
+A ideia por trás de uma \gls{bvh} é subdividir as primitivas de uma cena em conjuntos possivelmente sobrepostos. Para cada desses conjuntos, um \gls{bv} é calculado e estes são organizados em uma estrutura de árvore. Os limites de cada nó nesta árvore são escolhidos de forma que ele delimite exatamente todos os nós na subárvore correspondente e cada nó folha delimite exatamente as primitivas contidas.
+
+A travessia do raio começa então no nó raiz e, se um raio não encontrar um \gls{bv} nesta hierarquia, a subárvore inteira pode ser ignorada. Comparadas a outras abordagens, as \glspl{BVHs}  geralmente têm os menores requisitos de memória e um memory footprint pré-computável \cite{bauszat2010minimal}.
 
 \section{Apresentação Gráfica do Trabalho Acadêmico}
 
