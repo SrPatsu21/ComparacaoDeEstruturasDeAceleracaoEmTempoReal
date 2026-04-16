@@ -15,9 +15,20 @@ Representações hierárquicas de objetos tridimensionais são eficientes em ter
     \label{fig:bvh}
 \end{figure}
 
-A travessia do raio começa então no nó raiz e, se um raio não encontrar um \gls{bv} nesta hierarquia, a subárvore inteira pode ser ignorada. Comparadas a outras abordagens, as \glspl{bvh}  geralmente têm os menores requisitos de memória e um memory footprint pré-computável \cite{bauszat2010minimal}.
+Os limites de cada nó nesta árvore são escolhidos de forma que delimitem exatamente todos os nós na subárvore correspondente e que cada nó folha delimite exatamente as primitivas contidas nele. A travessia do raio começa no nó raiz e, se um raio errar um \gls{bv} nesta hierarquia, a subárvore inteira pode ser ignorada. 
 
-Técnicas híbridas têm sido investigadas minuciosamente nos últimos anos, buscando combinar os benefícios das árvores kd e das BVHs.
+Originalmente, utilizavam-se pelo menos seis bounding slabs para formar um casco fechado em torno de um objeto. 
+
+Se essas placas forem perpendiculares ao eixo de coordenadas do mundo, o BV é chamado de \gls{aabb}. Em \glspl{bvh} padrão, os limites de um AABB são armazenados usando
+seis valores de ponto flutuante.
+
+Comparadas a outras abordagens, as \glspl{bvh}  geralmente têm os menores requisitos de memória e um memory footprint pré-computável \cite{bauszat2010minimal}.
+
+Técnicas híbridas têm sido investigadas minuciosamente nos últimos anos, buscando combinar os benefícios das árvores kd e das \glspl{bvh}.
+
+
+% oq é bounding slabs
+% Como bvh viaja pelos BV traversal
 
 \section{Apresentação Gráfica do Trabalho Acadêmico}
 
