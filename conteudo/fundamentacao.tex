@@ -4,31 +4,33 @@
 
 % A fundamentação teórica em um Trabalho de Conclusão de Curso (TCC) é uma parte essencial que fornece o embasamento conceitual e teórico para o estudo realizado. Ela consiste na revisão da literatura existente sobre o tema abordado no trabalho, onde são apresentadas teorias, modelos, conceitos e descobertas relevantes que sustentam a pesquisa.
 
-O Ray tracing é uma poderosa técnica de síntese de imagens, utilizada para renderização há décadas e que vem se tornando cada vez mais importante para aplicações em tempo real. No entanto, o tray tracing exige alto poder computacional e depende de estruturas de dados pré-processadas para alcançar um desempenho em tempo real. Dentre os métodos para melhorar a eficiência do traçado de raios, as estruturas de dados hierárquicas são extremamente importantes e populares \cite{stich2009spatial}.
+O Ray tracing é uma poderosa técnica de síntese de imagens, utilizada para renderização há décadas e que vem se tornando cada vez mais importante para aplicações em tempo real. No entanto, o ray tracing exige alto poder computacional e depende de estruturas de dados pré-processadas para alcançar um desempenho em tempo real. Dentre os métodos para melhorar a eficiência do traçado de raios, as estruturas de dados hierárquicas são extremamente importantes e populares \cite{stich2009spatial}.
+
+% melhor explicacao do ray tracing
 
 Representações hierárquicas de objetos tridimensionais são eficientes em termos de tempo e espaço. Elas tipicamente consistem em árvores cujos ramos representam volumes delimitadores \cite{rubin19803}.A ideia por trás de uma \gls{bvh} é subdividir as primitivas de uma cena em conjuntos possivelmente sobrepostos. Para cada desses conjuntos, um \gls{bv} é calculado e estes são organizados em uma estrutura de árvore. Os limites de cada nó nesta árvore são escolhidos de forma que ele delimite exatamente todos os nós na subárvore correspondente e cada nó folha delimite exatamente as primitivas contidas \cite{bauszat2010minimal}.
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.7\textwidth]{images/bvhExample.png}
-    \caption{Exemplo de Bounding Volume Hierarchy (BVH). Fonte: \cite{singleton_bvh}}
+    \caption{Exemplo de \gls{bvh}. Fonte: \cite{singleton_bvh}}
     \label{fig:bvh}
 \end{figure}
 
-Os limites de cada nó nesta árvore são escolhidos de forma que delimitem exatamente todos os nós na subárvore correspondente e que cada nó folha delimite exatamente as primitivas contidas nele. A travessia do raio começa no nó raiz e, se um raio errar um \gls{bv} nesta hierarquia, a subárvore inteira pode ser ignorada. 
+Os limites de cada nó nesta árvore são definidos de forma que delimitem completamente todos os nós pertencentes à sua subárvore; da mesma forma, cada nó folha delimita exatamente as primitivas que contem \cite{bauszat2010minimal}. Para encontrar a intersecção mais próxima, A travessia de um raio inicia-se no nó raiz e é realizada de forma top-down. Geralmente utilizando uma pilha para armazenar nós internos que podem conter a interseção mais próxima. A cada iteração, o nó do topo é removido e o raio é testado contra seu \gls{bv}. Caso haja interseção, seus nós filhos são adicionados à pilha, no caso de nós internos, ou as primitivas são testadas diretamente, no caso de nós folha. Testandos as primitivas, armazenamos a distância até a intersecção mais próxima encontrada até o momento. Usando essa distância, podemos ignorar os nós que estão mais distantes do que a intersecção encontrada anteriormente. A travessia continua até que a pilha esteja vazia. Para um teste de oclusão, quando queremos saber apenas se o ponto está visível ou ocluído, podemos, portanto, usar um \textit{early exit}(saída antecipada) após encontrar a primeira intersecção \cite{meister2021survey}.
 
-Originalmente, utilizavam-se pelo menos seis bounding slabs para formar um casco fechado em torno de um objeto. 
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{images/bvhIntersection.png}
+    \caption{Exemplo de travessia de \gls{bvh} para encontrar a intersecção, descartamos toda a subárvore do nó C, uma vez que o raio não intersecta a caixa delimitadora associada a ela. Fonte: \cite{meister2021survey}}
+    \label{fig:bvh}
+\end{figure}
 
-Se essas placas forem perpendiculares ao eixo de coordenadas do mundo, o BV é chamado de \gls{aabb}. Em \glspl{bvh} padrão, os limites de um AABB são armazenados usando
-seis valores de ponto flutuante.
+Originalmente, \gls{bvh} utilizava pelo menos seis \textit{bounding slabs}(planos limitantes) para formar um casco fechado ao redor de um objeto. Cada slab corresponde à região compreendida entre dois planos paralelos, sendo que o conjunto desses planos define o volume delimitador. Um slab é definido como a região compreendida entre dois planos paralelos, que restringem o espaço em uma determinada direção; a interseção desses \textit{slabs} define o volume delimitador \cite{bauszat2010minimal}.
 
-Comparadas a outras abordagens, as \glspl{bvh}  geralmente têm os menores requisitos de memória e um memory footprint pré-computável \cite{bauszat2010minimal}.
+Se esses \textit{slabs} são perpendiculares aos eixos do sistema de coordenadas do mundo, o volume delimitador resultante é denominado \gls{aabb}. Em \glspl{bvh} convencionais, os limites de um \gls{aabb} são representados por seis valores de ponto flutuante, correspondentes às coordenadas mínimas e máximas ao longo de cada eixo cartesiano  \cite{bauszat2010minimal}.
 
-Técnicas híbridas têm sido investigadas minuciosamente nos últimos anos, buscando combinar os benefícios das árvores kd e das \glspl{bvh}.
-
-
-% oq é bounding slabs
-% Como bvh viaja pelos BV traversal
+Comparadas a outras abordagens, as \glspl{bvh}  geralmente têm os menores requisitos de memória e um \textit{memory footprint}(uso de memória) pré-computável \cite{bauszat2010minimal}.  Técnicas híbridas têm sido investigadas minuciosamente nos últimos anos, buscando combinar os benefícios das árvores kd e das \glspl{bvh}.
 
 \section{Apresentação Gráfica do Trabalho Acadêmico}
 
