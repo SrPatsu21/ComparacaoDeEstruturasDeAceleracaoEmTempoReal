@@ -4,43 +4,63 @@
 
 % A fundamentação teórica em um Trabalho de Conclusão de Curso (TCC) é uma parte essencial que fornece o embasamento conceitual e teórico para o estudo realizado. Ela consiste na revisão da literatura existente sobre o tema abordado no trabalho, onde são apresentadas teorias, modelos, conceitos e descobertas relevantes que sustentam a pesquisa.
 
-Ray tracing é um algoritmo de renderização gráfica 3D baseado na simulação do caminho da luz real. Comparado com a maioria dos outros algoritmos de renderização, o traçado de raios proporciona um efeito de luz e sombra mais realista.O primeiro algoritmo de Ray tracing foi inicialmente proposto por Appel em 1968. Ray tracing é um nome para generalisar esses algoritmos. Appel criou o Ray casting \cite{wang2022development}.
+% explicar o termo ray tracing
 
-O Ray casting renderizava a cena emitindo um raio do ponto de observação para cada pixel e encontrando o objeto mais próximo que bloqueia o caminho da luz. Apenas dois raios estão envolvidos no ray casting. O primeiro é emitido pela camera para encontrar o ponto de interseção, o outro é enviado do ponto de interseção para a luz, para verificar se o próprio raio está na sombra \cite{wang2022development}.
+Ray tracing é um algoritmo de renderização gráfica 3D baseado na simulação do caminho da luz real. Comparado com a maioria dos outros algoritmos de renderização, o traçado de raios proporciona um efeito de luz e sombra mais realista. O primeiro algoritmo de ray tracing foi inicialmente proposto por Appel em 1968. Appel criou o ray casting \cite{wang2022development}.
 
-% adicionar imagem
+O ray casting renderiza a cena emitindo um raio primário do ponto de observação ou câmera para cada \textit{pixel}, encontrando o objeto mais próximo que bloqueia o caminho do raio. Raios adicionais, como raios de sombra, podem ser utilizados para verificar a visibilidade da luz a partir do ponto de interseção \cite{wang2022development}.
 
-O Whitted Ray veio como uma evolução do ray casting. Desenvolvido por Turner Whitted em 1979, esse algoritmo usa 4 tipos de raios diferentes. O raio da camera similar ao ray casting; O segundo de reflexão que reflete na direção da reflexão do espelho da superfície. O terceiro o raio de refração, que pode incidir no objeto a partir de um ângulo. O quarto raio é um raio de sombra, calculado pela sombra projetada pela fonte de luz e pelo objeto. A superficie nem sempre é perfeitamente brilhosa, seria necessario modelar um componente difusa, Mas a quantidade de processamento necessario para fonte de luz difusa é proibitiva \cite{wang2022development}.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{images/exemploRayCasting.png}
+    \caption{Exemplo do funcionamento do ray casting. Fonte: \cite{wang2022development}}
+    \label{fig:exemplo_ray_casting}
+\end{figure}
 
-% adicionar imagem
+O Whitted ray casting, uma evolução do ray casting, foi desenvolvido por Turner Whitted em 1979. Esse algoritmo usa 4 quatro tipos de raios diferentes. O raio da câmera é similar ao ray casting. O segundo raio de reflexão, simula superfícies refletoras e semirefletoras. O terceiro raio de refração, pode incidir no objeto a partir de um ângulo. O quarto raio de sombra, projeta sombra gerada pela fonte de luz e pelo objeto. A superfície nem sempre é perfeitamente brilhosa, seria necessário modelar um componente difuso, mas modelos de iluminação difusa mais realistas implicam maior custo computacional \cite{wang2022development}.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{images/ExemploWhittedRayCasting.png}
+    \caption{Exemplo do funcionamento do Whitted ray casting. Fonte: \cite{wang2022development}}
+    \label{fig:exemplo_whitted_ray_casting}
+\end{figure}
+
+% explicar rasterisacao e suas limitacoes
+
+% citar a abordagem hibrida normalmente aplicada
+
+% primitivas
+
+% fundamentos sobre as métricas de GPUs etc
 
 Vem se tornando cada vez mais importante para aplicações em tempo real. No entanto, o ray tracing exige alto poder computacional e depende de estruturas de dados pré-processadas para alcançar um desempenho em tempo real. Dentre os métodos para melhorar a eficiência do traçado de raios, as estruturas de dados hierárquicas são extremamente importantes e populares \cite{stich2009spatial}.
 
-Then we have a reflection ray that reflects towards the surface mirror reflection direction. The third ray is called a refraction ray which could go into the object from an angle. The final ray is a shadow ray that is calculated by the shadow produced by the light source and object. This article describes a shading model that calculates intensities using global data. Extensions to a ray tracing visible surface algorithm are then given in order to enable this shader. Classical ray optics provides a basic model for light reflection from completely smooth surfaces. For example, in Fig.1, the light intensity, I, composed mostly by specular reflection, S, transmission, T, show viewer from a single point from surface.
+% explicar melhor o impacto das estruturas de aceleracao
 
-Representações hierárquicas de objetos tridimensionais são eficientes em termos de tempo e espaço. Elas tipicamente consistem em árvores cujos ramos representam volumes delimitadores \cite{rubin19803}.A ideia por trás de uma \gls{bvh} é subdividir as primitivas de uma cena em conjuntos possivelmente sobrepostos. Para cada desses conjuntos, um \gls{bv} é calculado e estes são organizados em uma estrutura de árvore. Os limites de cada nó nesta árvore são escolhidos de forma que ele delimite exatamente todos os nós na subárvore correspondente e cada nó folha delimite exatamente as primitivas contidas \cite{bauszat2010minimal}.
+Representações hierárquicas de objetos tridimensionais são eficientes em termos de tempo e espaço. Essas representações tipicamente consistem em árvores cujos ramos representam volumes delimitadores \cite{rubin19803}. A ideia por trás de uma \gls{bvh} é subdividir as primitivas de uma cena em conjuntos possivelmente sobrepostos. Para cada desses conjuntos, um \gls{bv} é calculado e estes são organizados em uma estrutura de árvore. Os limites de cada nó nesta árvore são escolhidos de forma que ele delimite exatamente todos os nós na subárvore correspondente e cada nó folha delimite exatamente as primitivas contidas \cite{bauszat2010minimal}.
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.7\textwidth]{images/bvhExample.png}
     \caption{Exemplo de \gls{bvh}. Fonte: \cite{singleton_bvh}}
-    \label{fig:bvh}
+    \label{fig:bvh_example}
 \end{figure}
 
-Os limites de cada nó nesta árvore são definidos de forma que delimitem completamente todos os nós pertencentes à sua subárvore; da mesma forma, cada nó folha delimita exatamente as primitivas que contem \cite{bauszat2010minimal}. Para encontrar a intersecção mais próxima, A travessia de um raio inicia-se no nó raiz e é realizada de forma top-down. Geralmente utilizando uma pilha para armazenar nós internos que podem conter a interseção mais próxima. A cada iteração, o nó do topo é removido e o raio é testado contra seu \gls{bv}. Caso haja interseção, seus nós filhos são adicionados à pilha, no caso de nós internos, ou as primitivas são testadas diretamente, no caso de nós folha. Testandos as primitivas, armazenamos a distância até a intersecção mais próxima encontrada até o momento. Usando essa distância, podemos ignorar os nós que estão mais distantes do que a intersecção encontrada anteriormente. A travessia continua até que a pilha esteja vazia. Para um teste de oclusão, quando queremos saber apenas se o ponto está visível ou ocluído, podemos, portanto, usar um \textit{early exit}(saída antecipada) após encontrar a primeira intersecção \cite{meister2021survey}.
+Para encontrar a interseção mais próxima, a travessia de um raio inicia-se no nó raiz e é realizada de forma \textit{top-down}(de cima para baixo). Geralmente utilizando uma pilha para armazenar nós internos que podem conter a interseção mais próxima. A cada iteração, o nó do topo é removido e o raio é testado contra seu \gls{bv}. Caso haja interseção, seus nós filhos são adicionados à pilha, no caso de nós internos, ou as primitivas são testadas diretamente, no caso de nós folha. Testando as primitivas, armazenamos a distância até a interseção mais próxima encontrada até o momento. Usando essa distância, podemos ignorar os nós que estão mais distantes do que a interseção encontrada anteriormente. A travessia continua até que a pilha esteja vazia. Para um teste de oclusão, quando queremos saber apenas se o ponto está visível ou ocluído, podemos, portanto, usar um \textit{early exit}(saída antecipada) após encontrar a primeira interseção \cite{meister2021survey}.
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.7\textwidth]{images/bvhIntersection.png}
-    \caption{Exemplo de travessia de \gls{bvh} para encontrar a intersecção, descartamos toda a subárvore do nó C, uma vez que o raio não intersecta a caixa delimitadora associada a ela. Fonte: \cite{meister2021survey}}
-    \label{fig:bvh}
+    \caption{Exemplo de travessia de \gls{bvh} para encontrar a interseção, descartamos toda a subárvore do nó C, uma vez que o raio não intersecta a caixa delimitadora associada a ela. Fonte: \cite{meister2021survey}}
+    \label{fig:bvh_intersection}
 \end{figure}
 
-Originalmente, \gls{bvh} utilizava pelo menos seis \textit{bounding slabs}(planos limitantes) para formar um casco fechado ao redor de um objeto. Cada slab corresponde à região compreendida entre dois planos paralelos, sendo que o conjunto desses planos define o volume delimitador. Um slab é definido como a região compreendida entre dois planos paralelos, que restringem o espaço em uma determinada direção; a interseção desses \textit{slabs} define o volume delimitador \cite{bauszat2010minimal}.
+Originalmente, \gls{bvh} utilizava pelo menos seis \textit{bounding slabs}(planos limitantes) para formar um casco fechado ao redor de um objeto. Cada slab corresponde à região compreendida entre dois planos paralelos, que restringem o espaço em uma determinada direção; a interseção desses \textit{slabs} define o volume delimitador \cite{bauszat2010minimal}.
 
 Se esses \textit{slabs} são perpendiculares aos eixos do sistema de coordenadas do mundo, o volume delimitador resultante é denominado \gls{aabb}. Em \glspl{bvh} convencionais, os limites de um \gls{aabb} são representados por seis valores de ponto flutuante, correspondentes às coordenadas mínimas e máximas ao longo de cada eixo cartesiano  \cite{bauszat2010minimal}.
 
-Comparadas a outras abordagens, as \glspl{bvh}  geralmente têm os menores requisitos de memória e um \textit{memory footprint}(uso de memória) pré-computável \cite{bauszat2010minimal}.  Técnicas híbridas têm sido investigadas minuciosamente nos últimos anos, buscando combinar os benefícios das árvores kd e das \glspl{bvh}.
+Comparadas a outras abordagens, as \glspl{bvh} geralmente têm os menores requisitos de memória e um \textit{memory footprint}(uso de memória) pré-computável \cite{bauszat2010minimal}. Técnicas híbridas têm sido investigadas minuciosamente nos últimos anos, buscando combinar os benefícios das árvores \glspl{bvh}.
 
 \section{Apresentação Gráfica do Trabalho Acadêmico}
 
