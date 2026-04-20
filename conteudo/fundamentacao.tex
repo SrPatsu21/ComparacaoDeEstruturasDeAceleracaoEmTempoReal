@@ -4,9 +4,7 @@
 
 % A fundamentação teórica em um Trabalho de Conclusão de Curso (TCC) é uma parte essencial que fornece o embasamento conceitual e teórico para o estudo realizado. Ela consiste na revisão da literatura existente sobre o tema abordado no trabalho, onde são apresentadas teorias, modelos, conceitos e descobertas relevantes que sustentam a pesquisa.
 
-% explicar o termo ray tracing
-
-Ray tracing é um algoritmo de renderização gráfica 3D baseado na simulação do caminho da luz real. Comparado com a maioria dos outros algoritmos de renderização, o traçado de raios proporciona um efeito de luz e sombra mais realista. O primeiro algoritmo de ray tracing foi inicialmente proposto por Appel em 1968. Appel criou o ray casting \cite{wang2022development}.
+Ray tracing é uma técnica de renderização gráfica 3D baseada na simulação do caminho da luz real. O termo pode ser utilizado tanto para se referir a um algoritmo específico, quanto para uma classe de algoritmos que lançam raios através de uma cena. Comparado com a maioria dos outros algoritmos de renderização, o ray tracing proporciona um efeito de luz e sombra mais realista. O primeiro algoritmo de ray tracing foi proposto por Appel em 1968. Appel criou o ray casting \cite{wang2022development}.
 
 O ray casting renderiza a cena emitindo um raio primário do ponto de observação ou câmera para cada \textit{pixel}, encontrando o objeto mais próximo que bloqueia o caminho do raio. Raios adicionais, como raios de sombra, podem ser utilizados para verificar a visibilidade da luz a partir do ponto de interseção \cite{wang2022development}.
 
@@ -32,11 +30,14 @@ O Whitted ray casting, uma evolução do ray casting, foi desenvolvido por Turne
 
 % primitivas
 
+Em um sistema de modelagem hierárquica, podemos representar objetos de qualquer complexidade. Tudo é definido a partir de outro objeto ate, seu nivel mais baixo, entao precisamos de algo mais basico que não precise de uma hierarquia para ser descrito. Em sistemas hierárquicos, chamamos esses objetos de nível mais baixo de \textit{primitives}(primitivos). No ray tracing os primitivos podem ser: polígonos, objetos geométricos como a esfera ou objetos mais complexos como \textit{parametric patches}(patches paramétricos) \cite{wyvill1995practical}. Na rasterização % achar texto mas no vulkan sao apenas pontos linhas e triangulos
+
 % fundamentos sobre as métricas de GPUs etc
 
 Vem se tornando cada vez mais importante para aplicações em tempo real. No entanto, o ray tracing exige alto poder computacional e depende de estruturas de dados pré-processadas para alcançar um desempenho em tempo real. Dentre os métodos para melhorar a eficiência do traçado de raios, as estruturas de dados hierárquicas são extremamente importantes e populares \cite{stich2009spatial}.
 
 % explicar melhor o impacto das estruturas de aceleracao
+% olhar Preliminaries - A Survey on Bounding Volume Hierarchies for Ray Tracing
 
 Representações hierárquicas de objetos tridimensionais são eficientes em termos de tempo e espaço. Essas representações tipicamente consistem em árvores cujos ramos representam volumes delimitadores \cite{rubin19803}. A ideia por trás de uma \gls{bvh} é subdividir as primitivas de uma cena em conjuntos possivelmente sobrepostos. Para cada desses conjuntos, um \gls{bv} é calculado e estes são organizados em uma estrutura de árvore. Os limites de cada nó nesta árvore são escolhidos de forma que ele delimite exatamente todos os nós na subárvore correspondente e cada nó folha delimite exatamente as primitivas contidas \cite{bauszat2010minimal}.
 
