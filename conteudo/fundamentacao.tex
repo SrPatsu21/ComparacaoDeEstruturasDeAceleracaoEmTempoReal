@@ -6,14 +6,14 @@
 
 
 % fundamentos sobre as métricas de GPUs etc
-\subsection{GPUs}
+\subsection{Hardware dedicado \glspl{gpu}}
 
 No início, a aparência dos gráficos baseados em GPU era um tanto monótona e padronizada devido à falta de programabilidade, mas agora a maioria dos estágios do pipeline gráfico são programáveis. Infelizmente, parece que o aumento na programabilidade atingiu um limite, e mais liberdade exigiria a capacidade de alterar a própria estrutura do pipeline. Isso, por sua vez, está firmemente enraizado no hardware gráfico específico da GPU e não é facilmente modificado \cite{laine2011high}. %buscar mais no memso artigo
 
+% traduzir e adicionar mais
 In the early times, the look of GPU-based graphics was somewhat dull and standardized because of the lack of programmability, but currently most of the stages of the graphics pipeline are programmable. Unfortunately, it looks like the increase in programmability has hit a limit, and further freedom would require the capability of changing the structure of the pipeline itself. This, in turn, is firmly rooted in the graphics-specific hardware of the GPU, and not easily changed.
 
 \subsection{primitivas}
-% primitivas
 
 Em um sistema de modelagem hierárquica, podemos representar objetos de qualquer complexidade. Tudo é definido a partir de outro objeto ate, seu nivel mais baixo, entao precisamos de algo mais basico que não precise de uma hierarquia para ser descrito. Em sistemas hierárquicos, chamamos esses objetos de nível mais baixo de \textit{primitives}(primitivos). No ray tracing os primitivos podem ser: polígonos, objetos geométricos como a esfera ou objetos mais complexos como \textit{parametric patches}(patches paramétricos) \cite{wyvill1995practical}. Na rasterização % achar texto mas no vulkan sao apenas pontos linhas e triangulos
 
@@ -136,6 +136,8 @@ Originalmente, \gls{bvh} utilizava pelo menos seis \textit{bounding slabs}(plano
 Se esses \textit{slabs} são perpendiculares aos eixos do sistema de coordenadas do mundo, o volume delimitador resultante é denominado \gls{aabb}. Em \glspl{bvh} convencionais, os limites de um \gls{aabb} são representados por seis valores de ponto flutuante, correspondentes às coordenadas mínimas e máximas ao longo de cada eixo cartesiano  \cite{bauszat2010minimal}.
 
 Comparadas a outras abordagens, as \glspl{bvh} geralmente têm os menores requisitos de memória e um \textit{memory footprint}(uso de memória) pré-computável \cite{bauszat2010minimal}. Técnicas híbridas têm sido investigadas minuciosamente nos últimos anos, buscando combinar os benefícios das árvores \glspl{bvh}.
+
+% apresentar os modelos q serao usados no trabalho
 
 %
 %--------- FIM DESENVOLVIMENTO------------
