@@ -22,7 +22,6 @@ Em um sistema de modelagem hierárquica, podemos representar objetos de qualquer
 Ray tracing é uma técnica de renderização gráfica 3D baseada na simulação do caminho da luz real. O termo pode ser utilizado tanto para se referir a um algoritmo específico, quanto para uma classe de algoritmos que lançam raios através de uma cena. Comparado com a maioria dos outros algoritmos de renderização, o ray tracing proporciona um efeito de luz e sombra mais realista. O primeiro algoritmo de ray tracing foi proposto por Appel em 1968. Appel criou o ray casting \cite{wang2022development}.
 
 O ray casting renderiza a cena emitindo um raio primário do ponto de observação ou câmera para cada \textit{pixel}, encontrando o objeto mais próximo que bloqueia o caminho do raio. Raios adicionais, como raios de sombra, podem ser utilizados para verificar a visibilidade da luz a partir do ponto de interseção \cite{wang2022development}.
-% achar equacao para raio inicial e sombra, como ele pode ser calculado
 
 \begin{figure}[H]
     \centering
@@ -30,6 +29,23 @@ O ray casting renderiza a cena emitindo um raio primário do ponto de observaç�
     \caption{Exemplo do funcionamento do ray casting. Fonte: \cite{wang2022development}}
     \label{fig:exemplo_ray_casting}
 \end{figure}
+
+As faces são orientadas utilizando a regra da mão direita: os vértices são listados em sentido anti-horário quando se olha o objeto do exterior. Para uma face ABC, o vetor normal n=AB*AC aponta para fora. \cite{freud2006fast}.
+
+A equação do raio que parte da câmera é um dos elementos fundamentais do ray casting, pois permite determinar o ponto de interseção com os objetos da cena. Essa equação pode ser expressa como:
+
+\begin{equation*}
+\mathbf{SI} = \beta_p \, \mathbf{SP}, \quad \beta_p \in \mathbb{R}, \; 0 < \beta_p \leq 1
+\end{equation*}
+
+em que:
+\begin{itemize}
+    \item $S$ representa a posição de origem do raio;
+    \item $P$ corresponde ao centro de um pixel no detector;
+    \item $\mathbf{SP}$ define a direção do raio;
+    \item $I$ é o ponto de interseção do raio e a superfície do objeto;
+    \item $\beta_p$ é um parâmetro escalar que determina a posição do ponto de interseção ao longo do raio.
+\end{itemize}
 
 O Whitted ray casting, uma evolução do ray casting, foi desenvolvido por Turner Whitted em 1979. Esse algoritmo usa 4 quatro tipos de raios diferentes. O raio da câmera é similar ao ray casting. O segundo raio de reflexão, simula superfícies refletoras e semirefletoras. O terceiro raio de refração, pode incidir no objeto a partir de um ângulo. O quarto raio de sombra, projeta sombra gerada pela fonte de luz e pelo objeto. A superfície nem sempre é perfeitamente brilhosa, seria necessário modelar um componente difuso, mas modelos de iluminação difusa mais realistas implicam maior custo computacional \cite{wang2022development}.
 
