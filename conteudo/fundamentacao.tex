@@ -49,9 +49,20 @@ Testar se uma amostra de pixel é coberta por um triângulo 2D é equivalente a 
     \caption{Funções de aresta 3D para um triângulo. \cite{davidovivc20123d}}
     \label{fig:3DEdgeFunction}
 \end{figure}
-% shaders (fragment shader)
 
-% Z-buffer
+Grande parte do trabalho no pipeline gráfico, principalmente a execução de shaders de \textit{vertex}(vértice) e \textit{fragment}(fragmento), bem como outros estágios programáveis é realizadas pelos núcleos de shader programáveis \cite{laine2011high}.
+
+O \textit{vertex shader} é responsável por decodifica os dados geométricos. Já o \textit{fragment shader} reconstrui o conteúdo da textura a nivel de pixel de saída, por meio da reconstrução do conteúdo da textura via combinação linear \cite{schuster2021compression}.
+
+Durante a rasterização, quando uma primitiva intersecta ou passa à frente de outra, torna-se ambíguo qual delas deve ser visível em cada pixel. O Z-buffer é um algoritmo que resolve a visibilidade ao nível de pixel, processando polígonos e atualizando os valores de profundidade por pixel durante a conversão da varredura. Não lidam bem com superfícies parcialmente transparentes \cite{greene1993hierarchical}.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{images/ZBufferCase.png}
+    \caption{Caso em que primitivas competem pelo mesmo pixel. Criado pelo autor usando GeoGebra Classic.}
+    \label{fig:ZBufferCase}
+\end{figure}
+
 
 A rasterização se tornou a abordagem dominante para aplicações interativas devido aos seus baixos requisitos computacionais iniciais (não há necessidade de ponto flutuante no espaço de imagem 2D), à sua capacidade de ser implementada em hardware e ao desempenho cada vez maior de placas gráficas dedicadas. No entanto, o tratamento de efeitos globais não são nativos e dependem de aproximações, como reflexos e sobras \cite{davidovivc20123d}.
 
