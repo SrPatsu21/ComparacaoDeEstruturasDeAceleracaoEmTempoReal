@@ -4,14 +4,17 @@
 
 % A fundamentação teórica em um Trabalho de Conclusão de Curso (TCC) é uma parte essencial que fornece o embasamento conceitual e teórico para o estudo realizado. Ela consiste na revisão da literatura existente sobre o tema abordado no trabalho, onde são apresentadas teorias, modelos, conceitos e descobertas relevantes que sustentam a pesquisa.
 
-
-% fundamentos sobre as métricas de GPUs etc
 \subsection{Hardware dedicado \glspl{gpu}}
 
-No início, a aparência dos gráficos baseados em GPU era um tanto monótona e padronizada devido à falta de programabilidade, mas agora a maioria dos estágios do pipeline gráfico são programáveis. Infelizmente, parece que o aumento na programabilidade atingiu um limite, e mais liberdade exigiria a capacidade de alterar a própria estrutura do pipeline. Isso, por sua vez, está firmemente enraizado no hardware gráfico específico da GPU e não é facilmente modificado \cite{laine2011high}. %buscar mais no memso artigo
+No início, a aparência dos gráficos baseados em GPU era um tanto monótona e padronizada devido à falta de programabilidade, mas agora a maioria dos estágios do pipeline gráfico são programáveis. Infelizmente, parece que o aumento na programabilidade atingiu um limite, e mais liberdade exigiria a capacidade de alterar a própria estrutura do pipeline. Isso, por sua vez, está firmemente enraizado no hardware gráfico específico da GPU e não é facilmente modificado \cite{laine2011high}.
 
-% traduzir e adicionar mais
-In the early times, the look of GPU-based graphics was somewhat dull and standardized because of the lack of programmability, but currently most of the stages of the graphics pipeline are programmable. Unfortunately, it looks like the increase in programmability has hit a limit, and further freedom would require the capability of changing the structure of the pipeline itself. This, in turn, is firmly rooted in the graphics-specific hardware of the GPU, and not easily changed.
+Uma grande parte do trabalho no pipeline gráfico,  principalmente a execução de shaders de vertex e fragment, mas tambem outros estágios programáveis, são realizadas pelos núcleos de shader programáveis. Outros processos realizados pelo hardware grafico: marshaling e scheduling de dados, por exemplo, gerenciamento de FIFOs primitivos e caches de buffer de quadro na memória on-chip, busca de dados de entrada do shader na memória local antes da execução do shader, acionamento de execuções de shader, execução de ROP e assim por diante. Realisa calculos mais triviais como a construção de equações de borda e plano,  rasterização e clipping \cite{laine2011high}.
+
+A NVIDIA introduziu o CUDA em 2007, por meio do CUDA os núcleos programáveis (shader cores) passaram a ser acessíveis para aplicações de propósito geral \cite{laine2011high}. Isso possibilita a implementação de algoritmos fora do pipeline gráfico tradicional, ampliando a flexibilidade no desenvolvimento.
+
+A plataforma CUDA tem o problema de baixa compatibilidade entre plataformas \cite{song2024parallel}. A AMD criou o HIP, que permite os desenvolvedores migrem o código CUDA existente para plataformas AMD \cite{amd_hip_docs}. Como alternativa mais multiplataforma que suporta \glspl{cpu} e outros dispositivos, OpenCL é usado como plataforma de computação paralela \cite{song2024parallel}. Um dispositivo OpenCL pode ser dividido em uma ou mais unidades de computação, e cada uma é composta por um ou mais elementos de processamento (PEs) \cite{song2024parallel}.
+
+As placas gráficas começaram a oferecer cada vez mais funcionalidades programáveis como sintaxe para shaders, inconsistencia entre fornecedores e GPUs moveis que possuem arquitetura baseada em seus requisitos de energia e espaço. O Vulkan resolve esses problemas por ter sido projetado para arquiteturas gráficas modernas. Vulkan reduz a sobrecarga de lidar com diversos drivers, permitindo que programadores especifiquem suas intencoes por meio de uma \gls{api} \cite{vulkan_tutorial}. Diferentemente das outras plataformas, que são voltadas à computação de propósito geral, o Vulkan é mais direcionado ao desenvolvimento de aplicações gráficas, como renderização.
 
 \subsection{primitivas}
 
@@ -136,6 +139,24 @@ Originalmente, \gls{bvh} utilizava pelo menos seis \textit{bounding slabs}(plano
 Se esses \textit{slabs} são perpendiculares aos eixos do sistema de coordenadas do mundo, o volume delimitador resultante é denominado \gls{aabb}. Em \glspl{bvh} convencionais, os limites de um \gls{aabb} são representados por seis valores de ponto flutuante, correspondentes às coordenadas mínimas e máximas ao longo de cada eixo cartesiano  \cite{bauszat2010minimal}.
 
 Comparadas a outras abordagens, as \glspl{bvh} geralmente têm os menores requisitos de memória e um \textit{memory footprint}(uso de memória) pré-computável \cite{bauszat2010minimal}. Técnicas híbridas têm sido investigadas minuciosamente nos últimos anos, buscando combinar os benefícios das árvores \glspl{bvh}.
+
+\subsection{Métricas}
+
+% explicar isso tudo
+
+% build time
+% traversal time
+% overhead time
+% frame time
+% latência por frame
+% memory footprint total
+% memory bandwidth usage
+% ocupação de CUDA cores
+% warp divergence
+% cache efficiency
+% consumo energético por frame
+% uso da CPU
+% uso de memória RAM
 
 % apresentar os modelos q serao usados no trabalho
 
