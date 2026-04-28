@@ -109,7 +109,62 @@ A rasterização se tornou a abordagem dominante para aplicações interativas d
 % citar a abordagem hibrida normalmente aplicada
 Os dois principais algoritmos usados em computação gráfica para gerar imagens 2D a partir de cenas 3D são a rasterização e o ray tracing. A rasterização projeta cada triângulo no plano da imagem e enumera todos os pixels cobertos em 2D, enquanto o ray tracing opera em 3D, gerando raios através de cada pixel e encontrando a interseção mais próxima com um triângulo \cite{davidovivc20123d}.
 
-With 3D rasterization the only remaining differences between the two approaches are the scene traversal and the enumeration of potentially covered samples on the image plane (binning). 3D rasterization allows us to explore the design space between traditional rasterization and ray casting in a formalized manner. We discuss performance/cost trade-offs and evaluate different implementations and compare 3D rasterization to traditional ray tracing and 2D rasterization \cite{davidovivc20123d}.
+Com a rasterização 3D, as principais diferenças entre as abordagens passam a se concentrar em dois pontos. A travessia da cena, como identificar os objetos relevantes para a cena, usando estruturas e organizações das primitivas. A enumeração de amostras potencialmente cobertas no plano da imagem (binning), que determina quais pixels ou amostras podem ser influenciados por cada primitiva \cite{davidovivc20123d}.
+
+% buscar no texto a abordagem hibrida
+This continuous rendering algorithm allows us to explore the
+continuum of methods between rasterization and ray tracing. Note
+that the rasterize function can be replaced by a ray-triangle inter-
+section, or 2D rasterization for linear projections
+
+In this paper we focus on primary (camera) rays, i.e. rays with a
+common origin or parallel rays, because only these are also covered
+by rasterization. We consider secondary rays and efficient global il-
+lumination algorithms, such as path tracing or photon mapping, as
+orthogonal to our approach. Even for the simple case of primary
+rays, rasterization and ray tracing seemed to be fundamentally dif-
+ferent. In this paper, we show that a different view on both algo-
+rithms based on a slight generalization – rasterizing through 3D
+edge functions defined in world space instead of 2D edge functions
+on the image plane – we can fold ray casting, i.e. ray tracing of
+primary rays, and rasterization into a single 3D rasterization algo-
+rithm. In this unified context we can now apply techniques that
+have been limited to one approach also in the context of the other.
+
+Combined Use of Traversal and Binning A generic formulation
+of combined traversal and binning (not explicitly aligned) is shown
+as pseudo-code in Figure 7. Here F is a frustum and N is a node of
+the spatial index structure (typically starting with the entire view-
+port and the root node, respectively). The blue keywords denote
+oracles which control the behavior of the algorithm, and allow us to
+reproduce the aforementioned rendering algorithms and to explore
+new avenues.
+
+For example, the algorithm behaves like a standard 2D rasterizer if
+we set generateSamples and binning to true, and all other
+oracles to false. To obtain a coherent ray tracer, isOccluded and
+isOutside are activated to perform a test that determines if a
+spatial index node intersects a ray frustum or is occluded by other
+geometry; splitFrustum is false; the generateSamples or-
+acle controls the traversal of the spatial index structure and is true
+for leaves of the spatial index only, where it initiates the per-sample
+coverage computation instead of rasterizing the triangles.
+
+This approach allows us to flexibly combine concepts from both
+ends of the continuum and use occlusion and frustum culling based
+on the spatial index hierarchy with binning at the coverage level us-
+ing the sample grid additional 2D acceleration structure. We also
+experiment with adaptively splitting ray frusta, which can be bene-
+ficial for scenes with an irregular distribution of details.
+
+More distinct combinations from this continuum have already been
+explored. For example, Benthin et al. [4] build on a 16-wide SIMD
+architecture traversing 16 frusta in parallel through a scene acceler-
+ation structure, each bounding a set of highly coherent rays. They
+also cull back-facing and missed triangles prior to ray-triangle in-
+tersection computation. We believe that our formulation of the full
+continuum allows us to explore other promising algorithms in a sys-
+tematic way
 
 \subsection{estruturas de aceleracao}
 % explicar melhor o impacto das estruturas de aceleracao
