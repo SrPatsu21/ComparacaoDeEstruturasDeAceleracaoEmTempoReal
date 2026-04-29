@@ -18,11 +18,11 @@ As placas gráficas começaram a oferecer cada vez mais funcionalidades program�
 
 \subsection{primitivas}
 
-Em um sistema de modelagem hierárquica, podemos representar objetos de qualquer complexidade. Tudo é definido a partir de outro objeto ate, seu nivel mais baixo, entao precisamos de algo mais basico que não precise de uma hierarquia para ser descrito. Em sistemas hierárquicos, chamamos esses objetos de nível mais baixo de \textit{primitives}(primitivos). No ray tracing os primitivos podem ser: polígonos, objetos geométricos como a esfera ou objetos mais complexos como \textit{parametric patches}(patches paramétricos) \cite{wyvill1995practical}. Na rasterização é possivel figuras mais complexas, porem o Vulkan usa apenas pontos, linhas e triangulos, pois sao as mais otimizadas \cite{vulkan_docs}
+Em um sistema de modelagem hierárquica, podemos representar objetos de qualquer complexidade. Tudo é definido a partir de outro objeto ate, seu nivel mais baixo, entao precisamos de algo mais basico que não precise de uma hierarquia para ser descrito. Em sistemas hierárquicos, chamamos esses objetos de nível mais baixo de \textit{primitives}(primitivos). No \textit{ray tracing} os primitivos podem ser: polígonos, objetos geométricos como a esfera ou objetos mais complexos como \textit{parametric patches}(patches paramétricos) \cite{wyvill1995practical}. Na rasterização é possivel figuras mais complexas, porem o Vulkan usa apenas pontos, linhas e triangulos, pois sao as mais otimizadas \cite{vulkan_docs}
 
-\subsection{Ray tracing}
+\subsection{\textit{ray tracing}}
 
-Ray tracing é uma técnica de renderização gráfica 3D baseada na simulação do caminho da luz real. O termo pode ser utilizado tanto para se referir a um algoritmo específico, quanto para uma classe de algoritmos que lançam raios através de uma cena. Comparado com a maioria dos outros algoritmos de renderização, o ray tracing proporciona um efeito de luz e sombra mais realista. O primeiro algoritmo de ray tracing foi proposto por Appel em 1968. Appel criou o ray casting \cite{wang2022development}.
+\textit{ray tracing} é uma técnica de renderização gráfica 3D baseada na simulação do caminho da luz real. O termo pode ser utilizado tanto para se referir a um algoritmo específico, quanto para uma classe de algoritmos que lançam raios através de uma cena. Comparado com a maioria dos outros algoritmos de renderização, o \textit{ray tracing} proporciona um efeito de luz e sombra mais realista. O primeiro algoritmo de \textit{ray tracing} foi proposto por Appel em 1968. Appel criou o ray casting \cite{wang2022development}.
 
 O ray casting renderiza a cena emitindo um raio primário do ponto de observação ou câmera para cada \textit{pixel}, encontrando o objeto mais próximo que bloqueia o caminho do raio. Raios adicionais, como raios de sombra, podem ser utilizados para verificar a visibilidade da luz a partir do ponto de interseção \cite{wang2022development}.
 
@@ -107,69 +107,46 @@ A rasterização se tornou a abordagem dominante para aplicações interativas d
 
 \subsection{abordagem hibrida}
 % citar a abordagem hibrida normalmente aplicada
-Os dois principais algoritmos usados em computação gráfica para gerar imagens 2D a partir de cenas 3D são a rasterização e o ray tracing. A rasterização projeta cada triângulo no plano da imagem e enumera todos os pixels cobertos em 2D, enquanto o ray tracing opera em 3D, gerando raios através de cada pixel e encontrando a interseção mais próxima com um triângulo \cite{davidovivc20123d}.
+Os dois principais algoritmos usados em computação gráfica para gerar imagens 2D a partir de cenas 3D são a rasterização e o \textit{ray tracing}. A rasterização projeta cada triângulo no plano da imagem e enumera todos os pixels cobertos em 2D, enquanto o \textit{ray tracing} opera em 3D, gerando raios através de cada pixel e encontrando a interseção mais próxima com um triângulo \cite{davidovivc20123d}.
 
 Com a rasterização 3D, as principais diferenças entre as abordagens passam a se concentrar em dois pontos. A travessia da cena, como identificar os objetos relevantes para a cena, usando estruturas e organizações das primitivas. A enumeração de amostras potencialmente cobertas no plano da imagem (binning), que determina quais pixels ou amostras podem ser influenciados por cada primitiva \cite{davidovivc20123d}.
 
+rasterização e \textit{ray tracing} não são técnicas distintas, mas sim pontos extremos de um mesmo espectro contínuo. Sendo assim, diferentes comportamentos podem ser obtidos por meio da ativação ou desativação de determinados componentes, como geração de amostras, binning e testes de oclusão. Permitindo aplicar tanto estrategia de rasterizacao quanto de ray traicing \cite{davidovivc20123d}.
 % buscar no texto a abordagem hibrida
-This continuous rendering algorithm allows us to explore the
-continuum of methods between rasterization and ray tracing. Note
-that the rasterize function can be replaced by a ray-triangle inter-
-section, or 2D rasterization for linear projections
 
-In this paper we focus on primary (camera) rays, i.e. rays with a
-common origin or parallel rays, because only these are also covered
-by rasterization. We consider secondary rays and efficient global il-
-lumination algorithms, such as path tracing or photon mapping, as
-orthogonal to our approach. Even for the simple case of primary
-rays, rasterization and ray tracing seemed to be fundamentally dif-
-ferent. In this paper, we show that a different view on both algo-
-rithms based on a slight generalization – rasterizing through 3D
-edge functions defined in world space instead of 2D edge functions
-on the image plane – we can fold ray casting, i.e. ray tracing of
-primary rays, and rasterization into a single 3D rasterization algo-
-rithm. In this unified context we can now apply techniques that
-have been limited to one approach also in the context of the other.
+% ray tracing offline tem q ver isso ai
+% verificar se pode ser escrito dessa forma
+Pipeline de renderização híbrida (\textit{Hybrid rendering pipeline}) no qual a rasterização, computação e ray  traçado de raios trabalham juntos para possibilitar visuais em tempo real com qualidade próxima à do \textit{ray tracing offline}. A interação de múltiplas etapas gráficas e a utilização das capacidades únicas de cada etapa e a modularização do processo de renderização permite alcançar varios aspectos visual de forma otimizada \cite{barre2019hybrid}.
 
-Combined Use of Traversal and Binning A generic formulation
-of combined traversal and binning (not explicitly aligned) is shown
-as pseudo-code in Figure 7. Here F is a frustum and N is a node of
-the spatial index structure (typically starting with the entire view-
-port and the root node, respectively). The blue keywords denote
-oracles which control the behavior of the algorithm, and allow us to
-reproduce the aforementioned rendering algorithms and to explore
-new avenues.
+o PICA PICA é um experimento de traçado de raios em tempo real com agentes de autoaprendizagem em um mundo proceduralmente. O sistema adota um pipeline de renderização híbrida que combina rasterização, shaders de computação e técnicas de \textit{ray tracing} para compor a imagem final. A arquitetura do pipeline é organizada em múltiplas etapas, cada uma responsável por um aspecto específico da renderização, usa abordagem modular para maximizar eficiência e qualidade visual \cite{barre2019hybrid}.
 
-For example, the algorithm behaves like a standard 2D rasterizer if
-we set generateSamples and binning to true, and all other
-oracles to false. To obtain a coherent ray tracer, isOccluded and
-isOutside are activated to perform a test that determines if a
-spatial index node intersects a ray frustum or is occluded by other
-geometry; splitFrustum is false; the generateSamples or-
-acle controls the traversal of the spatial index structure and is true
-for leaves of the spatial index only, where it initiates the per-sample
-coverage computation instead of rasterizing the triangles.
+O pipeline do PICA PICA é executado na seguinte ordem: 
+1. Object-space rendering.
+1.1. Texture-space object parameterization.
+1.2. Transparency and translucency ray tracing.
+2. Global illumination (diffuse interreflections).
+3. G-buffer layout.
+4. Direct shadows.
+4.1. Shadows from G-buffer.
+4.2. Shadow denoising.
+5. Reflections.
+5.1. Reflections from G-buffer.
+5.2. Ray traced shadows at reflection intersections.
+5.3. Reflection denoising.
+6. Direct lighting.
+7. Reflection and radiosity merge.
+8. Post-processing.
 
-This approach allows us to flexibly combine concepts from both
-ends of the continuum and use occlusion and frustum culling based
-on the spatial index hierarchy with binning at the coverage level us-
-ing the sample grid additional 2D acceleration structure. We also
-experiment with adaptively splitting ray frusta, which can be bene-
-ficial for scenes with an irregular distribution of details.
 
-More distinct combinations from this continuum have already been
-explored. For example, Benthin et al. [4] build on a 16-wide SIMD
-architecture traversing 16 frusta in parallel through a scene acceler-
-ation structure, each bounding a set of highly coherent rays. They
-also cull back-facing and missed triangles prior to ray-triangle in-
-tersection computation. We believe that our formulation of the full
-continuum allows us to explore other promising algorithms in a sys-
-tematic way
+Rasterização (G-buffer pass)
+ReSTIR DI (Direct Illumination)
+Soft Shadows (Area Lights)
+Reflexões — GGX Importance Sampling
 
 \subsection{estruturas de aceleracao}
 % explicar melhor o impacto das estruturas de aceleracao
-% olhar Preliminaries - A Survey on Bounding Volume Hierarchies for Ray Tracing
-O ray tracing vem se tornando cada vez mais importante para aplicações em tempo real. No entanto, exige alto poder computacional e depende de estruturas de dados pré-processadas para alcançar um desempenho em tempo real. Dentre os métodos para melhorar a eficiência do traçado de raios, as estruturas de dados hierárquicas são extremamente importantes e populares \cite{stich2009spatial}.
+% olhar Preliminaries - A Survey on Bounding Volume Hierarchies for \textit{ray tracing}
+O \textit{ray tracing} vem se tornando cada vez mais importante para aplicações em tempo real. No entanto, exige alto poder computacional e depende de estruturas de dados pré-processadas para alcançar um desempenho em tempo real. Dentre os métodos para melhorar a eficiência do traçado de raios, as estruturas de dados hierárquicas são extremamente importantes e populares \cite{stich2009spatial}.
 
 Representações hierárquicas de objetos tridimensionais são eficientes em termos de tempo e espaço. Essas representações tipicamente consistem em árvores cujos ramos representam volumes delimitadores \cite{rubin19803}. A ideia por trás de uma \gls{bvh} é subdividir as primitivas de uma cena em conjuntos possivelmente sobrepostos. Para cada desses conjuntos, um \gls{bv} é calculado e estes são organizados em uma estrutura de árvore. Os limites de cada nó nesta árvore são escolhidos de forma que ele delimite exatamente todos os nós na subárvore correspondente e cada nó folha delimite exatamente as primitivas contidas \cite{bauszat2010minimal}.
 
