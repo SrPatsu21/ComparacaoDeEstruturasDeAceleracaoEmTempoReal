@@ -120,28 +120,32 @@ Pipeline de renderização híbrida (\textit{Hybrid rendering pipeline}) no qual
 
 o PICA PICA é um experimento de traçado de raios em tempo real com agentes de autoaprendizagem em um mundo proceduralmente. O sistema adota um pipeline de renderização híbrida que combina rasterização, shaders de computação e técnicas de \textit{ray tracing} para compor a imagem final. A arquitetura do pipeline é organizada em múltiplas etapas, cada uma responsável por um aspecto específico da renderização, usa abordagem modular para maximizar eficiência e qualidade visual \cite{barre2019hybrid}.
 
-O pipeline do PICA PICA é executado na seguinte ordem: 
-1. Object-space rendering.
-1.1. Texture-space object parameterization.
-1.2. Transparency and translucency ray tracing.
-2. Global illumination (diffuse interreflections).
-3. G-buffer layout.
-4. Direct shadows.
-4.1. Shadows from G-buffer.
-4.2. Shadow denoising.
-5. Reflections.
-5.1. Reflections from G-buffer.
-5.2. Ray traced shadows at reflection intersections.
-5.3. Reflection denoising.
-6. Direct lighting.
-7. Reflection and radiosity merge.
-8. Post-processing.
+O pipeline do PICA PICA se inicia com o \textit{object-space rendering}(renderização no espaço de objetos), trata a estruturas geométricas e coordenadas de textura. Faz o calculo de transparencia e translucides para raios. Depois com \textit{global illumination} calcula oclusão (esse processo é limitada para um numero maximo de testes por quadro) \cite{barre2019hybrid}. G-buffer \cite{}.
 
 
-Rasterização (G-buffer pass)
-ReSTIR DI (Direct Illumination)
-Soft Shadows (Area Lights)
-Reflexões — GGX Importance Sampling
+
+% 1. Object-space rendering.
+% 1.1. Texture-space object parameterization.
+% 1.2. Transparency and translucency ray tracing.
+% 2. Global illumination (diffuse interreflections).
+% 3. G-buffer layout.
+% 4. Direct shadows.
+% 4.1. Shadows from G-buffer.
+% 4.2. Shadow denoising.
+% 5. Reflections.
+% 5.1. Reflections from G-buffer.
+% 5.2. Ray traced shadows at reflection intersections.
+% 5.3. Reflection denoising.
+% 6. Direct lighting.
+% 7. Reflection and radiosity merge.
+% 8. Post-processing.
+
+
+% oq eu vou fazer
+% Rasterização (G-buffer pass)
+% ReSTIR DI (Direct Illumination)
+% Soft Shadows (Area Lights)
+% Reflexões — GGX Importance Sampling
 
 \subsection{estruturas de aceleracao}
 % explicar melhor o impacto das estruturas de aceleracao
