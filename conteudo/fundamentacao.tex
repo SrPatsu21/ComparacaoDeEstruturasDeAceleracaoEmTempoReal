@@ -102,7 +102,6 @@ Durante a rasterização, quando uma primitiva intersecta ou passa à frente de 
     \label{fig:ZBufferCase}
 \end{figure}
 
-
 A rasterização se tornou a abordagem dominante para aplicações interativas devido aos seus baixos requisitos computacionais iniciais (não há necessidade de ponto flutuante no espaço de imagem 2D), à sua capacidade de ser implementada em hardware e ao desempenho cada vez maior de placas gráficas dedicadas. No entanto, o tratamento de efeitos globais não são nativos e dependem de aproximações, como reflexos e sobras \cite{davidovivc20123d}.
 
 \subsection{abordagem hibrida}
@@ -118,16 +117,19 @@ Pipeline de renderização híbrida (\textit{Hybrid rendering pipeline}) no qual
 
 o PICA PICA é um experimento de traçado de raios em tempo real com agentes de autoaprendizagem em um mundo proceduralmente. O sistema adota um pipeline de renderização híbrida que combina rasterização, shaders de computação e técnicas de \textit{ray tracing} para compor a imagem final. A arquitetura do pipeline é organizada em múltiplas etapas, cada uma responsável por um aspecto específico da renderização, usa abordagem modular para maximizar eficiência e qualidade visual \cite{barre2019hybrid}.
 
+Para gerar imagens de alta qualidade, seria necessário gerar milhares de raios por pixel. Mesmo com uma BVH otimizada, algoritmos eficientes de busca e GPUs rápidas, isso não é possível em tempo real atualmente, exceto para as cenas mais simples. As imagens que podem ser geradas com as restrições de desempenho atuaiz possuem muito ruido. Porem elas podem ser tratadas com algoritmos de redução de ruído, podendo gerar imagens com apenas um raio por pixel com qualidade próximo a um \textit{ray tracing offline} \cite{akenine2019real}.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{images/UmaAmostraPorPixelPathTraced.png}
+    \caption{Imagem path-traced (esquerda). Imagem suavizada (centro). A qualidade de referência renderizada com 2048 amostras por pixel (direita). Fonte \cite{akenine2019real} cortesia da NVIDIA Corporation.}
+    \label{fig:UmaAmostraPorPixelPathTraced}
+\end{figure}
+
+
 O pipeline do PICA PICA se inicia com o \textit{object-space rendering}(renderização no espaço de objetos), trata a estruturas geométricas e coordenadas de textura. Faz o calculo de transparencia e translucides para raios. Depois com \textit{global illumination} calcula oclusão (esse processo é limitada para um numero maximo de testes por quadro) \cite{barre2019hybrid}. G-buffer uma abreviação de \textit{geometric buffers}(buffers geométricos), referese a buffers usados para armazenar propriedades de superfície. Cada G-buffer é um alvo de renderização separado. Esse alvo pode ser  mapa de profundidade, buffer normal, buffer de rugosidade, oclusão, cor da textura(albedo), intensidade da luz, intensidade especular e imagem quase final \cite{akenine2019real}.
 
 Usando dados do G-buffer gera sombrars a partir da fonte de luz e remove possiveis ruidos. Pega pontos de partida do G-buffer para lançar raios de reflexão. Calcula a luz direta que vem de uma fonte ate o material. Por fim pós-processamento que adiciona efeitos como \textit{anti-aliasing}(suavização de serrilhado) e desfoque de movimento \cite{barre2019hybrid}.
-
-
-% oq eu vou fazer
-% Rasterização (G-buffer pass)
-% ReSTIR DI (Direct Illumination)
-% Soft Shadows (Area Lights)
-% Reflexões — GGX Importance Sampling
 
 \subsection{estruturas de aceleracao}
 % explicar melhor o impacto das estruturas de aceleracao

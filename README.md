@@ -6,6 +6,13 @@
 docker run --rm -v $(pwd):/data -w /data texlive/texlive bash -c "pdflatex main.tex; bibtex main; makeglossaries main; pdflatex main.tex; pdflatex main.tex"
 ```
 
+
+## o q eu vou fazer
+Rasterização (G-buffer pass)
+ReSTIR DI (Direct Illumination)
+Soft Shadows (Area Lights)
+Reflexões — GGX Importance Sampling
+
 ## Hybrid Renderer Pipeline
 
 Rasterization + ReSTIR DI + GGX Importance Sampling
