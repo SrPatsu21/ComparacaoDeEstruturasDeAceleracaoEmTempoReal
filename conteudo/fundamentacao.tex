@@ -106,39 +106,21 @@ Durante a rasterização, quando uma primitiva intersecta ou passa à frente de 
 A rasterização se tornou a abordagem dominante para aplicações interativas devido aos seus baixos requisitos computacionais iniciais (não há necessidade de ponto flutuante no espaço de imagem 2D), à sua capacidade de ser implementada em hardware e ao desempenho cada vez maior de placas gráficas dedicadas. No entanto, o tratamento de efeitos globais não são nativos e dependem de aproximações, como reflexos e sobras \cite{davidovivc20123d}.
 
 \subsection{abordagem hibrida}
-% citar a abordagem hibrida normalmente aplicada
 Os dois principais algoritmos usados em computação gráfica para gerar imagens 2D a partir de cenas 3D são a rasterização e o \textit{ray tracing}. A rasterização projeta cada triângulo no plano da imagem e enumera todos os pixels cobertos em 2D, enquanto o \textit{ray tracing} opera em 3D, gerando raios através de cada pixel e encontrando a interseção mais próxima com um triângulo \cite{davidovivc20123d}.
 
 Com a rasterização 3D, as principais diferenças entre as abordagens passam a se concentrar em dois pontos. A travessia da cena, como identificar os objetos relevantes para a cena, usando estruturas e organizações das primitivas. A enumeração de amostras potencialmente cobertas no plano da imagem (binning), que determina quais pixels ou amostras podem ser influenciados por cada primitiva \cite{davidovivc20123d}.
 
 rasterização e \textit{ray tracing} não são técnicas distintas, mas sim pontos extremos de um mesmo espectro contínuo. Sendo assim, diferentes comportamentos podem ser obtidos por meio da ativação ou desativação de determinados componentes, como geração de amostras, binning e testes de oclusão. Permitindo aplicar tanto estrategia de rasterizacao quanto de ray traicing \cite{davidovivc20123d}.
-% buscar no texto a abordagem hibrida
 
 % ray tracing offline tem q ver isso ai
-% verificar se pode ser escrito dessa forma
+% verificar se pode ser escrito dessa forma a traducao
 Pipeline de renderização híbrida (\textit{Hybrid rendering pipeline}) no qual a rasterização, computação e ray  traçado de raios trabalham juntos para possibilitar visuais em tempo real com qualidade próxima à do \textit{ray tracing offline}. A interação de múltiplas etapas gráficas e a utilização das capacidades únicas de cada etapa e a modularização do processo de renderização permite alcançar varios aspectos visual de forma otimizada \cite{barre2019hybrid}.
 
 o PICA PICA é um experimento de traçado de raios em tempo real com agentes de autoaprendizagem em um mundo proceduralmente. O sistema adota um pipeline de renderização híbrida que combina rasterização, shaders de computação e técnicas de \textit{ray tracing} para compor a imagem final. A arquitetura do pipeline é organizada em múltiplas etapas, cada uma responsável por um aspecto específico da renderização, usa abordagem modular para maximizar eficiência e qualidade visual \cite{barre2019hybrid}.
 
-O pipeline do PICA PICA se inicia com o \textit{object-space rendering}(renderização no espaço de objetos), trata a estruturas geométricas e coordenadas de textura. Faz o calculo de transparencia e translucides para raios. Depois com \textit{global illumination} calcula oclusão (esse processo é limitada para um numero maximo de testes por quadro) \cite{barre2019hybrid}. G-buffer \cite{}.
+O pipeline do PICA PICA se inicia com o \textit{object-space rendering}(renderização no espaço de objetos), trata a estruturas geométricas e coordenadas de textura. Faz o calculo de transparencia e translucides para raios. Depois com \textit{global illumination} calcula oclusão (esse processo é limitada para um numero maximo de testes por quadro) \cite{barre2019hybrid}. G-buffer uma abreviação de \textit{geometric buffers}(buffers geométricos), referese a buffers usados para armazenar propriedades de superfície. Cada G-buffer é um alvo de renderização separado. Esse alvo pode ser  mapa de profundidade, buffer normal, buffer de rugosidade, oclusão, cor da textura(albedo), intensidade da luz, intensidade especular e imagem quase final \cite{akenine2019real}.
 
-
-
-% 1. Object-space rendering.
-% 1.1. Texture-space object parameterization.
-% 1.2. Transparency and translucency ray tracing.
-% 2. Global illumination (diffuse interreflections).
-% 3. G-buffer layout.
-% 4. Direct shadows.
-% 4.1. Shadows from G-buffer.
-% 4.2. Shadow denoising.
-% 5. Reflections.
-% 5.1. Reflections from G-buffer.
-% 5.2. Ray traced shadows at reflection intersections.
-% 5.3. Reflection denoising.
-% 6. Direct lighting.
-% 7. Reflection and radiosity merge.
-% 8. Post-processing.
+Usando dados do G-buffer gera sombrars a partir da fonte de luz e remove possiveis ruidos. Pega pontos de partida do G-buffer para lançar raios de reflexão. Calcula a luz direta que vem de uma fonte ate o material. Por fim pós-processamento que adiciona efeitos como \textit{anti-aliasing}(suavização de serrilhado) e desfoque de movimento \cite{barre2019hybrid}.
 
 
 % oq eu vou fazer
