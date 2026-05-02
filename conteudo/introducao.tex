@@ -1,6 +1,10 @@
 \chapter{INTRODUÇÃO}
 
-% As orientações aqui apresentadas são baseadas em um conjunto de normas elaboradas pela ABNT. Além das normas técnicas a Biblioteca também elaborou  um guia para elaboração de trabalhos acadêmicos que está disponível na sua Homepage. < http://biblioteca.ifc.edu.br/normalizacao-de-trabalhos//>.
+A computação gráfica tem evoluído significativamente nas últimas décadas, impulsionada pela necessidade de gerar imagens cada vez mais realistas em diferentes contextos. Nesse cenário, o uso de algoritmos de \textit{ray tracing} tem se destacado pela sua capacidade de produzir imagens altamente realistas. No entanto, o custo computacional associado a essa técnica ainda é um desafio, especialmente em cenários dinâmicos.
+
+Para viabilizar o \textit{ray tracing} em tempo real, torna-se fundamental o uso de estruturas de aceleração. As \glspl{bvh} permitem reduzir significativamente o número de testes de interseção entre raios e primitivas geométricas. Com o avanço do hardware dedicado, como \gls{gpu} moderna, diferentes estratégias de construção e atualização dessas estruturas têm sido propostas, cada uma apresentando características distintas em termos de desempenho e eficiência.
+
+Diante desse cenário, torna-se relevante investigar como essas diferentes abordagens se comportam em aplicações de tempo real, considerando tanto as características das cenas quanto as limitações do hardware utilizado.
 
 \section{Problema de Pesquisa}
 
@@ -36,8 +40,3 @@ A utilização de estruturas de aceleração, como \gls{bvh}, é fundamental par
 Além disso, abordagens como rebuild completo e refit incremental apresentam trade-offs relevantes, que podem influenciar diretamente a eficiência da aplicação dependendo do cenário de uso. A análise desses fatores é importante não apenas do ponto de vista teórico, mas também prático, contribuindo para a escolha de técnicas mais adequadas em aplicações reais.
 
 Dessa forma, este trabalho se justifica pela necessidade de avaliar e comparar essas abordagens, considerando múltiplas métricas de desempenho, a fim de fornecer subsídios para o desenvolvimento de sistemas mais eficientes em ambientes de tempo real.
-
-% As siglas utilizadas devem ser inseridas no arquivo acronimos.tex. E o uso dá de algumas formas, como \gls{ifc}. Ou \acrlong{ifc}. Ou \glspl{ifc}.
-%
-%--------- FIM INTRODUÇÃO------------
-%
