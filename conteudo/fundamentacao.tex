@@ -21,10 +21,14 @@ Em um sistema de modelagem hierárquica, objetos complexos são construídos a p
 
 No \textit{ray tracing}, as primitivas podem ser: polígonos, objetos geométricos como a esfera ou objetos mais complexos como patches paramétricos \cite{wyvill1995practical}. Na rasterização, é possível usar figuras mais complexas, porém o Vulkan usa apenas pontos, linhas e triângulos, pois são as mais otimizadas. Em especial, os triângulos são amplamente utilizados uma vez que permitem a aproximação de superfícies arbitrárias e complexas \cite{vulkan_docs}.
 
-\subsection{Principais efeitos luminosos}
+\subsection{Efeitos físicos da luz}
 
-Sombras
-Reflexão
+Sombras podem ser entendidas como o resultado da obstrução da luz. Em algoritmos de \textit{ray tracing}, esse fenômeno é pela emissão de raios de sombra (\textit{shadow rays}) a partir de um ponto de interseção na superfície em direção à fonte de luz. Se esse raio não intercepta nenhum objeto o ponto é considerado iluminado; caso contrário, está em sombra, pois a luz é bloqueada por outro objeto \cite{marschner2021fundamentals}.
+
+A reflexão especular ideal, também chamada de reflexão em espelho,
+
+pode ser modelada em \textit{ray tracing} considerando que, o ponto na superfície refletora tem sua cor definida de acordo com o raio refletido, raio correspondente ao observador. A direção pode ser calculada a partir da direção incidente e da normal da superfície r=d−2(d⋅n)n. A luz refletida sofre perda de energia, para simular isso a cor é reduzida a cada interacao.
+
 Refração
 Iluminação difusa
 Iluminação global (Global Illumination)
@@ -32,7 +36,7 @@ Oclusão (occlusion)
 Luz direta
 Transparência
 Translucidez
-% Componente especular (intensidade especular)
+Componente especular (intensidade especular)
 
 \subsection{\textit{Ray tracing}}
 
