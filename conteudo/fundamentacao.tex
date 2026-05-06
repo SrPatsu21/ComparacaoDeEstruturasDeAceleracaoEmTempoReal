@@ -25,9 +25,7 @@ No \textit{ray tracing}, as primitivas podem ser: polígonos, objetos geométric
 
 Sombras podem ser entendidas como o resultado da obstrução da luz. Em algoritmos de \textit{ray tracing}, esse fenômeno é pela emissão de raios de sombra (\textit{shadow rays}) a partir de um ponto de interseção na superfície em direção à fonte de luz. Se esse raio não intercepta nenhum objeto o ponto é considerado iluminado; caso contrário, está em sombra, pois a luz é bloqueada por outro objeto \cite{marschner2021fundamentals}.
 
-A reflexão especular ideal, também chamada de reflexão em espelho,
-
-pode ser modelada em \textit{ray tracing} considerando que, o ponto na superfície refletora tem sua cor definida de acordo com o raio refletido, raio correspondente ao observador. A direção pode ser calculada a partir da direção incidente e da normal da superfície r=d−2(d⋅n)n. A luz refletida sofre perda de energia, para simular isso a cor é reduzida a cada interacao.
+A reflexão especular ideal, também chamada de reflexão em espelho, pode ser modelada em \textit{ray tracing} considerando que, o ponto na superfície refletora tem sua cor definida de acordo com o raio refletido, raio correspondente ao observador. A direção pode ser calculada a partir da direção incidente e da normal da superfície r=d−2(d⋅n)n. A luz refletida sofre perda de energia, para simular isso a cor é reduzida a cada interacao.
 
 Refração
 Iluminação difusa
@@ -183,7 +181,10 @@ Comparadas a outras abordagens, as \glspl{bvh} têm geralmente os menores requis
 
 \subsection{Métricas}
 
-% explicar isso tudo
+https://developer.nvidia.com/nsight-compute
+https://docs.nvidia.com/cuda/archive/11.4.3/profiler-users-guide/index.html
+
+Tempo de construção \textit{build time}, uma das metricas mais controversas, se refere levado para a construcao da estrutura de aceleração. Em uma simulacao em tempo real é esperado que a cena mude, e conseguentemente a estrutura de aceleracao precisa ser ajustada. Existe duas abordagens principais, reconstruir (\textit{rebuild}) a estrutura todo frame e consertar (\textit{refit}) a estrutura todo frame.
 
 % build time
 % traversal time
@@ -198,8 +199,6 @@ Comparadas a outras abordagens, as \glspl{bvh} têm geralmente os menores requis
 % consumo energético por frame
 % uso da CPU
 % uso de memória RAM
-
-% apresentar os modelos q serao usados no trabalho
 
 %
 %--------- FIM DESENVOLVIMENTO------------
