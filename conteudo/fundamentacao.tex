@@ -188,7 +188,7 @@ Comparadas a outras abordagens, as \glspl{bvh} têm geralmente os menores requis
 
 % explicar modelos de BVH utilizados
 
-\subsection{Métricas}
+\subsection{Métricas de GPU}
 
 Para saber o desemplenho de cada tipo de \gls{bvh}, é preciso coletar metricas de processamento, memoria, uso de nucleos CUDA, metricas de \gls{gpu} e gls{cpu} num geral. Para possibilitar uma maior quantidade de metricas. A NVIDIA possue duas ferramentas NVIDIA Nsight Compute e NVIDIA Nsight Graphics. Essas ferramentas sao especificas da arquitetura das \glspl{gpu} NVIDIA, mas existente ferramentas equivalentes para outros dispositivos. A AMD Radeon GPU Profiler é especifica para \glspl{gpu} AMD.
 
@@ -205,22 +205,23 @@ O Nsight Compute permite extrair informacoes ao nivel de driver.
 
 Análise da Carga de Trabalho Computacional (Compute Workload Analysis): Análise detalhada dos recursos computacionais dos SM, incluindo instruções por ciclo, e a utilização de cada pipeline.
 
+% cache efficiency
 Estatísticas de Instruções (Instruction Stats): Estatísticas das low-level assembly instructions (SASS). Fornece informações sobre os tipos e a frequência das instruções executadas.
 
 Estatísticas de Inicialização (Launch Stats): A configuração de inicialização define o tamanho da grade do kernel, a divisão da grade em blocos e os recursos da GPU necessários para executar o kernel. Escolher uma configuração de inicialização eficiente maximiza a utilização do dispositivo.
 
+% memory bandwidth usage
 Análise da Carga de Trabalho da Memória (Memory Workload Analysis): A memória pode se tornar um fator limitante para o desempenho geral do kernel quando as unidades de hardware envolvidas são totalmente utilizadas (Mem Busy), quando a largura de banda de comunicação disponível entre essas unidades é esgotada (Max Bandwidth) ou quando a taxa máxima de transferência de instruções de memória é atingida (Mem Pipes Busy). Dependendo do fator limitante, o gráfico e as tabelas de memória permitem identificar o gargalo exato no sistema de memória.
 
 % usar separadamente para testar mas n precisa citar NumaAffinity
 
-% Nvlink para multigpu n temos :)
-% Nvlink_Tables mesma coisa
-% Nvlink_Topology ja sabe
 
+% ocupação de CUDA cores
 Ocupação (Occupancy): A ocupação é a proporção entre o número de warps ativos por multiprocessador e o número máximo possível de warps ativos. Outra forma de visualizar a ocupação é como a porcentagem da capacidade do hardware de processar warps que está sendo utilizada ativamente.
 
 Amostragem de PM (PmSampling): Visão temporal das métricas amostradas periodicamente durante a duração da carga de trabalho. Os dados são coletados em várias passagens. Use esta seção para entender como o comportamento da carga de trabalho muda ao longo de sua execução.
 
+% warp divergence
 Amostragem de PM: Estados de Warp (PmSampling WarpStates): Estados de warp amostrados periodicamente durante a duração da carga de trabalho. As métricas em diferentes grupos provêm de diferentes passagens.
 
 Estatísticas do Agendador (SchedulerStats): Resumo da atividade dos agendadores que emitem instruções. Cada agendador mantém um conjunto de warps para os quais pode emitir instruções. O limite superior de warps no conjunto (Warps Teóricos) é limitado pela configuração de lançamento. A cada ciclo, cada agendador verifica o estado dos warps alocados no conjunto (Warps Ativos). Warps ativos que não estão paralisados (Warps Elegíveis) estão prontos para emitir sua próxima instrução. Do conjunto de warps elegíveis, o agendador seleciona um único warp do qual emitirá uma ou mais instruções (Warp Emitido). Em ciclos sem warps elegíveis, o slot de emissão é ignorado e nenhuma instrução é emitida. Ter muitos slots de emissão ignorados indica baixa capacidade de ocultação de latência.
@@ -231,57 +232,26 @@ SpeedOfLight (Taxa de Transferência de Velocidade da Luz da GPU): Visão geral 
 
 Estatísticas de Estado de Warp (WarpStateStats):Análise dos estados em que todos os warps passaram ciclos durante a execução do kernel. Os estados de warp descrevem a prontidão ou incapacidade de um warp para emitir sua próxima instrução. Os ciclos de warp por instrução definem a latência entre duas instruções consecutivas. Quanto maior o valor, mais paralelismo de warp é necessário para ocultar essa latência.
 
-% https://docs.nvidia.com/nsight-compute/ProfilingGuide/index.html
-
-
 % working on this
 
 % https://docs.nvidia.com/nsight-graphics/index.html
 % https://docs.nvidia.com/nsight-compute/index.html
-
-maybe
-% https://docs.nvidia.com/cuda/archive/11.4.3/profiler-users-guide/index.html
+% https://docs.nvidia.com/nsight-compute/ProfilingGuide/index.html
 
 
-% ocupação de CUDA cores
-Occupancy (Occupancy)
-
-Occupancy is the ratio of the number of active warps per multiprocessor to the maximum number of possible active warps. Another way to view occupancy is the percentage of the hardware's ability to process warps that is actively in use. Higher occupancy does not always result in higher performance, however, low occupancy always reduces the ability to hide latencies, resulting in overall performance degradation. Large discrepancies between the theoretical and the achieved occupancy during execution typically indicates highly imbalanced workloads.
-
-% https://docs.nvidia.com/nsight-compute/ProfilingGuide/index.html?
-% highlight=sm__maximum_warps_per_active_cycle_pct#occupancy-metrics
-
-% warp divergence
-SourceCounters (Source Counters)
-
-Source metrics, including branch efficiency and sampled warp stall reasons. Warp Stall Sampling metrics are periodically sampled over the kernel runtime. They indicate when warps were stalled and couldn't be scheduled. See the documentation for a description of all stall reasons. Only focus on stalls if the schedulers fail to issue every cycle.
-
-% talvez:
-% smsp__thread_inst_executed_per_inst_executed.ratio
-% smsp__sass_average_branch_targets_threads_uniform.pct
-
-% memory bandwidth usage
-memory throughput
-
-% https://docs.nvidia.com/nsight-compute/ProfilingGuide/index.html?highlight=sm__maximum_warps_per_active_cycle_pct#device-memory
-
-% cache efficiency
-MemoryWorkloadAnalysis (Memory Workload Analysis)
-
-Detailed analysis of the memory resources of the GPU. Memory can become a limiting factor for the overall kernel performance when fully utilizing the involved hardware units (Mem Busy), exhausting the available communication bandwidth between those units (Max Bandwidth), or by reaching the maximum throughput of issuing memory instructions (Mem Pipes Busy). Depending on the limiting factor, the memory chart and tables allow to identify the exact bottleneck in the memory system.
-
+\subsection{Métricas do Pipeline}
+% build time
+Tempo de construção \textit{build time}, uma das metricas mais controversas, se refere levado para a construcao da estrutura de aceleração. Em uma simulacao em tempo real é esperado que a cena mude, e conseguentemente a estrutura de aceleracao precisa ser ajustada. Existe duas abordagens principais, reconstruir (\textit{rebuild}) a estrutura todo frame e consertar (\textit{refit}) a estrutura todo frame.
 
 % traversal time
-% overhead time
 % frame time
+% latência por frame
+% overhead time % overhead = frame time - (build + traversal)
 % memory footprint total
-% memory bandwidth usage
 
-
+\subsection{Métricas da CPU}
 % uso da CPU
 % uso de memória RAM
 % consumo energético por frame
-% latência por frame
 
-% build time
-Tempo de construção \textit{build time}, uma das metricas mais controversas, se refere levado para a construcao da estrutura de aceleração. Em uma simulacao em tempo real é esperado que a cena mude, e conseguentemente a estrutura de aceleracao precisa ser ajustada. Existe duas abordagens principais, reconstruir (\textit{rebuild}) a estrutura todo frame e consertar (\textit{refit}) a estrutura todo frame.
+
