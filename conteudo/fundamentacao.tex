@@ -34,7 +34,7 @@ No \textit{ray tracing}, as primitivas podem ser: polígonos, objetos geométric
 
 Sombras podem ser entendidas como o resultado da obstrução da luz. Em algoritmos de \textit{ray tracing}, esse fenômeno é pela emissão de raios de sombra (\textit{shadow rays}) a partir de um ponto de interseção na superfície em direção à fonte de luz. Se esse raio não intercepta nenhum objeto o ponto é considerado iluminado; caso contrário, está em sombra, pois a luz é bloqueada por outro objeto \cite{marschner2021fundamentals}.
 
-A reflexão especular ideal, também chamada de reflexão em espelho, pode ser modelada em \textit{ray tracing} considerando que, o ponto na superfície refletora tem sua cor definida de acordo com o raio refletido, raio correspondente ao observador. A direção pode ser calculada a partir da direção incidente e da normal da superfície r=d−2(d⋅n)n. A luz refletida sofre perda de energia, para simular isso a cor é reduzida a cada interacao.
+A reflexão especular ideal, também chamada de reflexão em espelho, pode ser modelada em \textit{ray tracing} considerando que, o ponto na superfície refletora tem sua cor definida de acordo com o raio refletido, raio correspondente ao observador. A direção pode ser calculada a partir da direção incidente e da normal da superfície r=d-2(d*n)n. A luz refletida sofre perda de energia, para simular isso a cor é reduzida a cada interacao.
 
 Refração
 Iluminação difusa
@@ -197,8 +197,8 @@ A NVIDIA Nsight Compute é uma interface fornece métricas de desempenho detalha
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.7\textwidth]{images/ExecucaoNvidiaNsightCompute.png}
-    \caption{Diagram demonstrando como Nsight Compute consegue coletar metricas ao inserir bibliotecas de metricas entre o processo e os \textit{drivers}. Fonte: \cite{nvidia_nsight_compute}}
-    \label{fig:nvidia_nsight_}
+    \caption{Diagrama demonstrando como o Nsight Compute consegue coletar métricas ao inserir bibliotecas de métricas entre o processo e os \textit{drivers}. Fonte: \cite{nvidia_nsight_compute}}
+    \label{fig:nvidia_nsight_compute}
 \end{figure}
 
 O Nsight Compute permite extrair informacoes ao nivel de driver.
@@ -221,48 +221,49 @@ Ocupação (Occupancy): A ocupação é a proporção entre o número de warps a
 
 Amostragem de PM (PmSampling): Visão temporal das métricas amostradas periodicamente durante a duração da carga de trabalho. Os dados são coletados em várias passagens. Use esta seção para entender como o comportamento da carga de trabalho muda ao longo de sua execução.
 
-Amostragem de PM: Estados de Warp (PmSampling_WarpStates): Estados de warp amostrados periodicamente durante a duração da carga de trabalho. As métricas em diferentes grupos provêm de diferentes passagens.
+Amostragem de PM: Estados de Warp (PmSampling WarpStates): Estados de warp amostrados periodicamente durante a duração da carga de trabalho. As métricas em diferentes grupos provêm de diferentes passagens.
 
-Estatísticas do Agendador (SchedulerStats): Resumo da atividade dos agendadores que emitem instruções. Cada agendador mantém um conjunto de warps para os quais pode emitir instruções. O limite superior de warps no conjunto (Warps Teóricos) é limitado pela configuração de lançamento. A cada ciclo, cada agendador verifica o estado dos warps alocados no conjunto (Warps Ativos). Warps ativos que não estão paralisados ​​(Warps Elegíveis) estão prontos para emitir sua próxima instrução. Do conjunto de warps elegíveis, o agendador seleciona um único warp do qual emitirá uma ou mais instruções (Warp Emitido). Em ciclos sem warps elegíveis, o slot de emissão é ignorado e nenhuma instrução é emitida. Ter muitos slots de emissão ignorados indica baixa capacidade de ocultação de latência.
+Estatísticas do Agendador (SchedulerStats): Resumo da atividade dos agendadores que emitem instruções. Cada agendador mantém um conjunto de warps para os quais pode emitir instruções. O limite superior de warps no conjunto (Warps Teóricos) é limitado pela configuração de lançamento. A cada ciclo, cada agendador verifica o estado dos warps alocados no conjunto (Warps Ativos). Warps ativos que não estão paralisados (Warps Elegíveis) estão prontos para emitir sua próxima instrução. Do conjunto de warps elegíveis, o agendador seleciona um único warp do qual emitirá uma ou mais instruções (Warp Emitido). Em ciclos sem warps elegíveis, o slot de emissão é ignorado e nenhuma instrução é emitida. Ter muitos slots de emissão ignorados indica baixa capacidade de ocultação de latência.
 
-Contadores de Origem (SourceCounters): Métricas de origem, incluindo eficiência de ramificação e motivos de parada de warp amostrados. As métricas de Amostragem de Parada de Warp são amostradas periodicamente durante a execução do kernel. Elas indicam quando os warps foram paralisados ​​e não puderam ser agendados.
+Contadores de Origem (SourceCounters): Métricas de origem, incluindo eficiência de ramificação e motivos de parada de warp amostrados. As métricas de Amostragem de Parada de Warp são amostradas periodicamente durante a execução do kernel. Elas indicam quando os warps foram paralisados e não puderam ser agendados.
 
 SpeedOfLight (Taxa de Transferência de Velocidade da Luz da GPU): Visão geral de alto nível da taxa de transferência para recursos de computação e memória da GPU. Para cada unidade, a taxa de transferência indica a porcentagem de utilização alcançada em relação ao máximo teórico.
 
 Estatísticas de Estado de Warp (WarpStateStats):Análise dos estados em que todos os warps passaram ciclos durante a execução do kernel. Os estados de warp descrevem a prontidão ou incapacidade de um warp para emitir sua próxima instrução. Os ciclos de warp por instrução definem a latência entre duas instruções consecutivas. Quanto maior o valor, mais paralelismo de warp é necessário para ocultar essa latência.
 
-https://docs.nvidia.com/nsight-compute/ProfilingGuide/index.html
+% https://docs.nvidia.com/nsight-compute/ProfilingGuide/index.html
 
 
 % working on this
 
-https://docs.nvidia.com/nsight-graphics/index.html
-https://docs.nvidia.com/nsight-compute/index.html
+% https://docs.nvidia.com/nsight-graphics/index.html
+% https://docs.nvidia.com/nsight-compute/index.html
 
 maybe
-https://docs.nvidia.com/cuda/archive/11.4.3/profiler-users-guide/index.html
+% https://docs.nvidia.com/cuda/archive/11.4.3/profiler-users-guide/index.html
 
 
 % ocupação de CUDA cores
 Occupancy (Occupancy)
 
-Occupancy is the ratio of the number of active warps per multiprocessor to the maximum number of possible active warps. Another way to view occupancy is the percentage of the hardware’s ability to process warps that is actively in use. Higher occupancy does not always result in higher performance, however, low occupancy always reduces the ability to hide latencies, resulting in overall performance degradation. Large discrepancies between the theoretical and the achieved occupancy during execution typically indicates highly imbalanced workloads.
+Occupancy is the ratio of the number of active warps per multiprocessor to the maximum number of possible active warps. Another way to view occupancy is the percentage of the hardware's ability to process warps that is actively in use. Higher occupancy does not always result in higher performance, however, low occupancy always reduces the ability to hide latencies, resulting in overall performance degradation. Large discrepancies between the theoretical and the achieved occupancy during execution typically indicates highly imbalanced workloads.
 
-https://docs.nvidia.com/nsight-compute/ProfilingGuide/index.html?highlight=sm__maximum_warps_per_active_cycle_pct#occupancy-metrics
+% https://docs.nvidia.com/nsight-compute/ProfilingGuide/index.html?
+% highlight=sm__maximum_warps_per_active_cycle_pct#occupancy-metrics
 
 % warp divergence
 SourceCounters (Source Counters)
-	
-Source metrics, including branch efficiency and sampled warp stall reasons. Warp Stall Sampling metrics are periodically sampled over the kernel runtime. They indicate when warps were stalled and couldn’t be scheduled. See the documentation for a description of all stall reasons. Only focus on stalls if the schedulers fail to issue every cycle.
 
-talvez:
-smsp__thread_inst_executed_per_inst_executed.ratio
-smsp__sass_average_branch_targets_threads_uniform.pct
+Source metrics, including branch efficiency and sampled warp stall reasons. Warp Stall Sampling metrics are periodically sampled over the kernel runtime. They indicate when warps were stalled and couldn't be scheduled. See the documentation for a description of all stall reasons. Only focus on stalls if the schedulers fail to issue every cycle.
+
+% talvez:
+% smsp__thread_inst_executed_per_inst_executed.ratio
+% smsp__sass_average_branch_targets_threads_uniform.pct
 
 % memory bandwidth usage
 memory throughput
 
-https://docs.nvidia.com/nsight-compute/ProfilingGuide/index.html?highlight=sm__maximum_warps_per_active_cycle_pct#device-memory
+% https://docs.nvidia.com/nsight-compute/ProfilingGuide/index.html?highlight=sm__maximum_warps_per_active_cycle_pct#device-memory
 
 % cache efficiency
 MemoryWorkloadAnalysis (Memory Workload Analysis)
