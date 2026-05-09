@@ -201,7 +201,7 @@ A NVIDIA Nsight Compute é uma interface que fornece métricas de desempenho det
     \label{fig:nvidia_nsight_compute}
 \end{figure}
 
-O \textit{Nsight Compute} permite extrair informações em nível de driver da GPU, disponibilizando métricas detalhadas para análise de desempenho de kernels CUDA.
+O \textit{Nsight Compute} permite extrair informações em nível de driver da GPU, disponibilizando métricas detalhadas para análise de desempenho de kernels CUDA \cite{nvidia_nsight_compute}.
 
 \begin{itemize}
 
@@ -232,22 +232,42 @@ O \textit{Nsight Compute} permite extrair informações em nível de driver da G
 
 \end{itemize}
 
-% working on this
-
-% https://docs.nvidia.com/nsight-graphics/index.html
 % https://docs.nvidia.com/nsight-compute/index.html
 % https://docs.nvidia.com/nsight-compute/ProfilingGuide/index.html
 
 
 \subsection{Métricas do Pipeline}
-% build time
-Tempo de construção \textit{build time}, uma das metricas mais controversas, se refere levado para a construcao da estrutura de aceleração. Em uma simulacao em tempo real é esperado que a cena mude, e conseguentemente a estrutura de aceleracao precisa ser ajustada. Existe duas abordagens principais, reconstruir (\textit{rebuild}) a estrutura todo frame e consertar (\textit{refit}) a estrutura todo frame.
 
+Apesar do \textit{Nsight Compute} conseguir coletar uma grande variedade de métricas, a ferramenta possui limitações para análise temporal do pipeline gráfico completo. Sincronização entre filas de execução, duração relativa entre estágios do pipeline e comportamento global de execução de frames. Para suprir essas limitações, o \textit{Nsight Graphics} fornece uma visão temporal da execução da aplicação.
+
+Em código, permite a criação de \textit{user markers}, que associam métricas temporais a regiões específicas da aplicação. O \textit{Nsight Graphics} coleta quaisquer marcadores de usuário existentes no aplicativo e os exibe na fila correspondente à sua execução. Isso pode ajudar a entender o fluxo de trabalho dos frames. Esses marcadores possibilitam delimitar diferentes estágios do pipeline, como construção de estruturas de aceleração, travessia de raios e pós-processamento \cite{nvidia_nsight_graphics_gpu_trace_ui}.
+
+% build time
+Tempo de construção \textit{build time}, uma das métricas mais controversas, refere-se ao tempo levado para a construção da estrutura de aceleração. Em uma simulação em tempo real, é esperado que a cena mude e, consequentemente, a estrutura de aceleração precisa ser ajustada. Existem duas abordagens principais: reconstruir (\textit{rebuild}) a estrutura todo frame e consertar (\textit{refit}) a estrutura todo frame.
+
+% https://docs.nvidia.com/nsight-graphics/index.html
 % traversal time
 % frame time
 % latência por frame
 % overhead time % overhead = frame time - (build + traversal)
 % memory footprint total
+
+% Métricas temporais
+%     frame time
+%     build time
+%     traversal time
+%     latency
+%     overhead
+% Métricas estruturais
+%     queue synchronization
+%     barriers
+%     context switches
+%     overlap compute/graphics
+% Métricas RT
+%     RT core utilization
+%     traversal throughput
+%     ray divergence
+%     AS build cost
 
 \subsection{Métricas da CPU}
 % uso da CPU
