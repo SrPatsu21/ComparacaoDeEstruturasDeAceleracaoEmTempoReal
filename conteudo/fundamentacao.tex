@@ -201,34 +201,34 @@ A NVIDIA Nsight Compute é uma interface fornece métricas de desempenho detalha
     \label{fig:nvidia_nsight_compute}
 \end{figure}
 
-O Nsight Compute permite extrair informacoes ao nivel de driver, fornecendo métricas para análise de desempenho de kernels CUDA.
+O Nsight Compute permite extrair informações ao nível de driver, fornecendo métricas para análise de desempenho de kernels CUDA.
 
 \begin{itemize}
 
-\item \textbf{Análise da Carga de Trabalho Computacional (\textit{Compute Workload Analysis})}: Análise detalhada dos recursos computacionais dos \gls{sm}, incluindo instruções por ciclo, e a utilização de cada pipeline. Pipelines com muita carga de trabalho podem limitar desempenho geral.
+\item \textbf{Análise da Carga de Trabalho Computacional (\textit{Compute Workload Analysis})}: Análise detalhada dos recursos computacionais dos \gls{sm}, incluindo instruções por ciclo e a utilização de cada pipeline. Pipelines com muita carga de trabalho podem limitar desempenho geral.
 
-\item \textbf{Estatísticas de Instruções (\textit{Instruction Stats})}: Estatísticas das \gls{sass}. Fornece informações sobre os tipos e a frequência das instruções executadas. Ajuda a entender as quais instruções o programa gerou e permite visualizar possiveis micro-otimizações facilmente.
+\item \textbf{Estatísticas de Instruções (\textit{Instruction Stats})}: Estatísticas das \gls{sass}. Fornece informações sobre os tipos e a frequência das instruções executadas. Ajuda a entender quais instruções o programa gerou e permite visualizar possíveis micro-otimizações facilmente.
 
-\item \textbf{Estatísticas de Inicialização (\textit{Launch Stats})}: Permite visualizar as configuração de inicialização escolhidas para executar o kernel. Essas configuracoes definem por exemplo, tamanho do \textit{grid}, quantidade de \textit{threads}, quantidade de blocos no \textit{grid} e recursos consumidos pelo kernel, como registradores e memória compartilhada. Escolher uma configuração de inicialização eficiente maximiza a utilização do dispositivo.
+\item \textbf{Estatísticas de Inicialização (\textit{Launch Stats})}: permite visualizar as configurações de inicialização escolhidas para executar o kernel. Essas configurações definem, por exemplo, tamanho do \textit{grid}, quantidade de \textit{threads}, quantidade de blocos no \textit{grid} e recursos consumidos pelo kernel, como registradores e memória compartilhada. Escolher uma configuração de inicialização eficiente maximiza a utilização do dispositivo.
 
 % memory bandwidth usage
-\item \textbf{Análise da Carga de Trabalho da Memória (\textit{Memory Workload Analysis})}: A memória pode se tornar um fator limitante para o desempenho geral do kernel quando as unidades de hardware envolvidas são totalmente utilizadas, quando a largura de banda de comunicação disponível entre essas unidades é esgotada ou quando a taxa máxima de transferência de instruções de memória é atingida . As tabelas de memória permitem identificar o gargalos no sistema de memória.
+\item \textbf{Análise da Carga de Trabalho da Memória (\textit{Memory Workload Analysis})}: A memória pode se tornar um fator limitante para o desempenho geral do kernel quando as unidades de hardware envolvidas são totalmente utilizadas, quando a largura de banda de comunicação disponível entre essas unidades é esgotada ou quando a taxa máxima de transferência de instruções de memória é atingida. As tabelas de memória permitem identificar os gargalos no sistema de memória.
 
 % ocupação de CUDA cores
-\item \textbf{Ocupação (\textit{Occupancy})}: A ocupação representa o nível de utilização dos multiprocessadores, sendo definida pela relação entre a quantidade de \textit{warps} ativos em execução e o número máximo de \textit{warps} que o hardware consegue suportar simultaneamente. Outra forma de visualizar a ocupação é como a porcentagem da capacidade do hardware de processar warps que está sendo utilizada ativamente. Mostra se o multiprocessamento esta sendo utilizado de forma efficiente.
+\item \textbf{Ocupação (\textit{Occupancy})}: A ocupação representa o nível de utilização dos multiprocessadores, sendo definida pela relação entre a quantidade de \textit{warps} ativos em execução e o número máximo de \textit{warps} que o hardware consegue suportar simultaneamente. Outra forma de visualizar a ocupação é como a porcentagem da capacidade do hardware de processar warps que está sendo utilizada ativamente. Mostra se o multiprocessamento está sendo utilizado de forma eficiente.
 
-\item \textbf{Amostragem de PM (\textit{PmSampling})}: Visão temporal das métricas amostradas periodicamente durante a duração da carga de trabalho. Os dados são coletados em várias passagens. Usada para entender como o comportamento da carga de trabalho muda ao longo da execução.
+\item \textbf{Amostragem de PM (\textit{PmSampling})}: visão temporal das métricas amostradas periodicamente durante a duração da carga de trabalho. Os dados são coletados em várias passagens. Usada para entender como o comportamento da carga de trabalho muda ao longo da execução.
 
 % warp divergence
-\item \textbf{Amostragem de PM: Estados de Warp (\textit{PmSampling WarpStates})}: Visao temeporal do estados de warp durante a duração da carga de trabalho. As métricas em diferentes grupos provêm de diferentes passagens. Traz melhor compreencao do estado de cada warp
+\item \textbf{Amostragem de PM: Estados de Warp (\textit{PmSampling WarpStates})}: Visão temporal dos estados de warp durante a duração da carga de trabalho. As métricas em diferentes grupos provêm de diferentes passagens. Traz melhor compreensão do estado de cada warp.
 
-\item \textbf{Estatísticas do Agendador (\textit{Scheduler Stats})}: Resumo da atividade dos agendadores que emitem instruções. Cada agendador mantém um conjunto de warps para os quais pode emitir instruções. A cada ciclo, cada agendador verifica o estado dos warps alocados no conjunto (Warps Ativos). Warps ativos que não estão paralisados (Warps Elegíveis) estão prontos para emitir sua próxima instrução. Do conjunto de warps elegíveis, o agendador seleciona um único warp do qual emitirá uma ou mais instruções (Warp Emitido). Ter muitos slots de emissão ignorados indica baixa capacidade de ocultação de latência.
+\item \textbf{Estatísticas do Agendador (\textit{Scheduler Stats})}: resumo da atividade dos agendadores que emitem instruções. Cada agendador mantém um conjunto de warps para os quais pode emitir instruções. A cada ciclo, cada agendador verifica o estado dos warps alocados no conjunto (Warps Ativos). Warps ativos que não estão paralisados (Warps Elegíveis) estão prontos para emitir sua próxima instrução. Do conjunto de warps elegíveis, o agendador seleciona um único warp do qual emitirá uma ou mais instruções (Warp Emitido). Ter muitos slots de emissão ignorados indica baixa capacidade de ocultação de latência.
 
-\item \textbf{Contadores de Origem (\textit{Source Counters})}: Métricas de origem, incluindo eficiência de branch e motivos de parada de warp. As métricas de Amostragem de Parada de Warp são amostradas periodicamente durante a execução do kernel. Elas indicam quando os warps foram paralisados e não puderam ser agendados.
+\item \textbf{Contadores de Origem (\textit{Source Counters})}: Métricas de origem, incluindo eficiência de branch e motivos de parada de warp. As métricas de amostragem de Parada de Warp são amostradas periodicamente durante a execução do kernel. Elas indicam quando os warps foram paralisados e não puderam ser agendados.
 
 \item \textbf{Taxa de Transferência de Velocidade da Luz da GPU (\textit{GPU Speed Of Light Throughput})}: Visão geral de alto nível da taxa de transferência para recursos de computação e memória da GPU. Para cada unidade, a taxa de transferência indica a porcentagem de utilização alcançada em relação ao máximo teórico.
 
-\item \textbf{Estatísticas de Estado de Warp (\textit{Warp State Stats})}:Análise dos estados em que todos os warps passaram ciclos durante a execução do kernel. Os estados de warp descrevem a prontidão ou incapacidade de um warp para emitir sua próxima instrução. Os ciclos de warp por instrução definem a latência entre duas instruções consecutivas. Quanto maior o valor, mais paralelismo de warp é necessário para ocultar essa latência.
+\item \textbf{Estatísticas de Estado de Warp (\textit{Warp State Stats})}: Análise dos estados em que todos os warps passaram ciclos durante a execução do kernel. Os estados de warp descrevem a prontidão ou incapacidade de um warp para emitir sua próxima instrução. Os ciclos de warp por instrução definem a latência entre duas instruções consecutivas. Quanto maior for o valor, mais paralelismo de warp é necessário para ocultar essa latência.
 
 \end{itemize}
 
