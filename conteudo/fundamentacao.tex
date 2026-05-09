@@ -190,9 +190,9 @@ Comparadas a outras abordagens, as \glspl{bvh} têm geralmente os menores requis
 
 \subsection{Métricas de GPU}
 
-Para saber o desemplenho de cada tipo de \gls{bvh}, é preciso coletar metricas de processamento, memoria, uso de nucleos CUDA, metricas de \gls{gpu} e gls{cpu} num geral. Para possibilitar uma maior quantidade de metricas. A NVIDIA possue duas ferramentas NVIDIA Nsight Compute e NVIDIA Nsight Graphics. Essas ferramentas sao especificas da arquitetura das \glspl{gpu} NVIDIA, mas existente ferramentas equivalentes para outros dispositivos. A AMD Radeon GPU Profiler é especifica para \glspl{gpu} AMD.
+Para saber o desempenho de cada tipo de \gls{bvh}, é preciso coletar métricas de processamento, memória, uso de núcleos CUDA, métricas de \gls{gpu} e \gls{cpu} no geral. Para possibilitar uma maior quantidade de métricas. A NVIDIA possui duas ferramentas: NVIDIA Nsight Compute e NVIDIA Nsight Graphics. Essas ferramentas são específicas da arquitetura das \glspl{gpu} NVIDIA, mas existem ferramentas equivalentes para outros dispositivos. A AMD Radeon GPU Profiler é específica para \glspl{gpu} AMD.
 
-A NVIDIA Nsight Compute é uma interface fornece métricas de desempenho detalhadas, pode ser acessada por \gls{ui} ou \gls{cli} \cite{nvidia_developer_nsight_compute}. A ferramenta inicia a aplicação e insere bibliotecas de medição no processo executado. Essas bibliotecas permitem interceptar a comunicação com o driver CUDA e coletar métricas de desempenho da \gls{gpu} durante a execução dos kernels. Os resultados obtidos são então enviados de volta para a interface \cite{nvidia_nsight_compute}.
+A NVIDIA Nsight Compute é uma interface que fornece métricas de desempenho detalhadas, podendo ser acessada por \gls{ui} ou \gls{cli} \cite{nvidia_developer_nsight_compute}. A ferramenta inicia a aplicação e insere bibliotecas de medição no processo executado. Essas bibliotecas permitem interceptar a comunicação com o driver CUDA e coletar métricas de desempenho da \gls{gpu} durante a execução dos kernels. Os resultados obtidos são então enviados de volta para a interface \cite{nvidia_nsight_compute}.
 
 \begin{figure}[H]
     \centering
@@ -201,34 +201,34 @@ A NVIDIA Nsight Compute é uma interface fornece métricas de desempenho detalha
     \label{fig:nvidia_nsight_compute}
 \end{figure}
 
-O Nsight Compute permite extrair informações ao nível de driver, fornecendo métricas para análise de desempenho de kernels CUDA.
+O \textit{Nsight Compute} permite extrair informações em nível de driver da GPU, disponibilizando métricas detalhadas para análise de desempenho de kernels CUDA.
 
 \begin{itemize}
 
-\item \textbf{Análise da Carga de Trabalho Computacional (\textit{Compute Workload Analysis})}: Análise detalhada dos recursos computacionais dos \gls{sm}, incluindo instruções por ciclo e a utilização de cada pipeline. Pipelines com muita carga de trabalho podem limitar desempenho geral.
+\item \textbf{Análise da Carga de Trabalho Computacional (\textit{Compute Workload Analysis})}: fornece uma análise detalhada da utilização dos recursos computacionais dos \gls{sm}, incluindo métricas como instruções por ciclo e utilização de cada \textit{pipeline}. Essa análise auxilia na identificação de unidades computacionais sobrecarregadas que podem limitar o desempenho geral da aplicação.
 
-\item \textbf{Estatísticas de Instruções (\textit{Instruction Stats})}: Estatísticas das \gls{sass}. Fornece informações sobre os tipos e a frequência das instruções executadas. Ajuda a entender quais instruções o programa gerou e permite visualizar possíveis micro-otimizações facilmente.
+\item \textbf{Estatísticas de Instruções (\textit{Instruction Stats})}: apresenta estatísticas das instruções de baixo nível representadas em \gls{sass}, fornecendo informações sobre os tipos de instruções executadas e suas frequências. Essas métricas permitem compreender o comportamento gerado e identificar oportunidades de micro-otimização no código.
 
-\item \textbf{Estatísticas de Inicialização (\textit{Launch Stats})}: permite visualizar as configurações de inicialização escolhidas para executar o kernel. Essas configurações definem, por exemplo, tamanho do \textit{grid}, quantidade de \textit{threads}, quantidade de blocos no \textit{grid} e recursos consumidos pelo kernel, como registradores e memória compartilhada. Escolher uma configuração de inicialização eficiente maximiza a utilização do dispositivo.
+\item \textbf{Estatísticas de Inicialização (\textit{Launch Stats})}: apresenta as configurações utilizadas para execução do kernel, incluindo tamanho do \textit{grid}, quantidade de \textit{threads}, número de blocos e recursos consumidos pelo kernel, como registradores e memória compartilhada. Essas informações auxiliam na análise da distribuição do paralelismo e da utilização dos recursos da GPU, permitindo avaliar a eficiência da configuração adotada.
 
 % memory bandwidth usage
-\item \textbf{Análise da Carga de Trabalho da Memória (\textit{Memory Workload Analysis})}: A memória pode se tornar um fator limitante para o desempenho geral do kernel quando as unidades de hardware envolvidas são totalmente utilizadas, quando a largura de banda de comunicação disponível entre essas unidades é esgotada ou quando a taxa máxima de transferência de instruções de memória é atingida. As tabelas de memória permitem identificar os gargalos no sistema de memória.
+\item \textbf{Análise da Carga de Trabalho da Memória (\textit{Memory Workload Analysis})}: analisa o comportamento do subsistema de memória da GPU. A memória pode se tornar um fator limitante para o desempenho do kernel quando ocorre saturação das unidades de hardware responsáveis pelas operações de memória, esgotamento da largura de banda disponível ou saturação da taxa de transferência de instruções de memória. As métricas apresentadas permitem identificar gargalos relacionados ao sistema de memória.
 
 % ocupação de CUDA cores
-\item \textbf{Ocupação (\textit{Occupancy})}: A ocupação representa o nível de utilização dos multiprocessadores, sendo definida pela relação entre a quantidade de \textit{warps} ativos em execução e o número máximo de \textit{warps} que o hardware consegue suportar simultaneamente. Outra forma de visualizar a ocupação é como a porcentagem da capacidade do hardware de processar warps que está sendo utilizada ativamente. Mostra se o multiprocessamento está sendo utilizado de forma eficiente.
+\item \textbf{Ocupação (\textit{Occupancy})}: representa o nível de utilização dos multiprocessadores da GPU, sendo definida pela relação entre a quantidade de \textit{warps} ativos em execução e o número máximo de \textit{warps} suportados simultaneamente pelo hardware. Essa métrica permite avaliar a eficiência da utilização dos recursos computacionais disponíveis e o grau de paralelismo alcançado durante a execução do kernel.
 
-\item \textbf{Amostragem de PM (\textit{PmSampling})}: visão temporal das métricas amostradas periodicamente durante a duração da carga de trabalho. Os dados são coletados em várias passagens. Usada para entender como o comportamento da carga de trabalho muda ao longo da execução.
+\item \textbf{Amostragem de PM (\textit{PmSampling})}: fornece uma visão temporal das métricas amostradas periodicamente durante a execução da carga de trabalho. Os dados são coletados em múltiplas passagens, permitindo analisar alterações no comportamento da aplicação ao longo da execução.
 
 % warp divergence
-\item \textbf{Amostragem de PM: Estados de Warp (\textit{PmSampling WarpStates})}: Visão temporal dos estados de warp durante a duração da carga de trabalho. As métricas em diferentes grupos provêm de diferentes passagens. Traz melhor compreensão do estado de cada warp.
+\item \textbf{Amostragem de PM: Estados de Warp (\textit{PmSampling WarpStates})}: apresenta uma visão temporal dos estados dos \textit{warps} durante a execução da carga de trabalho. As métricas são coletadas em diferentes grupos de amostragem e auxiliam na compreensão do comportamento e da evolução dos estados de execução dos \textit{warps}.
 
-\item \textbf{Estatísticas do Agendador (\textit{Scheduler Stats})}: resumo da atividade dos agendadores que emitem instruções. Cada agendador mantém um conjunto de warps para os quais pode emitir instruções. A cada ciclo, cada agendador verifica o estado dos warps alocados no conjunto (Warps Ativos). Warps ativos que não estão paralisados (Warps Elegíveis) estão prontos para emitir sua próxima instrução. Do conjunto de warps elegíveis, o agendador seleciona um único warp do qual emitirá uma ou mais instruções (Warp Emitido). Ter muitos slots de emissão ignorados indica baixa capacidade de ocultação de latência.
+\item \textbf{Estatísticas do Agendador (\textit{Scheduler Stats})}: resume a atividade dos agendadores responsáveis pela emissão de instruções. Cada agendador mantém um conjunto de \textit{warps} aptos à execução, verificando continuamente seus estados para selecionar aqueles elegíveis para emissão de instruções. Um elevado número de ciclos sem emissão de instruções pode indicar baixa capacidade de ocultação de latência e utilização ineficiente dos recursos computacionais.
 
-\item \textbf{Contadores de Origem (\textit{Source Counters})}: Métricas de origem, incluindo eficiência de branch e motivos de parada de warp. As métricas de amostragem de Parada de Warp são amostradas periodicamente durante a execução do kernel. Elas indicam quando os warps foram paralisados e não puderam ser agendados.
+\item \textbf{Contadores de Origem (\textit{Source Counters})}: apresenta métricas relacionadas ao código-fonte, incluindo eficiência de desvios condicionais (\textit{branch efficiency}) e motivos de paralisação de \textit{warps}. Essas métricas permitem identificar eventos que impedem o agendamento de execução dos \textit{warps} e possíveis gargalos associados ao fluxo de controle da aplicação.
 
-\item \textbf{Taxa de Transferência de Velocidade da Luz da GPU (\textit{GPU Speed Of Light Throughput})}: Visão geral de alto nível da taxa de transferência para recursos de computação e memória da GPU. Para cada unidade, a taxa de transferência indica a porcentagem de utilização alcançada em relação ao máximo teórico.
+\item \textbf{Taxa de Transferência de Velocidade da Luz da GPU (\textit{GPU Speed Of Light Throughput})}: fornece uma visão geral da utilização dos recursos computacionais e de memória da GPU em relação ao máximo teórico suportado pelo hardware. Essa análise permite identificar quais unidades estão mais próximas de seus limites de utilização.
 
-\item \textbf{Estatísticas de Estado de Warp (\textit{Warp State Stats})}: Análise dos estados em que todos os warps passaram ciclos durante a execução do kernel. Os estados de warp descrevem a prontidão ou incapacidade de um warp para emitir sua próxima instrução. Os ciclos de warp por instrução definem a latência entre duas instruções consecutivas. Quanto maior for o valor, mais paralelismo de warp é necessário para ocultar essa latência.
+\item \textbf{Estatísticas de Estado de Warp (\textit{Warp State Stats})}: apresenta uma análise detalhada dos estados percorridos pelos \textit{warps} durante a execução do kernel. Os estados de \textit{warp} descrevem condições de prontidão ou bloqueio para emissão de instruções. As métricas relacionadas aos ciclos por instrução permitem analisar latências de execução e a necessidade de paralelismo adicional para ocultação dessas latências.
 
 \end{itemize}
 
