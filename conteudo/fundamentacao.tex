@@ -242,27 +242,35 @@ Apesar do \textit{Nsight Compute} conseguir coletar uma grande variedade de mét
 
 Em código, permite a criação de \textit{user markers}, que associam métricas temporais a regiões específicas da aplicação. O \textit{Nsight Graphics} coleta quaisquer marcadores de usuário existentes no aplicativo e os exibe na fila correspondente à sua execução. Isso pode ajudar a entender o fluxo de trabalho dos frames. Esses marcadores possibilitam delimitar diferentes estágios do pipeline, como construção de estruturas de aceleração, travessia de raios e pós-processamento \cite{nvidia_nsight_graphics_gpu_trace_ui}.
 
-% build time
-Tempo de construção \textit{build time}, uma das métricas mais controversas, refere-se ao tempo levado para a construção da estrutura de aceleração. Em uma simulação em tempo real, é esperado que a cena mude e, consequentemente, a estrutura de aceleração precisa ser ajustada. Existem duas abordagens principais: reconstruir (\textit{rebuild}) a estrutura todo frame e consertar (\textit{refit}) a estrutura todo frame.
-
-% https://docs.nvidia.com/nsight-graphics/index.html
-% traversal time
-% frame time
-% latência por frame
-% overhead time % overhead = frame time - (build + traversal)
-% memory footprint total
-
 % Métricas temporais
 %     frame time
 %     build time
 %     traversal time
 %     latency
 %     overhead
+
+As GPUs modernas possuem múltiplas filas de execução responsáveis por submeter diferentes tipos de trabalho ao hardware, como operações gráficas, computacionais e transferências de memória \cite{vulkan_spec}. O \textit{Nsight Graphics} coleta informações relacionadas aos comandos de sincronização entre filas, incluindo operações de espera (\textit{wait}) e sinalização (\textit{signal}). Essas informações permitem identificar dependências entre cargas de trabalho, períodos em que determinadas filas permanecem bloqueadas aguardando sincronização e possíveis gargalos associados à coordenação da execução paralela da GPU \cite{nvidia_nsight_graphics_gpu_trace_ui}.
+
+Barreiras de recursos (\textit{resource barriers}) são mecanismos de sincronização utilizados para garantir a consistência no acesso a recursos compartilhados da GPU, como imagens, \textit{buffers} e estruturas de aceleração \cite{vulkan_spec}. O \textit{Nsight Graphics} é capaz de coletar chamadas relacionadas a barreiras de recursos e associá-las às respectivas filas de execução. Dessa forma, torna-se possível analisar impactos causados por sincronizações excessivas e dependências de memória \cite{nvidia_nsight_graphics_gpu_trace_ui}.
+
+A troca frequente entre contextos pode reduzir o paralelismo disponível e introduzir sobrecarga devido à necessidade de troca de estado e reconfiguração interna da GPU. O \textit{Nsight Graphics} permite identificar os intervalos temporais associados a cada contexto ativo durante a execução da aplicação \cite{nvidia_nsight_graphics_gpu_trace_ui}.
+
+As GPUs NVIDIA possuem múltiplos motores, esses motores podem operar em paralelo através de filas independentes de execução, permitindo sobreposição temporal entre diferentes tarefas da aplicação, como processamento gráfico, computacional e operações de cópia de memória \cite{cuda_programming_guide}. O \textit{Nsight Graphics} permite observar a distribuição temporal dessas atividades, possibilitando identificar regiões de paralelismo e concorrência entre cargas de trabalho gráficas e computacionais \cite{nvidia_nsight_graphics_gpu_trace_ui}.
+
 % Métricas estruturais
 %     queue synchronization
 %     barriers
 %     context switches
 %     overlap compute/graphics
+
+As GPUs modernas possuem unidades especializadas dedicadas à aceleração de operações de \textit{ray tracing}, conhecidas como \textit{RT Cores}. Essas unidades são responsáveis principalmente pelas operações de travessia de estruturas de aceleração e testes de interseção entre raios e primitivas \cite{nvidia_turing}. O \textit{Nsight Graphics} permite coletar métricas temporais e de utilização associadas às unidades de hardware por meio de contadores de desempenho (\textit{performance monitors}), possibilitando analisar o nível de utilização das unidades especializadas de \textit{ray tracing} \cite{nvidia_nsight_graphics_gpu_trace_ui}.
+
+A travessia (\textit{traversal}) de estruturas de aceleração é a operação responsável por percorrer as \glspl{bvh}, em busca de interseções entre raios e primitivas. O desempenho dessa etapa está diretamente relacionado à taxa de processamento das estruturas de aceleração e à eficiência de acesso à hierarquia espacial \cite{aila2009understanding}. O \textit{Nsight Graphics} permite analisar o comportamento temporal dessas operações através da instrumentação do pipeline e da coleta de métricas de taxa de transferencia das unidades de hardware durante a execução da aplicação \cite{nvidia_nsight_graphics_gpu_trace_ui}.
+
+Divergência de raios (\textit{ray divergence}) ocorre quando diferentes raios executados em paralelo seguem caminhos distintos durante a travessia da estrutura de aceleração ou durante a execução de \textit{shaders}, reduzindo a coerência de execução entre \textit{warps} e comprometendo a eficiência do paralelismo SIMD da GPU \cite{aila2009understanding}. A análise desse comportamento pode ser realizada através de métricas relacionadas à ocupação, eficiência de desvios condicionais, estados de \textit{warp} e motivos de paralisação coletadas pelo \textit{Nsight Compute}, permitindo identificar gargalos associados à divergência de execução \cite{nvidia_nsight_graphics_gpu_trace_ui}.
+
+O custo de construção de estruturas de aceleração (\textit{AS build cost}) corresponde ao tempo e aos recursos computacionais necessários para construir ou atualizar estruturas de aceleração utilizadas pelo pipeline de \textit{ray tracing}. Em aplicações dinâmicas, o custo associado à construção ou atualização dessas estruturas pode impactar significativamente o tempo total de execução do frame, especialmente em cenários com reconstruções frequentes \cite{vulkan_spec}. O \textit{Nsight Graphics} permite identificar temporalmente as operações de construção de estruturas de aceleração através da análise da linha temporal da GPU e da utilização de \textit{user markers}, possibilitando medir a duração dessas operações e analisar seus impactos sobre o pipeline de execução \cite{nvidia_nsight_graphics_gpu_trace_ui}.
+
 % Métricas RT
 %     RT core utilization
 %     traversal throughput
