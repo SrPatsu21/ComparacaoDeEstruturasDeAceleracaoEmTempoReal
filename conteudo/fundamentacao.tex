@@ -282,9 +282,13 @@ O custo de construção de estruturas de aceleração (\textit{AS build cost}) c
 
 \subsection{Métricas do ambiente}
 
+O processador e a memória principal do sistema desempenham papel fundamental, especialmente durante a preparação dos dados utilizados pela GPU. A CPU é responsável por tarefas como gerenciamento da cena, atualização de transformações, construção ou atualização de estruturas de aceleração e submissão de comandos gráficos e computacionais. A memória RAM armazena geometrias, materiais, descritores e demais estruturas auxiliares necessárias para a preparação dos dados antes de sua transferência para a GPU. Dessa forma, limitações de processamento da CPU ou de capacidade e largura de banda da memória principal podem introduzir gargalos que impactam o desempenho da renderização. Essas metricas pode ser adquiridas através de ferramentas de monitoramento do sistema operacional, como \textit{top}, \textit{htop} e interfaces gráficas de monitoramento do Linux, além da leitura direta das interfaces do kernel, como \texttt{/proc/stat} e \texttt{/proc/meminfo}.
 
+O consumo energético da CPU é uma métrica relevante para análise de desempenho e eficiência computacional, principalmente em aplicações com elevada carga de processamento geométrico e gerenciamento de estruturas espaciais. Essa métrica tem muito mais relevancia quando se aplica a sistemas moveis como notebooks e celulares, que tem o tempo de uso baseado no consumo. Em sistemas Linux, esse consumo pode ser monitorado através da interface Intel Running Average Power Limit (RAPL), que disponibiliza estimativas de energia consumida pelos componentes do processador através da interface \texttt{/sys/class/powercap/intel-rapl/} \cite{hackenberg2013power} \cite{intel_rapl}.
 
-Uso da CPU - leitura de /proc/stat
-Uso de memória RAM - leitura de /proc/meminfo
-Consumo energético da GPU - NVIDIA Management Library
-Consumo energético da CPU - Intel RAPL via /sys/class/powercap/intel-rapl/
+O consumo energético da GPU pode ser monitorado utilizando a NVIDIA Management Library (NVML), uma interface de programação disponibilizada pela NVIDIA para monitoramento e gerenciamento de dispositivos gráficos. A biblioteca fornece métricas relacionadas à potência instantânea, utilização da GPU, frequência de operação e uso de memória, permitindo acompanhar o comportamento energético da GPU \cite{nvml_api}\cite{nvml_power_usage}.
+
+% Uso da CPU - leitura de /proc/stat
+% Uso de memória RAM - leitura de /proc/meminfo
+% Consumo energético da GPU - NVIDIA Management Library
+% Consumo energético da CPU - Intel RAPL via /sys/class/powercap/intel-rapl/
