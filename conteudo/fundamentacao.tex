@@ -277,9 +277,14 @@ O custo de construção de estruturas de aceleração (\textit{AS build cost}) c
 %     ray divergence
 %     AS build cost
 
-\subsection{Métricas da CPU}
-% uso da CPU
-% uso de memória RAM
-% consumo energético por frame
+
+% https://docs.nvidia.com/nsight-graphics/UserGuide/gpu-trace-ui.html#user-markers
+
+\subsection{Métricas do ambiente}
 
 
+
+Uso da CPU - leitura de /proc/stat
+Uso de memória RAM - leitura de /proc/meminfo
+Consumo energético da GPU - NVIDIA Management Library
+Consumo energético da CPU - Intel RAPL via /sys/class/powercap/intel-rapl/
