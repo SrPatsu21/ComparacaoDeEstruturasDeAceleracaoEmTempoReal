@@ -190,7 +190,7 @@ Originalmente, \gls{bvh} utilizava pelo menos seis \textit{bounding slabs} (plan
 
 Se esses \textit{slabs} são perpendiculares aos eixos do sistema de coordenadas do mundo, o volume delimitador resultante é denominado \gls{aabb}. Em \glspl{bvh} convencionais, os limites de um \gls{aabb} são representados por seis valores de ponto flutuante, correspondentes às coordenadas mínimas e máximas ao longo de cada eixo cartesiano  \cite{bauszat2010minimal}.
 
-Comparadas a outras abordagens, as \glspl{bvh} têm geralmente os menores requisitos de memória e um \textit{memory footprint} (uso de memória) pré-computável \cite{bauszat2010minimal}. Técnicas híbridas têm sido investigadas minuciosamente nos últimos anos, buscando combinar os benefícios das árvores \glspl{bvh}.
+Comparadas a outras abordagens, as \glspl{bvh} têm geralmente os menores requisitos de memória e um \textit{memory footprint} (uso de memória) pré-computável \cite{bauszat2010minimal}. Técnicas híbridas têm sido investigadas minuciosamente nos últimos anos, buscando combinar os benefícios das árvores \glspl{bvh}. Alguns modelos serão apresentados.
 
 % explicar modelos de BVH utilizados
 
@@ -211,13 +211,11 @@ A HLBVH (\textit{Hierarchical Linear Bounding Volume Hierarchy}) foi proposta po
 
 % Wide BVH (BVH4, BVH8)
 
-Wide BVH utiliza nós com múltiplos filhos, como BVH4 ou BVH8, diferente das \gls{bvh} comuns que sao binárias. Embora a sobrecarga da travessia de raios seja reduzida com redução da profundidade da árvore. A taxa de transferência de raios acaba sendo limitada por outras restrições, como armazenamento e largura de banda da memória.
-
-Por esse motivo, as wide BVHs comprimidas são uma escolha interesante para a travessia, com nós internos comprimidos resultando em taxas de acerto de cache aprimoradas e maior taxa de transferência de raios.
-
-\cite{vaidyanathan2019wide}
+Wide BVH utiliza nós com múltiplos filhos, como BVH4 ou BVH8, diferente das \gls{bvh} comuns que sao binárias. Embora a sobrecarga da travessia de raios seja reduzida com redução da profundidade da árvore. A taxa de transferência de raios acaba sendo limitada por outras restrições, como armazenamento e largura de banda da memória. Por esse motivo, as wide BVHs comprimidas são uma escolha interesante para a travessia, com nós internos comprimidos resultando em taxas de acerto de cache aprimoradas e maior taxa de transferência de raios \cite{vaidyanathan2019wide}.
 
 % Multi-BVH(QBVH)
+
+
 % Compressed BVH
 % top-down Surface Area Heuristic BVH(SAH-BVH)
 % BVH com Divisões Espaciais (SBVH)
