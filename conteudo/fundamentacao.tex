@@ -193,17 +193,34 @@ Se esses \textit{slabs} são perpendiculares aos eixos do sistema de coordenadas
 Comparadas a outras abordagens, as \glspl{bvh} têm geralmente os menores requisitos de memória e um \textit{memory footprint} (uso de memória) pré-computável \cite{bauszat2010minimal}. Técnicas híbridas têm sido investigadas minuciosamente nos últimos anos, buscando combinar os benefícios das árvores \glspl{bvh}.
 
 % explicar modelos de BVH utilizados
+
+% Linear BVH (LBVH)
 O primeiro método paralelo de construção de BVH linear foi introduzido por Lauterbach. O método inicia atribuindo um código de Morton ao centróide de cada primitiva geométrica. Em seguida, as primitivas são ordenadas de acordo com esses códigos e a hierarquia é construída dividindo os nós nos pontos em que ocorre a maior diferença de bits entre dois códigos de Morton consecutivos. O código de Morton é calculado mapeando as coordenadas espaciais para um cubo unitário tridimensional e intercalando os bits binários de cada coordenada \cite{apetrei2014fast}.
 
-O algoritmo de Morton envolve múltiplas etapas de processamento dependentes entre si e requer grandes buffers temporários e é uma ordem de magnitude mais lento do que, por exemplo, ordenar os códigos de Morton. Posteriormente, o método foi aprimorado por Pantaleoni e Luebke e posteriormente por Garanzha que geraram a hierarquia sequencialmente a partir da raiz, processando cada nível em paralelo \cite{apetrei2014fast}.
+O código de Morton é gerado a partir das coordenadas espaciais das primitivas, convertendo posições tridimensionais em valores lineares que preservam a proximidade espacial entre os objetos. O algoritmo de Morton envolve múltiplas etapas de processamento dependentes entre si e requer grandes buffers temporários e é uma ordem de magnitude mais lento do que, por exemplo, ordenar os códigos de Morton. Posteriormente, o método foi aprimorado por Pantaleoni e Luebke geraram a hierarquia sequencialmente a partir da raiz, processando cada nível em paralelo \cite{apetrei2014fast}.
 
-Linear BVH (LBVH)
-Hierarchical LBVH (HLBVH)
-Wide BVH (BVH4, BVH8)
-Multi-BVH(QBVH)
-Compressed BVH
-top-down Surface Area Heuristic BVH(SAH-BVH)
-BVH com Divisões Espaciais (SBVH)
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{images/MortonCurveOrdering.png}
+    \caption{Ordenação da curva de Morton e os códigos de Morton correspondentes: \cite{pantaleoni2010hlbvh}}
+    \label{fig:morton_curve}
+\end{figure}
+
+% Hierarchical LBVH (HLBVH)
+A HLBVH (\textit{Hierarchical Linear Bounding Volume Hierarchy}) foi proposta por Pantaleoni como uma extensão da LBVH tradicional, buscando melhorar a eficiência da construção paralela da hierarquia, mas que reduz substancialmente tanto a quantidade de cálculos quanto o tráfego de memória necessários para construir a \gls{bhv}. Existe tres grandes mudancas no algoritmo. Primeiramente uma reformulação na etapa de ordenação baseada na Morton curve-based, exigida pelo procedimento original, na qual empregamos uma decomposição hierárquica em grade para explorar a coerência espacial presente na malha de entrada. Em segundo lugar, um novo procedimento de emissão de hierarquia de nós que aprimora a técnica de Lauterbach. Terceiro, um novo algoritmo híbrido que usa a heurística de área de superfície (SAH) para construir os níveis BVH superiores e usa particionamento rápido baseado na curva de Morton dentro das subárvores do cluster \cite{pantaleoni2010hlbvh}.
+
+% Wide BVH (BVH4, BVH8)
+
+Wide BVH utiliza nós com múltiplos filhos, como BVH4 ou BVH8, diferente das \gls{bvh} comuns que sao binárias. Embora a sobrecarga da travessia de raios seja reduzida com redução da profundidade da árvore. A taxa de transferência de raios acaba sendo limitada por outras restrições, como armazenamento e largura de banda da memória.
+
+Por esse motivo, as wide BVHs comprimidas são uma escolha interesante para a travessia, com nós internos comprimidos resultando em taxas de acerto de cache aprimoradas e maior taxa de transferência de raios.
+
+\cite{vaidyanathan2019wide}
+
+% Multi-BVH(QBVH)
+% Compressed BVH
+% top-down Surface Area Heuristic BVH(SAH-BVH)
+% BVH com Divisões Espaciais (SBVH)
 
 
 \subsection{Métricas de GPU}
