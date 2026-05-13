@@ -15,14 +15,21 @@ A plataforma CUDA apresenta limitações de compatibilidade entre plataformas \c
 
 As placas gráficas começaram a oferecer cada vez mais funcionalidades programáveis, como sintaxe para shaders, inconsistência entre fornecedores e GPUs móveis que possuem arquitetura baseada em seus requisitos de energia e espaço. O Vulkan resolve esses problemas de compatibilidade por ser projetado para arquiteturas gráficas modernas. Vulkan reduz a sobrecarga de lidar com diversos drivers, permitindo que programadores especifiquem suas intenções por meio de uma \gls{api} \cite{vulkan_tutorial}. Diferentemente das outras plataformas, OpenCL, voltadas à computação de propósito geral, o Vulkan é mais direcionado ao desenvolvimento de aplicações gráficas, como renderização.
 
-gls{gpu} threads
+\subsection{Arquitetura \glspl{gpu} NVIDIA}
 
-Blocks e grids
+O CUDA permite definir funções especiais chamadas kernels. Diferente de funções comuns, um kernel é executado paralelamente por múltiplas threads da GPU. Essas funções são executadas por blocos de thread, que são grupos de threads que têm sua memória compartilhada e sincronizam sua execução para coordenar acessos à memória \cite{guide2020cuda}.
 
-warps
+Um kernel pode ser executado por múltiplos blocos de thread. Os blocos são organizados em um grid unidimensional, bidimensional ou tridimensional de blocos de threads. O número de blocos de threads em um grid geralmente é determinado pelo tamanho dos dados sendo processados, que normalmente excede o número de processadores \cite{guide2020cuda}.
 
-SM
+A arquitetura da GPU é construída em torno de um conjunto escalável de multiprocessadores de streaming \glspl{sm} multithread. Quando um programa CUDA na CPU host invoca um kernel, os blocos do grid são enumerados e distribuídos para os \glspl{sm} com capacidade de execução disponível. Múltiplos blocos de threads (\textit{thread blocks}) podem ser executados simultaneamente em um mesmo \gls{sm} \cite{guide2020cuda}.
 
+Para gerenciar um número tão grande de threads, é empregada uma arquitetura exclusiva para multiprocessamento chamada \gls{simt}, que trabalha com o princípio de que uma única instrução controla múltiplas threads \cite{guide2020cuda}.
+
+O \gls{sm} cria, gerencia, agenda e executa threads em grupos de 32 threads paralelas chamadas warps. As threads individuais que compõem um warp começam juntas no mesmo endereço de programa, mas possuem seu próprio contador de endereço de instrução e estado de registro, sendo, portanto, livres para desviar e executar independentemente \cite{guide2020cuda}.
+
+Quando um \gls{sm} recebe um ou mais blocos de threads para executar, ele os divide em warps e cada warp é agendado por um agendador de warps para execução. A forma como um bloco é particionado em warps é sempre a mesma; cada warp contém threads com IDs de thread consecutivos e crescentes, sendo que o primeiro warp contém a thread 0 até a thread 31 \cite{guide2020cuda}.
+
+Um warp executa uma instrução por vez; essa instrução é comum para todas as threads no warp. Portanto, a eficiência máxima é alcançada quando todas as 32 threads de um warp seguem um caminho de execução. Uma divergência de warp (\textit{warp divergence}) ocorre se as threads de um warp divergirem por meio de um desvio condicional dependente de dados. O warp executa cada caminho de divergência, desabilitando e habilitando as threads. Essa divergência ocorre apenas dentro de um warp; warps diferentes executam independentemente \cite{guide2020cuda}.
 
 \subsection{Primitivas}
 
@@ -139,7 +146,6 @@ Com a rasterização 3D, as principais diferenças entre as abordagens passam a 
 Rasterização e \textit{ray tracing} sao abordagens distintas. Porem, não são técnicas distintas, são pontos extremos de um mesmo espectro contínuo. Sendo assim, diferentes comportamentos podem ser obtidos por meio da ativação ou desativação de determinados componentes, como geração de amostras, binning e testes de oclusão. Permitindo aplicar tanto estratégia de rasterização quanto de ray tracing \cite{davidovivc20123d}.
 
 % ray tracing offline tem q ver isso ai
-% verificar se pode ser escrito dessa forma a traducao
 Pipeline de renderização híbrida (\textit{Hybrid rendering pipeline}) no qual a rasterização, computação e ray tracing trabalham juntos para possibilitar visuais em tempo real com qualidade próxima à do \textit{ray tracing offline}. A interação de múltiplas etapas gráficas, a utilização das capacidades únicas de cada etapa e a modularização do processo de renderização permitem alcançar vários aspectos visuais de forma otimizada \cite{barre2019hybrid}.
 
 O PICA PICA é um otimo exemplo. PICA PICA é um experimento de traçado de raios em tempo real com agentes de autoaprendizagem em um mundo gerado proceduralmente. O sistema adota um pipeline de renderização híbrida que combina rasterização, shaders de computação e técnicas de \textit{ray tracing} para compor a imagem final. A arquitetura do pipeline é organizada em múltiplas etapas, cada uma responsável por um aspecto específico da renderização, utiliza uma abordagem modular para maximizar eficiência e qualidade visual \cite{barre2019hybrid}.
