@@ -193,7 +193,9 @@ Se esses \textit{slabs} são perpendiculares aos eixos do sistema de coordenadas
 Comparadas a outras abordagens, as \glspl{bvh} têm geralmente os menores requisitos de memória e um \textit{memory footprint} (uso de memória) pré-computável \cite{bauszat2010minimal}. Técnicas híbridas têm sido investigadas minuciosamente nos últimos anos, buscando combinar os benefícios das árvores \glspl{bvh}.
 
 % explicar modelos de BVH utilizados
-Alem da BHV comum temos:
+O primeiro método paralelo de construção de BVH linear foi introduzido por Lauterbach. O método inicia atribuindo um código de Morton ao centróide de cada primitiva geométrica. Em seguida, as primitivas são ordenadas de acordo com esses códigos e a hierarquia é construída dividindo os nós nos pontos em que ocorre a maior diferença de bits entre dois códigos de Morton consecutivos. O código de Morton é calculado mapeando as coordenadas espaciais para um cubo unitário tridimensional e intercalando os bits binários de cada coordenada \cite{apetrei2014fast}.
+
+O algoritmo de Morton envolve múltiplas etapas de processamento dependentes entre si e requer grandes buffers temporários e é uma ordem de magnitude mais lento do que, por exemplo, ordenar os códigos de Morton. Posteriormente, o método foi aprimorado por Pantaleoni e Luebke e posteriormente por Garanzha que geraram a hierarquia sequencialmente a partir da raiz, processando cada nível em paralelo \cite{apetrei2014fast}.
 
 Linear BVH (LBVH)
 Hierarchical LBVH (HLBVH)
