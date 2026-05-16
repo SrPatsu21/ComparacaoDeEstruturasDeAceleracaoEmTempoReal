@@ -220,13 +220,20 @@ Por esse motivo, as estruturas Wide BVHs comprimidas são uma escolha interessan
 % top-down Surface Area Heuristic BVH(SAH-BVH)
 Nenhuma dessas técnicas anteriores melhora a qualidade da árvore. Surface Area Heuristic (SAH) é um algoritmo aplicado na separação dos objetos geométricos, considera a densidade da geometria no espaço 3D e elimina eficientemente regiões vazias e reduz interações. Infelizmente, construir uma árvore de alta qualidade é custoso. Esse custo computacional torna a técnica inviável para cenas dinâmicas e animadas, onde são reconstruídas a cada quadro.
 
-O \textit{Binned SAH} é uma aproximação do SAH que reduz o custo de construção. Em vez de avaliar todos os planos de divisão entre primitivas, divide o espaço em um número fixo de regiões chamadas \textit{bins}. O custo é calculado baseado no tamanho e quantidade de primitivas e divide recursivamente até completar a árvore . Existem híbridos, um deles é o HLBVH que tem a construção mais rápida, mas perde mais qualidade \cite{garanzha2011grid}.
+O \textit{Binned SAH} é uma aproximação do SAH que reduz o custo de construção. Em vez de avaliar todos os planos de divisão entre primitivas, o espaço do nó é dividido em um número fixo de regiões chamadas \textit{bins}. As primitivas são distribuídas entre essas regiões e o algoritmo avalia planos de corte entre os bins, calculando o custo SAH de cada divisão com base na quantidade de primitivas e na área das AABBs resultantes. O plano com menor custo é selecionado e o processo é aplicado recursivamente até completar a árvore. Existem híbridos como, HLBVH que tem a construção mais rápida, mas perde mais qualidade \cite{garanzha2011grid} ou SBVH com menor custo, mas maior uso de memoria.
 
 % Hierarchical LBVH (HLBVH)
 A HLBVH (\textit{Hierarchical Linear Bounding Volume Hierarchy}) foi proposta por Pantaleoni como uma extensão da LBVH tradicional, buscando melhorar a eficiência da construção paralela da hierarquia, mas que reduz substancialmente tanto a quantidade de cálculos quanto o tráfego de memória necessários para construir a \gls{bhv}. O algoritmo introduz três modificações principais. Primeiramente, uma reformulação na etapa de ordenação baseada na Morton curve-based, exigida pelo procedimento original, na qual foi empregada uma decomposição hierárquica em grade para explorar a coerência espacial presente na malha de entrada. Em segundo lugar, um novo procedimento de emissão de hierarquia de nós que aprimora a técnica de Lauterbach. Terceiro, um novo algoritmo híbrido que usa a (SAH) para construir os níveis BVH superiores e usa particionamento rápido baseado na curva de Morton dentro das subárvores do cluster \cite{pantaleoni2010hlbvh}.
 
 % BVH com Divisões Espaciais (SBVH)
+Ainda uma outra forma de gerar uma arvore com qualidade Split BVH (SBVH) que usa \textit{Binned SAH} para dividir o espaco. O grande diferencial ocorre no plano de divisao, caso a primitive esteva atravesando o plano escolhido a primitiva é dividida em duas AABB, uma para cada lado do plano. As AABB geradas dessa divisao sao menores, conseguentemente isso gera um custo menor, porem gerar mais AABBs aumenta o uso de memoria \cite{stibora2016building}.
 
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{images/binningTechnic.png}
+    \caption{ilustração da técnica de \textit{binning}. À esquerda: binning de um nó BVH com dois planos divididos em um eixo. Os valores AABBs são recalculados para cada parte das primitivas cortadas. À direita: as caixas delimitadoras dos nós filhos esquerdo e direito para o segundo plano dividido. Fonte: \cite{stibora2016building}}
+    \label{fig:binning_technic}
+\end{figure}
 
 \subsection{Métricas de GPU}
 
