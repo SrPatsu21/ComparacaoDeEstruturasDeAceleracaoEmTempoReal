@@ -188,7 +188,7 @@ Para encontrar a interseção mais próxima. A travessia de um raio inicia-se no
 
 Originalmente, \gls{bvh} utilizava pelo menos seis \textit{bounding slabs} (planos limitantes) para formar um casco fechado ao redor de um objeto. Cada slab corresponde à região compreendida entre dois planos paralelos, que restringem o espaço em uma determinada direção; a interseção desses \textit{slabs} define o volume delimitador \cite{bauszat2010minimal}.
 
-Se esses \textit{slabs} são perpendiculares aos eixos do sistema de coordenadas do mundo, o volume delimitador resultante é denominado \gls{aabb}. Em \glspl{bvh} convencionais, os limites de um \gls{aabb} são representados por seis valores de ponto flutuante, correspondentes às coordenadas mínimas e máximas ao longo de cada eixo cartesiano  \cite{bauszat2010minimal}.
+Se esses \textit{slabs} são perpendiculares aos eixos do sistema de coordenadas do mundo, o volume delimitador resultante é denominado \gls{aabb}. Em \glspl{bvh} convencionais, os limites de um \gls{aabb} são representados por seis valores de ponto flutuante, correspondentes às coordenadas mínimas e máximas ao longo de cada eixo cartesiano, chamados de \textit{bounding box}  \cite{bauszat2010minimal}.
 
 Comparadas a outras abordagens, as \glspl{bvh} têm geralmente os menores requisitos de memória e um \textit{memory footprint} (uso de memória) pré-computável \cite{bauszat2010minimal}. Técnicas híbridas têm sido investigadas minuciosamente nos últimos anos, buscando combinar os benefícios das árvores \glspl{bvh}. Alguns modelos serão apresentados.
 
@@ -197,7 +197,7 @@ Comparadas a outras abordagens, as \glspl{bvh} têm geralmente os menores requis
 % Linear BVH (LBVH)
 O primeiro método paralelo de construção de BVH linear foi introduzido por Lauterbach. O método inicia atribuindo um código de Morton ao centróide de cada primitiva geométrica. Em seguida, as primitivas são ordenadas de acordo com esses códigos e a hierarquia é construída dividindo os nós nos pontos em que ocorre a maior diferença de bits entre dois códigos de Morton consecutivos. O código de Morton é calculado mapeando as coordenadas espaciais para um cubo unitário tridimensional e intercalando os bits binários de cada coordenada \cite{apetrei2014fast}.
 
-O código de Morton é gerado a partir das coordenadas espaciais das primitivas, convertendo posições tridimensionais em valores lineares que preservam a proximidade espacial entre os objetos. O algoritmo de Morton envolve múltiplas etapas de processamento dependentes entre si e requer grandes buffers temporários e é uma ordem de magnitude mais lento do que, por exemplo, ordenar os códigos de Morton. Posteriormente, o método foi aprimorado por Pantaleoni e Luebke geraram a hierarquia sequencialmente a partir da raiz, processando cada nível em paralelo \cite{apetrei2014fast}.
+O código de Morton é gerado a partir das coordenadas espaciais das primitivas. Esse processo converte posições tridimensionais em valores lineares que preservam a proximidade espacial entre os objetos. O algoritmo envolve múltiplas etapas de processamento dependentes entre si, e requer grandes buffers temporários e é uma ordem de magnitude mais lento do que, por exemplo, ordenar os códigos. Posteriormente, Pantaleoni e Luebke aprimoraram o método geraram a hierarquia sequencialmente a partir da raiz, processando cada nível em paralelo \cite{apetrei2014fast}.
 
 \begin{figure}[H]
     \centering
@@ -206,18 +206,25 @@ O código de Morton é gerado a partir das coordenadas espaciais das primitivas,
     \label{fig:morton_curve}
 \end{figure}
 
-% Hierarchical LBVH (HLBVH)
-A HLBVH (\textit{Hierarchical Linear Bounding Volume Hierarchy}) foi proposta por Pantaleoni como uma extensão da LBVH tradicional, buscando melhorar a eficiência da construção paralela da hierarquia, mas que reduz substancialmente tanto a quantidade de cálculos quanto o tráfego de memória necessários para construir a \gls{bhv}. Existe tres grandes mudancas no algoritmo. Primeiramente uma reformulação na etapa de ordenação baseada na Morton curve-based, exigida pelo procedimento original, na qual empregamos uma decomposição hierárquica em grade para explorar a coerência espacial presente na malha de entrada. Em segundo lugar, um novo procedimento de emissão de hierarquia de nós que aprimora a técnica de Lauterbach. Terceiro, um novo algoritmo híbrido que usa a heurística de área de superfície (SAH) para construir os níveis BVH superiores e usa particionamento rápido baseado na curva de Morton dentro das subárvores do cluster \cite{pantaleoni2010hlbvh}.
+% Compressed BVH
+Uma maneira de reduzir a sobrecarga de memória é comprimir a estrutura de dados de aceleração. A compressão funciona particularmente bem para BVHs, reduzindo \textit{memory footprint} e o uso de banda. Porém, essa compressão adiciona um custo de descompressão durante a travessia, o que deve resultar em uma diminuição de desempenho. Em cenas grandes, quando a memória dedicada da \gls{gpu} não é suficiente, essa perda de desempenho é compensada pela possibilidade de manter toda a BVH na memória principal e por um melhor uso do cache \cite{benthin2018compressed}.
+
+Existem várias versões de compressão: \textit{Compressed Bounding Volume Hierarchies} (CBVH) comprime a árvore por completo; Compressed-Leaf Bounding Volume Hierarchies (CLBVH) comprime apenas as folhas da árvore, tendo uma travessia mais rápida; Minimal Bounding Volume Hierarchy (MVH) usa a \textit{bounding box} do pai para construir a os filhos, consegue trabalhar com apenas 2 bytes, guardando nos filhos e folhas em uma pilha de dados \cite{bauszat2010minimal} \cite{benthin2018compressed}.
 
 % Wide BVH (BVH4, BVH8)
 % Multi-BVH(QBVH)
+Além do consumo de memória, o tempo de travessia também se torna um problema em cenas com muitas primitivas. O Wide BVH, também chamado de MBVH, QBVH, BVH4, BVH8 ou BVH16.  Diferente das \gls{bvh} comuns que são binárias, o Wide BVH utiliza nós com múltiplos filhos reduzindo o tempo de travessia. Embora a sobrecarga da travessia de raios seja reduzida com a redução da profundidade da árvore, a taxa de transferência de raios acaba sendo limitada por outras restrições, como armazenamento e largura de banda da memória \cite{vaidyanathan2019wide} \cite{tsakok2009faster}.
 
-Wide BVH utiliza nós com múltiplos filhos, tambem pode aparecer como MBVH, QBVH, BVH4, BVH8 ou BVH16. Diferente das \gls{bvh} comuns que sao binárias, elas podem ter filhos por nó. Embora a sobrecarga da travessia de raios seja reduzida com redução da profundidade da árvore. A taxa de transferência de raios acaba sendo limitada por outras restrições, como armazenamento e largura de banda da memória. Por esse motivo, as wide BVHs comprimidas são uma escolha interesante para a travessia, com nós internos comprimidos resultando em taxas de acerto de cache aprimoradas e maior taxa de transferência de raios \cite{vaidyanathan2019wide} \cite{tsakok2009faster}.
+Por esse motivo, as estruturas Wide BVHs comprimidas são uma escolha interessante para a travessia, com nós internos comprimidos resultando em taxas de acerto de cache aprimoradas e maior taxa de transferência de raios \cite{vaidyanathan2019wide} \cite{tsakok2009faster}.
 
-% add image exempla
-
-% Compressed BVH
 % top-down Surface Area Heuristic BVH(SAH-BVH)
+Nenhuma dessas técnicas anteriores melhora a qualidade da árvore. Surface Area Heuristic (SAH) é um algoritmo aplicado na separação dos objetos geométricos, considera a densidade da geometria no espaço 3D e elimina eficientemente regiões vazias e reduz interações. Infelizmente, construir uma árvore de alta qualidade é custoso. Esse custo computacional torna a técnica inviável para cenas dinâmicas e animadas, onde são reconstruídas a cada quadro.
+
+O \textit{Binned SAH} é uma aproximação do SAH que reduz o custo de construção. Em vez de avaliar todos os planos de divisão entre primitivas, divide o espaço em um número fixo de regiões chamadas \textit{bins}. O custo é calculado baseado no tamanho e quantidade de primitivas e divide recursivamente até completar a árvore . Existem híbridos, um deles é o HLBVH que tem a construção mais rápida, mas perde mais qualidade \cite{garanzha2011grid}.
+
+% Hierarchical LBVH (HLBVH)
+A HLBVH (\textit{Hierarchical Linear Bounding Volume Hierarchy}) foi proposta por Pantaleoni como uma extensão da LBVH tradicional, buscando melhorar a eficiência da construção paralela da hierarquia, mas que reduz substancialmente tanto a quantidade de cálculos quanto o tráfego de memória necessários para construir a \gls{bhv}. O algoritmo introduz três modificações principais. Primeiramente, uma reformulação na etapa de ordenação baseada na Morton curve-based, exigida pelo procedimento original, na qual foi empregada uma decomposição hierárquica em grade para explorar a coerência espacial presente na malha de entrada. Em segundo lugar, um novo procedimento de emissão de hierarquia de nós que aprimora a técnica de Lauterbach. Terceiro, um novo algoritmo híbrido que usa a (SAH) para construir os níveis BVH superiores e usa particionamento rápido baseado na curva de Morton dentro das subárvores do cluster \cite{pantaleoni2010hlbvh}.
+
 % BVH com Divisões Espaciais (SBVH)
 
 
