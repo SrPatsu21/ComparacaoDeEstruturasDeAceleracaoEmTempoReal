@@ -39,20 +39,17 @@ No \textit{ray tracing}, as primitivas podem ser: polígonos, objetos geométric
 
 \subsection{Efeitos físicos da luz}
 
-% precisa achar isso tudo
+O objetivo de um algoritmo de \textit{ray tracing} é simular diversos efeitos ópticos. Entre os principais efeitos estão a reflexão, refração, transparência, translucidez e oclusão.
 
-% Sombras podem ser entendidas como o resultado da obstrução da luz. Em algoritmos de \textit{ray tracing}, esse fenômeno é pela emissão de raios de sombra (\textit{shadow rays}) a partir de um ponto de interseção na superfície em direção à fonte de luz. Se esse raio não intercepta nenhum objeto o ponto é considerado iluminado; caso contrário, está em sombra, pois a luz é bloqueada por outro objeto \cite{marschner2021fundamentals}.
+A reflexão ocorre quando um raio de luz atinge uma superfície e retorna ao meio original. Em superfícies especulares, como espelhos metálicos, o ângulo de reflexão é igual ao ângulo de incidência, permitindo a formação de reflexos nítidos \cite{marschner2021fundamentals}.
 
-% A reflexão especular ideal, também chamada de reflexão em espelho, pode ser modelada em \textit{ray tracing} considerando que, o ponto na superfície refletora tem sua cor definida de acordo com o raio refletido, raio correspondente ao observador. A direção pode ser calculada a partir da direção incidente e da normal da superfície r=d-2(d*n)n. A luz refletida sofre perda de energia, para simular isso a cor é reduzida a cada interacao.
+A refração ocorre quando a luz atravessa materiais transparentes, sofrendo alteração em sua direção devido à diferença entre os índices de refração dos meios envolvidos. Materiais dielétricos, como vidro, água e diamante, apresentam esse comportamento. A mudança de direção do raio refratado é descrita pela Lei de Snell, sendo um dos principais efeitos utilizados para representar materiais transparentes em renderização física \cite{marschner2021fundamentals}.
 
-% Refração
-% Iluminação difusa
-% Iluminação global (Global Illumination)
-% Oclusão (occlusion)
-% Luz direta
-% Transparência
-% Translucidez
-% Componente especular (intensidade especular)
+A transparência corresponde à capacidade de um material permitir a passagem da luz através de sua superfície. Em materiais transparentes, parte da energia luminosa é transmitida para o interior do objeto, possibilitando visualizar objetos posicionados atrás dele. Esse efeito geralmente é combinado com refração para produzir representações fisicamente plausíveis de vidro, líquidos e outros materiais translúcidos \cite{akenine2019real}.
+
+A translucidez é semelhante à transparência, porém a luz transmitida sofre espalhamento interno dentro do material. Como consequência, a luz emerge difusa, impedindo a formação de imagens nítidas através do objeto. Materiais como cera, pele humana e mármore apresentam comportamento translúcido \cite{akenine2019real}.
+
+A oclusão ocorre quando um objeto bloqueia parcial ou totalmente a propagação da luz em uma cena. Esse fenômeno é responsável pela formação de sombras e regiões menos iluminadas \cite{marschner2021fundamentals}.
 
 \subsection{\textit{Ray tracing}}
 
