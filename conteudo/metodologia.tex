@@ -12,14 +12,23 @@ A partir dos resultados obtidos, também será realizada uma análise qualitativ
 
 \subsection{Instrumentos de coleta de dados}
 
-Aqui você fala:
+Para a extração das métricas será necessário o desenvolvimento de uma aplicação própria capaz de executar os cenários de teste e registrar os dados obtidos durante a execução. Ferramentas como o \textit{NVIDIA Nsight Compute}, o \textit{NVIDIA Nsight Graphics} e interfaces de monitoramento do Linux fornecem parte das métricas desejadas, porém não oferecem, de forma integrada, suporte à avaliação das diferentes variantes de \glspl{bvh} e dos cenários dinâmicos considerados nesta pesquisa.
 
-software desenvolvido;
-benchmarks;
-cenas de teste;
-GPU/CPU;
-ferramentas de profiling;
-métricas coletadas.
+Além disso, algumas métricas disponibilizadas pelo \textit{Nsight Graphics} dependem de integração direta com o código da aplicação. Dessa forma, o desenvolvimento de um sistema próprio de testes também permite maior controle sobre os experimentos, a implementação das estruturas avaliadas e a coleta padronizada dos resultados.
+
+Para a coleta de dados será necessário o uso de uma \gls{gpu}. Apesar de ser possível executar esses algoritmos em uma \gls{cpu}, simulações com alta complexidade gráfica, geometria dinâmica e execução em tempo real tornam-se mais viáveis em \glspl{gpu}. Além disso, as bibliotecas e ferramentas de coleta de métricas utilizadas neste trabalho são específicas para \glspl{gpu} da Nvidia.
+
+A aplicação precisará implementar todo o pipeline gráfico Vulkan juntamente com algoritmos híbridos de ray tracing. Será necessário desenvolver interfaces para as estruturas de aceleração, permitindo padronizar suas implementações e facilitar a substituição e comparação entre diferentes abordagens de \glspl{bvh}.
+
+Para os cenários dinâmicos, será necessária uma implementação própria dentro da aplicação desenvolvida. Isso permitirá maior controle sobre as modificações realizadas na cena e possibilitará analisar de forma mais precisa como essas alterações afetam o comportamento geral do sistema e o desempenho dos algoritmos.
+
+% parágrafo descrevendo as métricas
+
+Como ambiente de desenvolvimento e compilação, será utilizada uma imagem Docker baseada em Ubuntu 24.04. A imagem, desenvolvida pelo próprio autor, contém suporte para compilação de aplicações em C++ com Vulkan, além de bibliotecas auxiliares para matemática, gerenciamento de janelas, carregamento de modelos e manipulação de texturas.
+
+A \gls{ide} utilizada será o Visual Studio Code, em conjunto com a extensão \textit{Dev Containers}, que permite a conexão direta com o contêiner Docker e o acesso às bibliotecas e ferramentas instaladas no ambiente isolado. Essa abordagem facilita a configuração do ambiente de desenvolvimento e melhora a reprodutibilidade dos experimentos.
+
+O planejamento, organização e documentação do projeto serão realizados utilizando o Draw.io, para diagramas e esquemas, além de arquivos em formato Markdown para anotações e documentação técnica.
 
 \subsection{Procedimentos de coleta de dados}
 
