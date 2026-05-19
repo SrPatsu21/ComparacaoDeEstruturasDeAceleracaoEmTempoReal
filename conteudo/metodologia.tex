@@ -18,11 +18,96 @@ Além disso, algumas métricas disponibilizadas pelo \textit{Nsight Graphics} de
 
 Para a coleta de dados será necessário o uso de uma \gls{gpu}. Apesar de ser possível executar esses algoritmos em uma \gls{cpu}, simulações com alta complexidade gráfica, geometria dinâmica e execução em tempo real tornam-se mais viáveis em \glspl{gpu}. Além disso, as bibliotecas e ferramentas de coleta de métricas utilizadas neste trabalho são específicas para \glspl{gpu} da Nvidia.
 
-A aplicação precisará implementar todo o pipeline gráfico Vulkan juntamente com algoritmos híbridos de ray tracing. Será necessário desenvolver interfaces para as estruturas de aceleração, permitindo padronizar suas implementações e facilitar a substituição e comparação entre diferentes abordagens de \glspl{bvh}.
+A aplicação precisará implementar todo o \textit{pipeline} gráfico Vulkan juntamente com algoritmos híbridos de \textit{ray tracing}. Será necessário desenvolver interfaces para as estruturas de aceleração, permitindo padronizar suas implementações e facilitar a substituição e comparação entre diferentes abordagens de \glspl{bvh}.
 
 Para os cenários dinâmicos, será necessária uma implementação própria dentro da aplicação desenvolvida. Isso permitirá maior controle sobre as modificações realizadas na cena e possibilitará analisar de forma mais precisa como essas alterações afetam o comportamento geral do sistema e o desempenho dos algoritmos.
 
-% parágrafo descrevendo as métricas
+% TODO
+Nao sera aplicado nenhum ray tracing avancado so o basico para testar com mais veracidade as BHVs alem disso precisa de filtro de ruidos olhar a fundamentacao para isso 
+
+% ---------------------------
+
+% metricas extraidas direteamente do Nsight Compute :
+    % utilização dos recursos computacionais dos \gls{sm}
+    % Instruções por ciclo (Instructions per Cycle / IPC)
+    % Utilização de \textit{pipeline}
+    % Estatísticas de instruções \gls{sass}
+    % Tipos de instruções executadas
+    % Frequência de instruções
+    % Tamanho do grid
+    % Quantidade de threads
+    % Número de blocos
+    % Uso de registradores
+    % Uso de memória compartilhada
+    % Largura de banda de memória
+    % Taxa de transferência de instruções de memória
+    % Ocupação
+    % \textit{warps} ativos
+    % \textit{warps} máximos suportados
+    % Estados de warp
+    % Estatísticas do Agendador
+    % Ciclos sem emissão de instruções
+    % Branch efficiency
+    % Motivos de paralisação de \textit{warps} (warp stall reasons)
+    % Utilização computacional relativa ao máximo teórico
+    % Utilização de memória relativa ao máximo teórico
+    % Estatísticas de Estado de Warp
+    % Ciclos por instrução (Cycles Per Instruction / CPI)
+    % Latência de execução
+
+
+% Metricas extraidas pelo Nsight Compute:
+    % Métricas temporais:
+        % frame time
+        % build time
+        % traversal time
+        % latency
+        % overhead
+    % Métricas estruturais:
+        % queue synchronization
+        % Wait operations
+        % Signal operations
+        % Resource barriers
+        % context switches
+        % overlap compute/graphics
+        % Paralelismo entre filas
+        % Concorrência entre workloads
+    % Métricas RT
+        % RT core utilization
+        % traversal throughput
+        % ray divergence
+        % AS build cost
+
+% Metricas extraidas por outras APIs
+    % Uso da CPU - leitura de /proc/stat
+    % Uso de memória \gls{ram} - leitura de /proc/meminfo
+    % Consumo energético da \gls{gpu} - Nvidia Management Library
+    % Consumo energético da CPU - Intel RAPL via /sys/class/powercap/intel-rapl/
+
+% outras metricas extraidas a partir das metricas base:
+%     Utilização de SMs == sm__throughput + sm__warps_active + smsp__cycles_active
+%     Saturação de \textit{hardware} == sm__throughput + gpu__compute_memory_throughput + l1tex__throughput + dram__throughput
+%     Saturação de largura de banda == dram__throughput + gpu__dram_throughput + lts__throughput
+%     Paralelismo == sm__warps_active + sm__maximum_warps_per_active_cycle + Occupancy + Launch Stats
+%     Eficiência de execução SIMD == branch_efficiency + warp_execution_efficiency + warp_nonpred_execution_efficiency
+%     Dependências entre workloads == wait + signal + queue synchronization + resource barriers
+%     Dependências de memória == warp_stall_memory_dependency + warp_stall_long_scoreboard
+%     Gargalos de memória == dram__throughput + warp_stall_memory_dependency + Memory Workload Analysis
+%     Gargalos computacionais == sm__throughput + IPC + Compute Workload Analysis + Scheduler Stats
+%     Gargalos de sincronização == wait + barriers + queue synchronization + idle periods
+%     Taxa de processamento das BVHs == traversal throughput + RT Core utilization + traversal time
+%     Utilização de recursos computacionais == sm__throughput + smsp__inst_executed + IPC
+%     Utilização de recursos de memória == dram__throughput + lts__throughput + l1tex__throughput + bandwidth utilization
+
+% ---------------------------
+
+Serão coletadas métricas relacionadas ao desempenho computacional da \gls{gpu}, utilização dos recursos de execução e comportamento das estruturas de aceleração durante a travessia e construção das \glspl{bvh}. Entre as métricas analisadas estão utilização dos \glspl{sm}, instruções por ciclo, ocupação, utilização de \textit{pipelines}, quantidade de \textit{warps} ativos, estatísticas do escalonador, utilização de registradores, uso de memória compartilhada, largura de banda de memória e motivos de paralisação de \textit{warps} (\textit{warp stall reasons}). Também serão consideradas métricas relacionadas à eficiência de execução \gls{simd}, divergência de execução e utilização computacional e de memória em relação aos limites teóricos do \textit{hardware}.
+
+Também serão coletadas métricas temporais e estruturais relacionadas ao \textit{pipeline} gráfico e ao \textit{ray tracing}, incluindo tempo de construção das \glspl{bvh}, tempo de travessia, tempo de quadro (\textit{frame time}), latência, sobrecarga de execução (\textit{overhead}), sincronização entre filas, operações de espera e sinalização, barreiras de recursos, concorrência entre workloads e paralelismo entre filas de execução. Para o \textit{ray tracing} em \textit{hardware}, serão avaliadas métricas como utilização dos \textit{RT Cores}, taxa de travessia (\textit{traversal throughput}), divergência de raios e custo de construção das estruturas de aceleração.
+
+Além das métricas extraídas diretamente das ferramentas de monitoramento, também serão analisados indicadores derivados obtidos a partir da combinação das métricas base. Esses indicadores permitirão avaliar saturação de \textit{hardware}, saturação de largura de banda, gargalos computacionais, gargalos de memória, gargalos de sincronização, dependências entre workloads, paralelismo, eficiência de execução e taxa de processamento das \glspl{bvh}. A utilização de métricas derivadas busca fornecer uma análise mais abrangente do comportamento dos algoritmos e do impacto das diferentes estruturas de aceleração no desempenho geral do sistema.
+
+Por fim, também serão monitorados o uso da \gls{cpu}, consumo de memória \gls{ram} e consumo energético da \gls{gpu} e da \gls{cpu}, utilizando interfaces de monitoramento disponibilizadas pelo sistema operacional Linux e bibliotecas específicas da Nvidia.
 
 Como ambiente de desenvolvimento e compilação, será utilizada uma imagem Docker baseada em Ubuntu 24.04. A imagem, desenvolvida pelo próprio autor, contém suporte para compilação de aplicações em C++ com Vulkan, além de bibliotecas auxiliares para matemática, gerenciamento de janelas, carregamento de modelos e manipulação de texturas.
 
