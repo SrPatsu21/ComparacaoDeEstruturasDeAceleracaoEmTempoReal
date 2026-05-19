@@ -91,6 +91,17 @@ O Whitted \textit{ray casting}, uma evolução do \textit{ray casting}, foi dese
     \label{fig:exemplo_whitted_ray_casting}
 \end{figure}
 
+Apesar de os dois algoritmos citados gerarem sombras, as sombras produzidas são rígidas, possuem bordas bem definidas e utilizam luzes pontuais. Entretanto, em diversas aplicações, é necessário utilizar fontes de luz com área. As sombras suaves (\textit{soft shadows}) geradas por luzes com área produzem regiões de umbra e penumbra, fornecendo maior percepção espacial e profundidade entre os objetos da cena \cite{goesele2012fast}.
+
+Uma forma de produzir sombras suaves em \textit{ray tracing} consiste em realizar múltiplas amostragens da fonte de luz. Nesse método, vários raios de sombra são lançados em direção a diferentes pontos da luz com área (\textit{area light}). Para cada raio, verifica-se se existe algum objeto bloqueando o caminho entre o ponto da superfície e a fonte luminosa. A intensidade final da sombra é calculada pela proporção entre raios bloqueados e não bloqueados \cite{goesele2012fast}.
+
+% Importance Sampling (GGX)
+O Whitted \textit{ray casting} consegue simular reflexões em superfícies refletoras e semirrefletoras. Entretanto, quando poucas amostras são utilizadas, a imagem pode apresentar ruídos e perda de qualidade visual. Para reduzir esse problema, pode-se utilizar a técnica de \textit{Importance Sampling}, que concentra as amostras nas direções que mais contribuem para a iluminação da cena \cite{dupuy2023sampling}.
+
+Uma das distribuições mais utilizadas para esse processo é a \gls{ggx}, um modelo de microfacetos empregado para representar reflexos especulares de maneira mais realista. Nesse modelo, a superfície é composta por pequenos microfacetos que refletem a luz em diferentes direções. O \textit{Importance Sampling} baseado em GGX direciona mais raios para as direções de maior contribuição especular, reduzindo ruídos e melhorando a qualidade dos reflexos com menor custo computacional \cite{dupuy2023sampling}.
+
+% talvez coloque ReSTIR DI (Direct Illumination)
+
 \subsection{Rasterização}
 
 A rasterização é uma técnica básica de renderização. Uma tarefa de renderização complexa pode ser dividida em diferentes subtarefas associadas a diferentes objetos. Em seguida, cada objeto é dividido em polígonos projetados na tela. Finalmente, cada pixel coberto pelos polígonos é renderizado \cite{wang2022development}. A rasterização era inicialmente feita por \textit{software} em \gls{cpu}, isso é praticamente coisa do passado, pois o \textit{hardware} gráfico dedicado \gls{gpu} oferece desempenho muito superior e virou o padrão para simulação em tempo real \cite{laine2011high}.
