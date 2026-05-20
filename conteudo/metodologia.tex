@@ -119,34 +119,29 @@ O planejamento, organização e documentação do projeto serão realizados util
 \subsection{Procedimentos de coleta de dados}
 
 % como os testes serão executados;
-Nao é possivel ter um sistema completamente isolado entao antes dos testes, sera retirada as metricas atuais do sistema, para q fique registrado o estado previo da maquina
-Dentro do prorpio codigo, configurar uma quantidade de frames maxima antes da aplicacao automaticamente fechar
-depois de cada teste extrair as  metricas
+Os testes serão executados em um ambiente controlado, porém não completamente isolado. Dessa forma, antes de cada conjunto de execuções, serão coletadas métricas do estado atual do sistema, como uso de memória, utilização da \gls{cpu} e da \gls{gpu}, a fim de registrar as condições prévias da máquina durante os experimentos.
+
+A aplicação desenvolvida possuirá, em seu próprio código, uma quantidade máxima de \textit{frames} definida previamente. Ao atingir esse limite, a execução será encerrada automaticamente. Após cada teste, as métricas de desempenho serão extraídas e armazenadas para posterior análise.
+
+As métricas poderão ser coletadas de diferentes formas dependendo da ferramenta utilizada. A \textit{NVIDIA Nsight Compute} permite exportar automaticamente as métricas selecionadas para arquivos no formato `.csv`. Já a \textit{NVIDIA Nsight Graphics} gera arquivos de captura no formato `.nsgfx`, contendo informações detalhadas sobre a execução gráfica da aplicação. Por sua vez, a \textit{NVIDIA Management Library} será integrada diretamente ao programa, permitindo que métricas de consumo energético sejam registradas em arquivos para posterior análise.
 
 % quantas execuções;
 Para cada \gls{bvh} em cada cena, serão executadas inicialmente cinco medições independentes. Em seguida, serão calculados a média aritmética e o desvio padrão dos resultados de cada metrica. Caso o coeficiente de variação ultrapasse 2\%, novas execuções serão adicionadas até que a dispersão dos dados seja reduzida a um nível aceitável. Medições classificadas como \textit{outliers}, identificadas por critérios estatísticos de dispersão, poderão ser removidas do conjunto de dados antes do cálculo da média final.
 
 % quais cenas;
+As cenas utilizadas serão dinâmicas, contendo objetos em constante movimentação, além de elementos entrando e saindo da cena. Esse comportamento tem como objetivo provocar atualizações frequentes nas estruturas de \glspl{bvh}, permitindo avaliar o desempenho dos algoritmos em situações mais próximas de aplicações reais.
 
-As cenas devem ser dinamicas, isso significa que cada cena precisa de objetos que entram e saem da cena. e varios objetos que se movem 
-
-Uma cena de uma cidade com predios e carros em movimento
-Uma cena mais ambientada na natureza com grama, ceu, nuvens, agua, etc
-Uma montada com materiais variados e em diversos formato, os objetos devem se movimentar assim baguncando as \gls{bvh} para que elas precisem ser montadas toda vez
+Serão utilizadas três cenas principais:
+\begin{itemize}
+    \item uma cena urbana contendo prédios, veículos e múltiplos objetos em movimento;
+    \item uma cena baseada em ambientes naturais, contendo vegetação, água, céu e nuvens;
+    \item uma cena composta por diversos objetos geométricos com materiais variados e movimentação constante.
+\end{itemize}
 
 % quais algoritmos serão comparados;
-Os algoritmos a serem comparados serao: o algortimo padra \glspl{bvh} para ter a base de comparacao, \gls{lbvh}, \gls{cbvh}, \gls{clbvh}, \gls{mvh}, \gls{bvh4}, \gls{bvh8}, \gls{bvh16}, \gls{sah} \gls{bvh}, gls{bsah}, \gls{hlbvh}, \gls{sbvh}.
+Os algoritmos comparados serão: a implementação padrão de \glspl{bvh}, utilizada como base de comparação, além de \gls{lbvh}, \gls{cbvh}, \gls{clbvh}, \gls{mvh}, \gls{bvh4}, \gls{bvh8}, \gls{bvh16}, \gls{sah} \gls{bvh}, \gls{bsah}, \gls{hlbvh} e \gls{sbvh}.
 
-A diferenca entre os algoritmos nao é muito grande entoa podem ser feitas por meio de uma interface
-
-
-% Aqui você explica:
-
-% como os testes serão executados;
-% quantas execuções;
-% quais cenas;
-% quais algoritmos serão comparados;
-% como as métricas serão registradas.
+Como as diferenças estruturais entre os algoritmos são relativamente pequenas, será desenvolvida uma interface comum para abstrair suas implementações. Dessa forma, será possível alternar entre diferentes algoritmos de \gls{bvh} sem modificar o restante do \textit{pipeline} de renderização.
 
 \subsection{Procedimentos de análise de dados}
 
@@ -154,45 +149,16 @@ A diferenca entre os algoritmos nao é muito grande entoa podem ser feitas por m
 % gráficos;
 % tabelas;
 % comparação de desempenho;
+A análise dos dados será realizada a partir das métricas coletadas durante a execução dos testes de cada algoritmo de \gls{bvh}. Inicialmente, os resultados serão organizados em tabelas comparativas contendo as médias das métricas obtidas em cada cenário de teste. Entre as métricas analisadas estarão valores quantitativos, como consumo de memória, tempo de construção da \gls{bvh} e tempo de travessia (\textit{traversal}). Também serão avaliadas métricas percentuais relacionadas à utilização do hardware, como uso da \gls{gpu}, ocupação dos \textit{CUDA Cores} e utilização da \gls{cpu}.
 
-Apartir das metricas coletadas uma tabela de comparacao com a media das metricas de cada algoritmo algumas quantitativas como memoria e timers outras percentuais como uso de cuda core etc
+Além das tabelas comparativas, serão produzidos gráficos para facilitar a visualização do comportamento dos algoritmos em diferentes cenários. Esses gráficos permitirão analisar a relação entre o custo de construção das \glspl{bvh} e o ganho obtido durante a travessia dos raios, além de possibilitar a identificação de padrões de desempenho em cenas estáticas e dinâmicas. Também serão comparados fatores como impacto da movimentação dos objetos e custo de atualização ou reconstrução das estruturas.
 
-Graficos do tempo levado para a construcao, tavessia entre outras metricas de cada uma das \glspl{bvh}
+A partir da análise dessas tabelas e graficos, será possível identificar quais algoritmos apresentam melhor desempenho em cenários específicos, como ambientes com grande quantidade de objetos dinâmicos, cenas com alta complexidade geométrica ou aplicações que exigem reconstruções frequentes das \glspl{bvh}.
 
 % interpretação qualitativa.
-interpretacao de qual seria a \gls{bvh} mais adequada dependendo do cenario da maquina, por exemplo mais \gls{gpu} uma \gls{bvh} mais bem construida, uma \gls{gpu} mais forte com uma \gls{gpu} mais forte pode ser interesante poupar \gls{cpu} para outros processos ou salvar bateria ou reduzir uso de memoria.
+Além da análise quantitativa, será realizada uma interpretação qualitativa dos resultados. O objetivo será discutir qual tipo de \gls{bvh} é mais adequado dependendo das características do sistema utilizado. Em máquinas com maior capacidade de processamento na \gls{gpu}, por exemplo, pode ser vantajoso utilizar estruturas mais complexas e custosas de construir, mas que ofereçam melhor desempenho durante a travessia dos raios. Em contrapartida, sistemas com recursos computacionais mais limitados podem se beneficiar de estruturas mais simples e rápidas de atualizar.
 
-
-% Aqui entra:
-
-% análise quantitativa;
-% gráficos;
-% tabelas;
-% comparação de desempenho;
-% interpretação qualitativa.
-
-
-
-% A metodologia inclui várias seções importantes, tais como:
-% \begin{enumerate}
-%     \item Abordagem da pesquisa: Descreve se a pesquisa será qualitativa, quantitativa ou mista. Isso envolve a escolha entre abordagens como estudos de caso, experimentos, levantamentos, entre outros.
-
-%     \item Instrumentos de coleta de dados: Indica quais instrumentos serão utilizados para coletar dados, como questionários, entrevistas, observações, análise de documentos, entre outros. Essa seção também descreve como esses instrumentos serão desenvolvidos e validados, se necessário.
-
-%     \item Procedimentos de coleta de dados: Detalha como os dados serão coletados, incluindo informações sobre o local, o período de tempo, os participantes (se houver), os critérios de seleção, entre outros aspectos relevantes.
-
-%     \item Procedimentos de análise de dados: Descreve como os dados serão processados, analisados e interpretados. Isso pode incluir técnicas estatísticas, análise de conteúdo, codificação de dados, entre outras abordagens.
-
-%     \item Considerações éticas: Discute as questões éticas relacionadas à pesquisa, como consentimento informado dos participantes, confidencialidade, anonimato, entre outros princípios éticos a serem seguidos durante a condução da pesquisa.
-% \end{enumerate}
-
-% Para trabalhos voltados ao \textbf{desenvolvimento de sistemas} é esperado:
-% \begin{enumerate}
-%     \item Levantamento de requisitos
-%     \item Definição de tecnologias/infraestrutura
-%     \item Modelo de Banco
-%     \item Interfaces (prototipação)
-% \end{enumerate}
+Também será analisado o equilíbrio entre utilização de \gls{cpu} e \gls{gpu}, considerando cenários em que reduzir a carga sobre um dos componentes possa ser vantajoso para liberar recursos para outros processos, reduzir consumo energético, preservar bateria em dispositivos móveis ou diminuir o uso de memória. Dessa forma, a análise buscará não apenas identificar o algoritmo mais rápido, mas também compreender quais estruturas oferecem o melhor custo de construção, desempenho de renderização e utilização de recursos computacionais em diferentes contextos de execução.
 
 \section{Considerações éticas}
 
