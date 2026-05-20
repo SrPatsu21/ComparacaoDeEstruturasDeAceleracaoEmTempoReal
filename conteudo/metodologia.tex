@@ -118,7 +118,27 @@ O planejamento, organização e documentação do projeto serão realizados util
 
 \subsection{Procedimentos de coleta de dados}
 
-dentro do prorpio
+% como os testes serão executados;
+Nao é possivel ter um sistema completamente isolado entao antes dos testes, sera retirada as metricas atuais do sistema, para q fique registrado o estado previo da maquina
+Dentro do prorpio codigo, configurar uma quantidade de frames maxima antes da aplicacao automaticamente fechar
+depois de cada teste extrair as  metricas
+
+% quantas execuções;
+Para cada \gls{bvh} em cada cena, serão executadas inicialmente cinco medições independentes. Em seguida, serão calculados a média aritmética e o desvio padrão dos resultados de cada metrica. Caso o coeficiente de variação ultrapasse 2\%, novas execuções serão adicionadas até que a dispersão dos dados seja reduzida a um nível aceitável. Medições classificadas como \textit{outliers}, identificadas por critérios estatísticos de dispersão, poderão ser removidas do conjunto de dados antes do cálculo da média final.
+
+% quais cenas;
+
+As cenas devem ser dinamicas, isso significa que cada cena precisa de objetos que entram e saem da cena. e varios objetos que se movem 
+
+Uma cena de uma cidade com predios e carros em movimento
+Uma cena mais ambientada na natureza com grama, ceu, nuvens, agua, etc
+Uma montada com materiais variados e em diversos formato, os objetos devem se movimentar assim baguncando as \gls{bvh} para que elas precisem ser montadas toda vez
+
+% quais algoritmos serão comparados;
+Os algoritmos a serem comparados serao: o algortimo padra \glspl{bvh} para ter a base de comparacao, \gls{lbvh}, \gls{cbvh}, \gls{clbvh}, \gls{mvh}, \gls{bvh4}, \gls{bvh8}, \gls{bvh16}, \gls{sah} \gls{bvh}, gls{bsah}, \gls{hlbvh}, \gls{sbvh}.
+
+A diferenca entre os algoritmos nao é muito grande entoa podem ser feitas por meio de uma interface
+
 
 % Aqui você explica:
 
@@ -130,13 +150,26 @@ dentro do prorpio
 
 \subsection{Procedimentos de análise de dados}
 
-Aqui entra:
+% análise quantitativa;
+% gráficos;
+% tabelas;
+% comparação de desempenho;
 
-análise quantitativa;
-gráficos;
-tabelas;
-comparação de desempenho;
-interpretação qualitativa.
+Apartir das metricas coletadas uma tabela de comparacao com a media das metricas de cada algoritmo algumas quantitativas como memoria e timers outras percentuais como uso de cuda core etc
+
+Graficos do tempo levado para a construcao, tavessia entre outras metricas de cada uma das \glspl{bvh}
+
+% interpretação qualitativa.
+interpretacao de qual seria a \gls{bvh} mais adequada dependendo do cenario da maquina, por exemplo mais \gls{gpu} uma \gls{bvh} mais bem construida, uma \gls{gpu} mais forte com uma \gls{gpu} mais forte pode ser interesante poupar \gls{cpu} para outros processos ou salvar bateria ou reduzir uso de memoria.
+
+
+% Aqui entra:
+
+% análise quantitativa;
+% gráficos;
+% tabelas;
+% comparação de desempenho;
+% interpretação qualitativa.
 
 
 
