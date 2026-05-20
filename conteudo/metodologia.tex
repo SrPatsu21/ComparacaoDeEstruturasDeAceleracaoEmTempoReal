@@ -22,8 +22,9 @@ A aplicação precisará implementar todo o \textit{pipeline} gráfico Vulkan ju
 
 Para os cenários dinâmicos, será necessária uma implementação própria dentro da aplicação desenvolvida. Isso permitirá maior controle sobre as modificações realizadas na cena e possibilitará analisar de forma mais precisa como essas alterações afetam o comportamento geral do sistema e o desempenho dos algoritmos.
 
-% TODO
-Nao sera aplicado nenhum ray tracing avancado so o basico para testar com mais veracidade as BHVs alem disso precisa de filtro de ruidos olhar a fundamentacao para isso 
+Não será aplicado nenhum método avançado de \textit{ray tracing}. O objetivo é utilizar apenas técnicas básicas, como o Whitted \textit{ray casting}, \textit{soft shadows} e \textit{Importance Sampling} utilizando \gls{ggx}, a fim de avaliar com maior veracidade o desempenho das \glspl{bvh} durante o processo de interseção de raios.
+
+Mesmo utilizando técnicas básicas, a quantidade reduzida de amostras pode gerar ruídos visuais na imagem renderizada, principalmente em reflexões e sombras suaves. Dessa forma, torna-se necessário o uso de filtros de redução de ruído (\textit{denoising}) para suavizar artefatos e melhorar a qualidade visual das imagens geradas \cite{akenine2019real}.
 
 % ---------------------------
 
@@ -117,13 +118,15 @@ O planejamento, organização e documentação do projeto serão realizados util
 
 \subsection{Procedimentos de coleta de dados}
 
-Aqui você explica:
+dentro do prorpio
 
-como os testes serão executados;
-quantas execuções;
-quais cenas;
-quais algoritmos serão comparados;
-como as métricas serão registradas.
+% Aqui você explica:
+
+% como os testes serão executados;
+% quantas execuções;
+% quais cenas;
+% quais algoritmos serão comparados;
+% como as métricas serão registradas.
 
 \subsection{Procedimentos de análise de dados}
 
