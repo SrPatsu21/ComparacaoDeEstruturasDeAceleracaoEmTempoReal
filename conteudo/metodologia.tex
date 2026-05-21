@@ -18,6 +18,8 @@ Além disso, algumas métricas disponibilizadas pelo \textit{Nsight Graphics} de
 
 Para a coleta de dados será necessário o uso de uma \gls{gpu}. Apesar de ser possível executar esses algoritmos em uma \gls{cpu}, simulações com alta complexidade gráfica, geometria dinâmica e execução em tempo real tornam-se mais viáveis em \glspl{gpu}. Além disso, as bibliotecas e ferramentas de coleta de métricas utilizadas neste trabalho são específicas para \glspl{gpu} da Nvidia.
 
+Os experimentos serão realizados utilizando uma GPU NVIDIA RTX XXXX com XX GB de memória VRAM, processador intel i5 10600k, 16 GB de memória RAM DDR4 e sistema operacional KDE neon baseado no Ubuntu 24.04.
+
 A aplicação precisará implementar todo o \textit{pipeline} gráfico Vulkan juntamente com algoritmos híbridos de \textit{ray tracing}. Será necessário desenvolver interfaces para as estruturas de aceleração, permitindo padronizar suas implementações e facilitar a substituição e comparação entre diferentes abordagens de \glspl{bvh}.
 
 Para os cenários dinâmicos, será necessária uma implementação própria dentro da aplicação desenvolvida. Isso permitirá maior controle sobre as modificações realizadas na cena e possibilitará analisar de forma mais precisa como essas alterações afetam o comportamento geral do sistema e o desempenho dos algoritmos.
@@ -114,6 +116,8 @@ Como ambiente de desenvolvimento e compilação, será utilizada uma imagem Dock
 
 A \gls{ide} utilizada será o Visual Studio Code, em conjunto com a extensão \textit{Dev Containers}, que permite a conexão direta com o contêiner Docker e o acesso às bibliotecas e ferramentas instaladas no ambiente isolado. Essa abordagem facilita a configuração do ambiente de desenvolvimento e melhora a reprodutibilidade dos experimentos.
 
+Como ferramenta de versionamento, será utilizado o Git, e o projeto será disponibilizado na plataforma GitHub. A utilização de contêineres Docker em conjunto com o controle de versão busca garantir maior reprodutibilidade dos experimentos, padronização do ambiente de execução e rastreabilidade das modificações realizadas ao longo do desenvolvimento da pesquisa.
+
 O planejamento, organização e documentação do projeto serão realizados utilizando o Draw.io, para diagramas e esquemas, além de arquivos em formato Markdown para anotações e documentação técnica.
 
 \subsection{Procedimentos de coleta de dados}
@@ -139,9 +143,13 @@ Serão utilizadas três cenas principais:
 \end{itemize}
 
 % quais algoritmos serão comparados;
-Os algoritmos comparados serão: a implementação padrão de \glspl{bvh}, utilizada como base de comparação, além de \gls{lbvh}, \gls{cbvh}, \gls{clbvh}, \gls{mvh}, \gls{bvh4}, \gls{bvh8}, \gls{bvh16}, \gls{sah} \gls{bvh}, \gls{bsah}, \gls{hlbvh} e \gls{sbvh}.
+Os algoritmos comparados serão: a implementação padrão de \glspl{bvh}, utilizada como base de comparação, além de \gls{lbvh}, \gls{cbvh}, \gls{clbvh}, \gls{mvh}, \gls{bvh4}, \gls{bvh8}, \gls{bvh16}, \gls{sah} \gls{bvh}, \gls{bsah}, \gls{hlbvh} e \gls{sbvh}. As estruturas selecionadas representam diferentes estratégias de construção e travessia de \glspl{bvh} amplamente utilizadas em aplicações de \textit{ray tracing} em tempo real e renderização de alto desempenho.
 
 Como as diferenças estruturais entre os algoritmos são relativamente pequenas, será desenvolvida uma interface comum para abstrair suas implementações. Dessa forma, será possível alternar entre diferentes algoritmos de \gls{bvh} sem modificar o restante do \textit{pipeline} de renderização.
+
+Todos os algoritmos serão avaliados utilizando as mesmas cenas, resolução de renderização, quantidade de raios por pixel, configurações de iluminação e parâmetros de câmera, garantindo que as diferenças observadas estejam relacionadas exclusivamente às estruturas de aceleração utilizadas.
+
+Vale resaltar que os resultados obtidos estarão limitados ao \textit{hardware} e às tecnologias utilizadas, especialmente \glspl{gpu} Nvidia com suporte a \textit{ray tracing} em \textit{hardware} e à \gls{api} Vulkan.
 
 \subsection{Procedimentos de análise de dados}
 
