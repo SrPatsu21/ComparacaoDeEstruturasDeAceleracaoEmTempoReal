@@ -137,7 +137,7 @@ Grande parte do trabalho no \textit{pipeline} gráfico, principalmente a execuç
 
 O \textit{vertex shader} é responsável por decodificar os dados geométricos. Já o \textit{fragment shader} reconstrói o conteúdo da textura ao nível de pixel de saída, por meio da reconstrução do conteúdo da textura via combinação linear \cite{schuster2021compression}.
 
-Durante a rasterização, quando uma primitiva intersecta ou passa à frente de outra, torna-se ambíguo qual delas deve ser visível em cada pixel. O Z-buffer é um algoritmo que resolve a visibilidade ao nível de pixel. O Z-buffer processa os polígonos, atualiza e armazenando os valores de profundidade de cada pixel durante a conversão da varredura. Porem o Z-buffer  não lida bem com superfícies parcialmente transparentes \cite{greene1993hierarchical}.
+Durante a rasterização, quando uma primitiva intersecta ou passa à frente de outra, torna-se ambíguo qual delas deve ser visível em cada pixel. O Z-buffer é um algoritmo que resolve a visibilidade ao nível de pixel. O Z-buffer processa os polígonos, atualiza e armazenando os valores de profundidade de cada pixel durante a conversão da varredura. Porém o Z-buffer  não lida bem com superfícies parcialmente transparentes \cite{greene1993hierarchical}.
 
 \begin{figure}[H]
     \centering
@@ -154,7 +154,7 @@ Os dois principais algoritmos usados em computação gráfica para gerar imagens
 
 Com a rasterização 3D, as principais diferenças entre as abordagens passam a se concentrar em dois pontos. A travessia da cena, como identificar os objetos relevantes para a cena, usando estruturas e organizações das primitivas. A enumeração de amostras potencialmente cobertas no plano da imagem (\textit{binning}), que determina quais pixels ou amostras podem ser influenciados por cada primitiva \cite{davidovivc20123d}.
 
-Rasterização e \textit{ray tracing} sao abordagens distintas. Porem, não são técnicas distintas, são pontos extremos de um mesmo espectro contínuo. Sendo assim, diferentes comportamentos podem ser obtidos por meio da ativação ou desativação de determinados componentes, como geração de amostras, \textit{binning} e testes de oclusão. Permitindo aplicar tanto estratégia de rasterização quanto de \textit{ray tracing} \cite{davidovivc20123d}.
+Rasterização e \textit{ray tracing} sao abordagens distintas. Porém, não são técnicas distintas, são pontos extremos de um mesmo espectro contínuo. Sendo assim, diferentes comportamentos podem ser obtidos por meio da ativação ou desativação de determinados componentes, como geração de amostras, \textit{binning} e testes de oclusão. Permitindo aplicar tanto estratégia de rasterização quanto de \textit{ray tracing} \cite{davidovivc20123d}.
 
 O \textit{pipeline} de renderização híbrida (\textit{hybrid rendering pipeline}) combina técnicas de rasterização, computação paralela e \textit{ray tracing} para produzir imagens em tempo real com qualidade visual próxima à obtida por métodos de \textit{ray tracing offline}. A interação de múltiplas etapas gráficas, a utilização das capacidades únicas de cada etapa e a modularização do processo de renderização permitem alcançar vários aspectos visuais de forma otimizada \cite{barre2019hybrid}.
 
@@ -236,7 +236,7 @@ O \gls{bsah} é uma aproximação do \gls{sah} que reduz o custo de construção
 A \gls{hlbvh} foi proposta por Pantaleoni como uma extensão da \gls{lbvh} tradicional, buscando melhorar a eficiência da construção paralela da hierarquia, mas que reduz substancialmente tanto a quantidade de cálculos quanto o tráfego de memória necessários para construir a \gls{bvh}. O algoritmo introduz três modificações principais. Primeiramente, uma reformulação na etapa de ordenação baseada na Morton \textit{curve-based}, exigida pelo procedimento original, na qual foi empregada uma decomposição hierárquica em grade para explorar a coerência espacial presente na malha de entrada. Em segundo lugar, um novo procedimento de emissão de hierarquia de nós que aprimora a técnica de Lauterbach. Terceiro, um novo algoritmo híbrido que usa a \gls{sah} para construir os níveis \gls{bvh} superiores e usa particionamento rápido baseado na curva de Morton dentro das subárvores do conjunto \cite{pantaleoni2010hlbvh}.
 
 % BVH com Divisões Espaciais (SBVH)
-Ainda uma outra forma de gerar uma arvore com qualidade \gls{sbvh} que usa \gls{bsah} para dividir o espaco. O grande diferencial ocorre no plano de divisao, caso a primitive esteva atravesando o plano escolhido a primitiva é dividida em duas \gls{aabb}, uma para cada lado do plano. As \gls{aabb} geradas dessa divisao sao menores, conseguentemente isso gera um custo menor, porem gerar mais \glspl{aabb} aumenta o uso de memoria \cite{stibora2016building}.
+Ainda uma outra forma de gerar uma árvore com qualidade \gls{sbvh} que usa \gls{bsah} para dividir o espaço. O grande diferencial ocorre no plano de divisão, caso a primitiva esteja atravessando o plano escolhido a primitiva é dividida em duas \gls{aabb}, uma para cada lado do plano. As \gls{aabb} geradas dessa divisão são menores, consequentemente isso gera um custo menor, porém gerar mais \glspl{aabb} aumenta o uso de memória \cite{stibora2016building}.
 
 \begin{figure}[H]
     \centering
@@ -247,9 +247,9 @@ Ainda uma outra forma de gerar uma arvore com qualidade \gls{sbvh} que usa \gls{
 
 \subsection{Métricas de \gls{gpu}}
 
-Para saber o desempenho de cada tipo de \gls{bvh}, é preciso coletar métricas de processamento, memória, uso de núcleos \gls{cuda}, métricas de \gls{gpu} e \gls{cpu} no geral. Para possibilitar uma maior quantidade de métricas. A Nvidia possui duas ferramentas: Nvidia Nsight Compute e Nvidia Nsight Graphics. Essas ferramentas são específicas da arquitetura das \glspl{gpu} Nvidia, mas existem ferramentas equivalentes para outros dispositivos. A \gls{amd} Radeon \gls{gpu} Profiler é específica para \glspl{gpu} \gls{amd}.
+Para saber o desempenho de cada tipo de \gls{bvh}, é preciso coletar métricas de processamento, memória, uso de núcleos \gls{cuda}, métricas de \gls{gpu} e \gls{cpu} no geral. Para possibilitar uma maior quantidade de métricas. A Nvidia possui duas ferramentas: \textit{Nvidia Nsight Compute} e \textit{Nvidia Nsight Graphics}. Essas ferramentas são específicas da arquitetura das \glspl{gpu} Nvidia, mas existem ferramentas equivalentes para outros dispositivos. A \textit{\gls{amd} Radeon \gls{gpu} Profiler} é específica para \glspl{gpu} \gls{amd}.
 
-A Nvidia Nsight Compute é uma interface que fornece métricas de desempenho detalhadas, podendo ser acessada por \gls{ui} ou \gls{cli} \cite{nvidia_developer_nsight_compute}.  A ferramenta inicia a aplicação e insere bibliotecas de medição no processo executado. Essas bibliotecas permitem interceptar a comunicação com o \textit{driver} \gls{cuda} e coletar métricas de desempenho da \gls{gpu} durante a execução dos \textit{kernels}. Os resultados obtidos são então enviados de volta para a interface \cite{nvidia_nsight_compute}.
+A \textit{Nvidia Nsight Compute} é uma interface que fornece métricas de desempenho detalhadas, podendo ser acessada por \gls{ui} ou \gls{cli} \cite{nvidia_developer_nsight_compute}.  A ferramenta inicia a aplicação e insere bibliotecas de medição no processo executado. Essas bibliotecas permitem interceptar a comunicação com o \textit{driver} \gls{cuda} e coletar métricas de desempenho da \gls{gpu} durante a execução dos \textit{kernels}. Os resultados obtidos são então enviados de volta para a interface \cite{nvidia_nsight_compute}.
 
 \begin{figure}[H]
     \centering
@@ -341,9 +341,9 @@ O custo de construção de estruturas de aceleração (\textit{AS (acceleration 
 
 O processador e a memória principal do sistema desempenham papel fundamental, especialmente durante a preparação dos dados utilizados pela \gls{gpu}. A \gls{cpu} é responsável por tarefas como gerenciamento da cena, atualização de transformações, construção ou atualização de estruturas de aceleração e submissão de comandos gráficos e computacionais.
 
-A memória \gls{ram} armazena geometrias, materiais, descritores e demais estruturas auxiliares necessárias para a preparação dos dados antes de sua transferência para a \gls{gpu}. Dessa forma, limitações de processamento da \gls{cpu} ou de capacidade e largura de banda da memória principal podem introduzir gargalos que impactam o desempenho da renderização. Essas métricas podem ser adquiridas por meio de ferramentas de monitoramento do sistema operacional, como \textit{top}, \textit{htop} e interfaces gráficas de monitoramento do Linux, além da leitura direta das interfaces do \textit{kernel}, como \texttt{/proc/stat} e \texttt{/proc/meminfo}.
+A memória \gls{ram} armazena geometrias, materiais, descritores e demais estruturas auxiliares necessárias para a preparação dos dados antes de sua transferência para a \gls{gpu}. Dessa forma, limitações de processamento da \gls{cpu} ou de capacidade e largura de banda da memória principal podem introduzir gargalos que impactam o desempenho da renderização. Essas métricas podem ser adquiridas por meio de ferramentas de monitoramento do sistema operacional, como \textit{top}, \textit{htop} e interfaces gráficas de monitoramento do Linux, além da leitura direta das interfaces do \textit{kernel}, como \texttt{/ proc/ stat} e \texttt{/ proc/ meminfo}.
 
-O consumo energético da \gls{cpu} é uma métrica relevante para análise de desempenho e eficiência computacional, principalmente em aplicações com elevada carga de processamento geométrico e gerenciamento de estruturas espaciais. Essa métrica tem muito mais relevância quando se aplica a sistemas móveis, como notebooks e celulares, que têm o tempo de uso baseado no consumo. Em sistemas Linux, esse consumo pode ser monitorado por meio da interface \gls{rapl}, que disponibiliza estimativas de energia consumida pelos componentes do processador por meio da interface \texttt{/sys/class/powercap/intel-rapl/} \cite{hackenberg2013power} \cite{intel_rapl}.
+O consumo energético da \gls{cpu} é uma métrica relevante para análise de desempenho e eficiência computacional, principalmente em aplicações com elevada carga de processamento geométrico e gerenciamento de estruturas espaciais. Essa métrica tem muito mais relevância quando se aplica a sistemas móveis, como notebooks e celulares, que têm o tempo de uso baseado no consumo. Em sistemas Linux, esse consumo pode ser monitorado por meio da interface \gls{rapl}, que disponibiliza estimativas de energia consumida pelos componentes do processador por meio da interface \texttt{/ sys/ class/ powercap/ intel-rapl/} \cite{hackenberg2013power} \cite{intel_rapl}.
 
 O consumo energético da \gls{gpu} pode ser monitorado utilizando a \gls{nvml}, uma interface de programação disponibilizada pela Nvidia para monitoramento e gerenciamento de dispositivos gráficos. A biblioteca fornece métricas relacionadas à potência instantânea, utilização da \gls{gpu}, frequência de operação e uso de memória, permitindo acompanhar o comportamento energético da \gls{gpu} \cite{nvml_api}\cite{nvml_power_usage}.
 
@@ -360,3 +360,5 @@ O consumo energético da \gls{gpu} pode ser monitorado utilizando a \gls{nvml}, 
 % stb
 % KTX-Software
 % assimp
+
+\section{Trabalhos Correlatos}
