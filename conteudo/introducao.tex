@@ -8,7 +8,7 @@ Diante desse cenário, torna-se relevante investigar como essas diferentes abord
 
 \section{Problema de Pesquisa}
 
-Com o avanço de aplicações em tempo real, como renderização gráfica e simulações interativas, torna-se essencial o uso de estruturas de aceleração eficientes, como as variantes de \gls{bvh}. No entanto, diferentes algoritmos e estratégias de construção e atualização dessas estruturas, como o rebuild completo e o refit incremental, apresentam comportamentos distintos dependendo do tipo de hardware utilizado e das características da cena.
+Com o avanço de aplicações em tempo real, como renderização gráfica e simulações interativas, torna-se essencial o uso de estruturas de aceleração eficientes, como as variantes de \gls{bvh}. No entanto, diferentes algoritmos e estratégias de construção e atualização dessas estruturas, como o \textit{rebuild} completo e o \textit{refit} incremental, apresentam comportamentos distintos dependendo do tipo de hardware utilizado e das características da cena.
 
 Diante disso, surge o seguinte problema de pesquisa: qual abordagem de construção e atualização de \gls{bvh} apresenta melhor desempenho em simulações de tempo real, considerando diferentes cenários de hardware dedicado e cenas dinâmicas?
 
@@ -23,8 +23,8 @@ Analisar e comparar diferentes estruturas de aceleração baseadas em \gls{bvh},
 \begin{itemize}
     \item Analisar as vantagens e desvantagens de diferentes estruturas \gls{bvh} em simulações de tempo real;
     \item Avaliar a relevância das estruturas de aceleração em cenários com hardware dedicado;
-    \item Investigar abordagens de construção de \gls{bvh}, incluindo rebuild completo e refit incremental, em cenas dinâmicas e semi-dinâmicas;
-    \item Avaliar as vantagens de desvantagens relacionadas a:
+    \item Investigar abordagens de construção de \gls{bvh}, incluindo \textit{rebuild} completo e \textit{refit} incremental, em cenas dinâmicas e semi-dinâmicas;
+    \item Comparar diferentes estruturas \gls{bvh} considerando aspectos:
     \begin{itemize}
         \item latência por frame;
         \item uso de memória;
@@ -35,8 +35,8 @@ Analisar e comparar diferentes estruturas de aceleração baseadas em \gls{bvh},
 
 \section{Justificativa}
 
-A utilização de estruturas de aceleração, como \gls{bvh}, é fundamental para viabilizar aplicações de alto desempenho em computação gráfica, especialmente em contextos de tempo real. Com a crescente adoção de hardware dedicado, como GPUs modernas e unidades específicas para ray tracing, torna-se necessário compreender como diferentes estratégias de construção e atualização dessas estruturas impactam o desempenho geral do sistema.
+A utilização de estruturas de aceleração, como \gls{bvh}, é fundamental para viabilizar aplicações de alto desempenho em computação gráfica, especialmente em contextos de tempo real. Com a crescente adoção de hardware dedicado, como GPUs modernas e unidades específicas para \textit{ray tracing}, torna-se necessário compreender como diferentes estratégias de construção e atualização dessas estruturas impactam o desempenho geral do sistema.
 
-Além disso, abordagens como rebuild completo e refit incremental apresentam vantagens de desvantagens relevantes, que podem influenciar diretamente a eficiência da aplicação dependendo do cenário de uso. A análise desses fatores é importante não apenas do ponto de vista teórico, mas também prático, contribuindo para a escolha de técnicas mais adequadas em aplicações reais.
+Além disso, abordagens como \textit{rebuild} completo e \textit{refit} incremental apresentam características distintas, que podem influenciar diretamente a eficiência da aplicação dependendo do cenário de uso. A análise desses fatores é importante não apenas do ponto de vista teórico, mas também prático, contribuindo para a escolha de técnicas mais adequadas em aplicações reais.
 
 Dessa forma, este trabalho se justifica pela necessidade de avaliar e comparar essas abordagens, considerando múltiplas métricas de desempenho, a fim de fornecer subsídios para o desenvolvimento de sistemas mais eficientes em ambientes de tempo real.
