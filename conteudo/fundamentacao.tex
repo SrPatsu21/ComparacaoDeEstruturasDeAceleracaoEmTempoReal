@@ -6,14 +6,15 @@
 
 No início, a aparência dos gráficos baseados em \gls{gpu} era um tanto monótona e padronizada devido à falta de programabilidade, mas agora a maioria dos estágios do \textit{pipeline} gráfico é programável. Infelizmente, observou-se  que o aumento na programabilidade atingiu um limite, e mais liberdade exigiria a capacidade de alterar a própria estrutura do \textit{pipeline}. Isso, por sua vez, está firmemente enraizado no \textit{hardware} gráfico específico da \gls{gpu} e não é facilmente modificado \cite{laine2011high}.
 
-Uma grande parte do trabalho no \textit{pipeline} gráfico, principalmente a execução de \textit{shaders} de \textit{vertex} (vértice) e \textit{fragment} (fragmento), mas também outros estágios programáveis, são realizados pelos núcleos de \textit{shader} programáveis. Entre esses processos destacam-se \textit{marshaling}(organização de dados)) e \textit{scheduling}(agendamento de operações) de dados. Esses processos incluem gerenciamento de filas FIFO, controle de \textit{buffer} de quadro na memória da \gls{gpu}, busca de dados de entrada do \textit{shader} na memória local antes da execução do \textit{shader}, acionamento de execuções de \textit{shader}, execução de operações de rasterização. Realiza cálculos mais triviais, como a construção de equações de borda e plano, rasterização e \textit{clipping} \cite{laine2011high}.
-% acronimo para FIFO?
+Uma grande parte do trabalho no \textit{pipeline} gráfico, principalmente a execução de \textit{shaders} de \textit{vertex} (vértice) e \textit{fragment} (fragmento), mas também outros estágios programáveis, são realizados pelos núcleos de \textit{shader} programáveis. Entre esses processos destacam-se \textit{marshaling} (organização de dados) e \textit{scheduling} (agendamento de operações) de dados. Esses processos incluem gerenciamento de filas FIFO, controle de \textit{buffer} de quadro na memória da \gls{gpu}, busca de dados de entrada do \textit{shader} na memória local antes da execução do \textit{shader}, acionamento de execuções de \textit{shader}, execução de operações de rasterização. Além dessas tarefas, os núcleos também realiza cálculos mais triviais, como a construção de equações de borda e plano, rasterização e \textit{clipping} \cite{laine2011high}.
 
 A Nvidia introduziu o \gls{cuda} em 2007. Por meio do \gls{cuda}, os núcleos programáveis (\textit{shader cores}) passaram a ser acessíveis para aplicações de propósito geral \cite{laine2011high}. Tal abordagem possibilita a implementação de algoritmos fora do \textit{pipeline} gráfico tradicional, ampliando a flexibilidade no desenvolvimento.
 
-A plataforma \gls{cuda} apresenta limitações de compatibilidade entre plataformas \cite{song2024parallel}. A \gls{amd} criou o \gls{hip}, que permite aos desenvolvedores migrarem o código \gls{cuda} existente para plataformas \gls{amd} \cite{amd_hip_docs}. Como alternativa mais multiplataforma que suporta \glspl{cpu} e outros dispositivos, OpenCL é usado como plataforma de computação paralela \cite{song2024parallel}.
+A plataforma \gls{cuda} apresenta limitações de compatibilidade entre plataformas \cite{song2024parallel}. A fim de ampliar a portabilidade do código a \gls{amd} criou o \gls{hip}, que permite aos desenvolvedores migrarem o código \gls{cuda} existente para plataformas \gls{amd} \cite{amd_hip_docs}. Para cenários que exigem maior independência de fornecedor e suporte a diferentes arquiteturas de hardware, o OpenCL surge como uma alternativa multiplataforma para computação paralela, abrangendo \glspl{cpu}, \glspl{gpu} e outros dispositivos \cite{song2024parallel}.
 
-As placas gráficas começaram a oferecer cada vez mais funcionalidades e algumas causam incopatibilidade no codigo. Como por exemplo sintaxe para \textit{shaders}, inconsistência entre fornecedores e \glspl{gpu} móveis que possuem arquitetura baseada em seus requisitos de energia e espaço. O Vulkan resolve esses problemas de compatibilidade por ser projetado para arquiteturas gráficas modernas. Vulkan reduz a sobrecarga de lidar com diversos drivers, permitindo que programadores especifiquem suas intenções por meio de uma \gls{api} \cite{vulkan_tutorial}. Diferentemente das outras plataformas, OpenCL, voltadas à computação de propósito geral, o Vulkan é mais direcionado ao desenvolvimento de aplicações gráficas, como renderização.
+
+As placas gráficas começaram a oferecer cada vez mais funcionalidades e algumas causam incopatibilidade no codigo. Como por exemplo, sintaxe para \textit{shaders}, que geram inconsistência entre fornecedores e \glspl{gpu} móveis que possuem arquitetura baseada em seus requisitos de energia e espaço. O Vulkan \footnote{Vulkan é uma API gráfica e de computação multiplataforma mantida pelo Khronos Group, projetada para oferecer acesso de baixo nível ao hardware gráfico moderno.}resolve esses problemas de compatibilidade por ser projetado para arquiteturas gráficas modernas. Vulkan reduz a sobrecarga de lidar com diversos \textit{drivers}, permitindo que programadores especifiquem suas intenções por meio de uma \gls{api} \cite{vulkan_tutorial}. Diferentemente das outras plataformas, OpenCL, voltadas à computação de propósito geral, o Vulkan é mais direcionado ao desenvolvimento de aplicações gráficas, como renderização.
+
 
 \subsection{Arquitetura \glspl{gpu} Nvidia}
 
@@ -33,9 +34,9 @@ Um \textit{warp} executa uma instrução por vez; essa instrução é comum para
 
 \subsection{Primitivas}
 
-Em um sistema de modelagem hierárquica, objetos complexos são construídos a partir da junção de elementos mais básicos organizados em diferentes níveis. Para isso, são necessários elementos que não dependam de outros elementos para serem descritos. Em sistemas hierárquicos, chamamos esses elementos de nível mais baixo de \textit{primitives} (primitivas) \cite{wyvill1995practical}.
+Em um sistema de modelagem hierárquica, objetos complexos são construídos a partir da junção de elementos mais básicos organizados em diferentes níveis. Para isso, são necessários elementos que não dependam de outros elementos para serem descritos. Em sistemas hierárquicos, chamamos esses elementos de nível mais baixo de primitivas \cite{wyvill1995practical}.
 
-No \textit{ray tracing}, as primitivas podem ser: polígonos, objetos geométricos como a esfera ou objetos mais complexos como patches paramétricos \cite{wyvill1995practical}. Na rasterização, é possível usar figuras mais complexas, porém o Vulkan usa apenas pontos, linhas e triângulos, pois são as mais otimizadas. Em especial, os triângulos são amplamente utilizados uma vez que permitem a aproximação de superfícies arbitrárias e complexas \cite{vulkan_docs}.
+No \textit{ray tracing}, as primitivas podem ser: polígonos, objetos geométricos como a esfera ou objetos mais complexos como \textit{patches} paramétricos \cite{wyvill1995practical}. Na rasterização, é possível usar figuras mais complexas, porém o Vulkan usa apenas pontos, linhas e triângulos, pois são as mais otimizadas. Em especial, os triângulos são amplamente utilizados uma vez que permitem a aproximação de superfícies arbitrárias e complexas \cite{vulkan_docs}.
 
 \subsection{Efeitos físicos da luz}
 
@@ -53,7 +54,7 @@ A oclusão ocorre quando um objeto bloqueia parcial ou totalmente a propagação
 
 \subsection{\textit{Ray tracing}}
 
-\textit{ray tracing} é uma técnica de renderização gráfica 3D baseada na simulação da propagação da luz real em um cenário virtual tridimensional. O termo pode ser utilizado tanto para se referir a um algoritmo específico, quanto para uma classe de algoritmos que lançam raios através de uma cena. Comparado com a maioria dos outros algoritmos de renderização, o \textit{ray tracing} proporciona um efeito de luz e sombra mais realista. O primeiro algoritmo de \textit{ray tracing} foi proposto por Appel em 1968. Appel criou o \textit{ray casting} \cite{wang2022development}.
+\textit{Ray tracing} é uma técnica de renderização gráfica 3D baseada na simulação da propagação da luz real em um cenário virtual tridimensional. O termo pode ser utilizado tanto para se referir a um algoritmo específico, quanto para uma classe de algoritmos que lançam raios através de uma cena. Comparado com a maioria dos outros algoritmos de renderização, o \textit{ray tracing} proporciona um efeito de luz e sombra mais realista. Um dos trabalhos pioneiros nessa área foi o algoritmo de \textit{ray casting}, proposto por Appel em 1968, que serviu como base para o desenvolvimento das técnicas modernas de \textit{ray tracing} \cite{wang2022development}.
 
 O \textit{ray casting} renderiza a cena emitindo um raio primário do ponto de observação ou câmera para cada pixel, encontrando o objeto mais próximo que bloqueia o caminho do raio. Raios adicionais, como raios de sombra, podem ser utilizados para verificar a visibilidade da luz a partir do ponto de interseção \cite{wang2022development}.
 
@@ -82,7 +83,7 @@ Em que:
     \item $SI$ é vetor da origem até o ponto de interseção.
 \end{itemize}
 
-O Whitted \textit{ray casting}, uma evolução do \textit{ray casting}, foi desenvolvido por Turner Whitted em 1979. Esse algoritmo usa quatro tipos de raios diferentes. O raio da câmera é similar ao \textit{ray casting}. O segundo raio de reflexão simula superfícies refletoras e semirrefletoras. O terceiro raio de refração pode incidir no objeto a partir de um ângulo. O quarto raio de sombra projeta sombra gerada pela fonte de luz e pelo objeto. A superfície nem sempre é perfeitamente refletora, seria necessário modelar um componente difuso, mas modelos de iluminação difusa mais realistas implicam maior custo computacional \cite{wang2022development}.
+O \textit{Whitted ray casting}, uma evolução do \textit{ray casting}, foi desenvolvido por Turner Whitted em 1979. Esse algoritmo usa quatro tipos de raios diferentes. O raio da câmera é similar ao \textit{ray casting}. O segundo raio de reflexão simula superfícies refletoras e semirrefletoras. O terceiro raio de refração pode incidir no objeto a partir de um ângulo. O quarto raio de sombra projeta sombra gerada pela fonte de luz e pelo objeto. A superfície nem sempre é perfeitamente refletora, seria necessário modelar um componente difuso, mas modelos de iluminação difusa mais realistas implicam maior custo computacional \cite{wang2022development}.
 
 \begin{figure}[H]
     \centering
@@ -247,7 +248,7 @@ Ainda uma outra forma de gerar uma arvore com qualidade \gls{sbvh} que usa \gls{
 
 Para saber o desempenho de cada tipo de \gls{bvh}, é preciso coletar métricas de processamento, memória, uso de núcleos \gls{cuda}, métricas de \gls{gpu} e \gls{cpu} no geral. Para possibilitar uma maior quantidade de métricas. A Nvidia possui duas ferramentas: Nvidia Nsight Compute e Nvidia Nsight Graphics. Essas ferramentas são específicas da arquitetura das \glspl{gpu} Nvidia, mas existem ferramentas equivalentes para outros dispositivos. A \gls{amd} Radeon \gls{gpu} Profiler é específica para \glspl{gpu} \gls{amd}.
 
-A Nvidia Nsight Compute é uma interface que fornece métricas de desempenho detalhadas, podendo ser acessada por \gls{ui} ou \gls{cli} \cite{nvidia_developer_nsight_compute}.  A ferramenta inicia a aplicação e insere bibliotecas de medição no processo executado. Essas bibliotecas permitem interceptar a comunicação com o driver \gls{cuda} e coletar métricas de desempenho da \gls{gpu} durante a execução dos \textit{kernels}. Os resultados obtidos são então enviados de volta para a interface \cite{nvidia_nsight_compute}.
+A Nvidia Nsight Compute é uma interface que fornece métricas de desempenho detalhadas, podendo ser acessada por \gls{ui} ou \gls{cli} \cite{nvidia_developer_nsight_compute}.  A ferramenta inicia a aplicação e insere bibliotecas de medição no processo executado. Essas bibliotecas permitem interceptar a comunicação com o \textit{driver} \gls{cuda} e coletar métricas de desempenho da \gls{gpu} durante a execução dos \textit{kernels}. Os resultados obtidos são então enviados de volta para a interface \cite{nvidia_nsight_compute}.
 
 \begin{figure}[H]
     \centering
@@ -256,7 +257,7 @@ A Nvidia Nsight Compute é uma interface que fornece métricas de desempenho det
     \label{fig:nvidia_nsight_compute}
 \end{figure}
 
-O \textit{Nsight Compute} permite extrair informações ao nível de driver da \gls{gpu}, disponibilizando métricas detalhadas para análise de desempenho de \textit{kernels} \gls{cuda} \cite{nvidia_nsight_compute}.
+O \textit{Nsight Compute} permite extrair informações ao nível de \textit{driver} da \gls{gpu}, disponibilizando métricas detalhadas para análise de desempenho de \textit{kernels} \gls{cuda} \cite{nvidia_nsight_compute}.
 
 \begin{itemize}
 
