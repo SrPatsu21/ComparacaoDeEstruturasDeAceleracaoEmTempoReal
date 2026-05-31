@@ -88,7 +88,7 @@ O \textit{Whitted ray casting}, uma evolução do \textit{ray casting}, foi dese
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.7\textwidth]{images/ExemploWhittedRayCasting.png}
-    \caption{Exemplo do funcionamento do Whitted \textit{ray casting}. Fonte: \cite{wang2022development}}
+    \caption{Exemplo do funcionamento do \textit{Whitted ray casting}. Fonte: \cite{wang2022development}}
     \label{fig:exemplo_whitted_ray_casting}
 \end{figure}
 
@@ -97,7 +97,7 @@ Apesar de os dois algoritmos citados gerarem sombras, as sombras produzidas são
 Uma forma de produzir sombras suaves em \textit{ray tracing} consiste em realizar múltiplas amostragens da fonte de luz. Nesse método, vários raios de sombra são lançados em direção a diferentes pontos da luz com área (\textit{area light}). Para cada raio, verifica-se se existe algum objeto bloqueando o caminho entre o ponto da superfície e a fonte luminosa. A intensidade final da sombra é calculada pela proporção entre raios bloqueados e não bloqueados \cite{goesele2012fast}.
 
 % Importance Sampling (GGX)
-O Whitted \textit{ray casting} consegue simular reflexões em superfícies refletoras e semirrefletoras. Entretanto, quando poucas amostras são utilizadas, a imagem pode apresentar ruídos e perda de qualidade visual. Para reduzir esse problema, pode-se utilizar a técnica de \textit{Importance Sampling}, que concentra as amostras nas direções que mais contribuem para a iluminação da cena \cite{dupuy2023sampling}.
+O \textit{Whitted ray casting} consegue simular reflexões em superfícies refletoras e semirrefletoras. Entretanto, quando poucas amostras são utilizadas, a imagem pode apresentar ruídos e perda de qualidade visual. Para reduzir esse problema, pode-se utilizar a técnica de \textit{Importance Sampling}, que concentra as amostras nas direções que mais contribuem para a iluminação da cena \cite{dupuy2023sampling}.
 
 Uma das distribuições mais utilizadas para esse processo é a \gls{ggx}, um modelo de microfacetos empregado para representar reflexos especulares de maneira mais realista. Nesse modelo, a superfície é composta por pequenos microfacetos que refletem a luz em diferentes direções. O \textit{Importance Sampling} baseado em GGX direciona mais raios para as direções de maior contribuição especular, reduzindo ruídos e melhorando a qualidade dos reflexos com menor custo computacional \cite{dupuy2023sampling}.
 
@@ -105,7 +105,7 @@ Uma das distribuições mais utilizadas para esse processo é a \gls{ggx}, um mo
 
 \subsection{Rasterização}
 
-A rasterização é uma técnica básica de renderização. Uma tarefa de renderização complexa pode ser dividida em diferentes subtarefas associadas a diferentes objetos. Em seguida, cada objeto é dividido em polígonos projetados na tela. Finalmente, cada pixel coberto pelos polígonos é renderizado \cite{wang2022development}. A rasterização era inicialmente feita por \textit{software} em \gls{cpu}, isso é praticamente coisa do passado, pois o \textit{hardware} gráfico dedicado \gls{gpu} oferece desempenho muito superior e virou o padrão para simulação em tempo real \cite{laine2011high}.
+A rasterização é uma técnica básica de renderização. Uma tarefa de renderização complexa pode ser dividida em diferentes subtarefas associadas a diferentes objetos. Em seguida, cada objeto é dividido em polígonos projetados na tela. Finalmente, cada pixel coberto pelos polígonos é renderizado \cite{wang2022development}. A rasterização era inicialmente realizada por \textit{software} em \glspl{cpu}. Entretanto, o avanço do hardware gráfico dedicado levou à ampla adoção das \glspl{gpu} para essa tarefa, devido ao seu desempenho significativamente superior, tornando-se a abordagem predominante em aplicações de renderização em tempo real \cite{laine2011high}.
 
 O \textit{pipeline} de rasterização opera em triângulos projetados e recortados em 2D. O coração do algoritmo de rasterização, \textit{coverage computation} (cálculo de cobertura), determina para todos os pixels (e possivelmente várias subamostras em cada pixel), se eles estão cobertos por um determinado triângulo \cite{davidovivc20123d}.
 
@@ -122,13 +122,13 @@ O \textit{clipping} (recorte) à esquerda e à direita pode ser tratado como are
     \label{fig:ClippingATriangle}
 \end{figure}
 
-Interpolação, qualquer função linear, u, em um triângulo em 3D, por exemplo, \textit{cores} ou coordenadas de textura, obedece a u = aX + bY + cZ + d, sendo (X,Y, Z)T um ponto em 3D, e os parâmetros a, b e c podem ser determinados a partir de qualquer conjunto de valores definidos nos vértices. Assumindo o espaço canônico do olho, onde o centro de projeção é a origem, a direção da visão é o eixo z e o campo de visão é de 90 graus, dividir esta equação por Z resulta no conhecido esquema de interpolação correto para perspectiva 2D \cite{davidovivc20123d}.
+Na interpolação de atributos sobre um triângulo em 3D, qualquer função linear (u), como cores ou coordenadas de textura, pode ser descrita pela equação (u = aX + bY + cZ + d), em que ((X, Y, Z)T) representa um ponto no espaço tridimensional. Os parâmetros (a), (b) e (c) são determinados a partir dos valores associados aos vértices do triângulo. Assumindo o espaço canônico do olho, onde o centro de projeção está na origem, a direção de visualização coincide com o eixo (z) e o campo de visão é de 90 graus, a divisão dessa equação por (Z) resulta no conhecido esquema de interpolação correta em perspectiva 2D \cite{davidovivc20123d}.
 
-Testar se uma amostra de pixel é coberta por um triângulo 2D é equivalente a testar se um raio. Um Raio partindo do ponto de vista e passando por esse pixel, intersecta o triângulo. Como exemplo: e é a localização do ponto de vista e o raio passa por d = d0 + xdx + ydy, para coordenadas de pixel (x, y), enquanto p0, p1, p2 são os vértices do triângulo. Podemos formular funções de aresta lineares 3D usando o método de volume com sinal, conhecido como teste de interseção raio-triângulo de Plücker. Na prática, usamos n2 = (p1 - e) x (p0 - p1), que é numericamente mais estável para triângulos pequenos. Definindo a função de aresta 3D correspondente como V2(d) = n2 · d, que é equivalente a calcular o sinal escalonado \cite{davidovivc20123d}.
+Testar se uma amostra de pixel é coberta por um triângulo 2D é equivalente a testar se um raio. Um raio partindo do ponto de vista e passando por esse pixel, intersecta o triângulo. Como exemplo: (e) é a localização do ponto de vista e o raio passa por (d = d0 + xdx + ydy), para coordenadas de pixel (x, y), enquanto (p0, p1, p2) são os vértices do triângulo. Podemos formular funções de aresta lineares 3D usando o método de volume com sinal, conhecido como teste de interseção raio-triângulo de Plücker. Na prática, usamos (n2 = (p1 - e) x (p0 - p1)), que é numericamente mais estável para triângulos pequenos. Definindo a função de aresta 3D correspondente como (V2(d) = n2 · d), que é equivalente a calcular o sinal escalonado \cite{davidovivc20123d}.
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.7\textwidth]{images/3DEdgeFunction.png}
+    \includegraphics[width=0.7\textwidth]{images/3DEdgeFunctionAlt.png}
     \caption{Funções de aresta 3D para um triângulo. \cite{davidovivc20123d}}
     \label{fig:3DEdgeFunction}
 \end{figure}
@@ -137,7 +137,7 @@ Grande parte do trabalho no \textit{pipeline} gráfico, principalmente a execuç
 
 O \textit{vertex shader} é responsável por decodificar os dados geométricos. Já o \textit{fragment shader} reconstrói o conteúdo da textura ao nível de pixel de saída, por meio da reconstrução do conteúdo da textura via combinação linear \cite{schuster2021compression}.
 
-Durante a rasterização, quando uma primitiva intersecta ou passa à frente de outra, torna-se ambíguo qual delas deve ser visível em cada pixel. O Z-buffer é um algoritmo que resolve a visibilidade ao nível de pixel. O Z-buffer Processa os polígonos, atualiza e armazenando os valores de profundidade de cada pixel durante a conversão da varredura. Não lidam bem com superfícies parcialmente transparentes \cite{greene1993hierarchical}.
+Durante a rasterização, quando uma primitiva intersecta ou passa à frente de outra, torna-se ambíguo qual delas deve ser visível em cada pixel. O Z-buffer é um algoritmo que resolve a visibilidade ao nível de pixel. O Z-buffer processa os polígonos, atualiza e armazenando os valores de profundidade de cada pixel durante a conversão da varredura. Porem o Z-buffer  não lida bem com superfícies parcialmente transparentes \cite{greene1993hierarchical}.
 
 \begin{figure}[H]
     \centering
@@ -146,7 +146,7 @@ Durante a rasterização, quando uma primitiva intersecta ou passa à frente de 
     \label{fig:ZBufferCase}
 \end{figure}
 
-A rasterização se tornou a abordagem dominante para aplicações interativas devido aos seus baixos requisitos computacionais iniciais (não requer calculo de ponto flutuante no espaço de imagem 2D), à sua capacidade de ser implementada em \textit{hardware} e ao desempenho cada vez maior de placas gráficas dedicadas. No entanto, o tratamento de efeitos globais não é nativo e depende de aproximações, como reflexos e sombras \cite{davidovivc20123d}.
+A rasterização se tornou a abordagem dominante para aplicações interativas devido aos seus baixos requisitos computacionais iniciais (não requer cálculo de ponto flutuante no espaço de imagem 2D), à sua capacidade de ser implementada em \textit{hardware} e ao desempenho cada vez maior de placas gráficas dedicadas. No entanto, o tratamento de efeitos globais não é nativo e depende de aproximações, como reflexos e sombras \cite{davidovivc20123d}.
 
 \subsection{Abordagem hibrida}
 
@@ -156,10 +156,9 @@ Com a rasterização 3D, as principais diferenças entre as abordagens passam a 
 
 Rasterização e \textit{ray tracing} sao abordagens distintas. Porem, não são técnicas distintas, são pontos extremos de um mesmo espectro contínuo. Sendo assim, diferentes comportamentos podem ser obtidos por meio da ativação ou desativação de determinados componentes, como geração de amostras, \textit{binning} e testes de oclusão. Permitindo aplicar tanto estratégia de rasterização quanto de \textit{ray tracing} \cite{davidovivc20123d}.
 
-% ray tracing offline tem q ver isso ai
-\textit{Pipeline} de renderização híbrida (\textit{Hybrid rendering pipeline}) no qual a rasterização, computação e \textit{ray tracing} trabalham juntos para possibilitar visuais em tempo real com qualidade próxima à do \textit{ray tracing offline}. A interação de múltiplas etapas gráficas, a utilização das capacidades únicas de cada etapa e a modularização do processo de renderização permitem alcançar vários aspectos visuais de forma otimizada \cite{barre2019hybrid}.
+O \textit{pipeline} de renderização híbrida (\textit{hybrid rendering pipeline}) combina técnicas de rasterização, computação paralela e \textit{ray tracing} para produzir imagens em tempo real com qualidade visual próxima à obtida por métodos de \textit{ray tracing offline}. A interação de múltiplas etapas gráficas, a utilização das capacidades únicas de cada etapa e a modularização do processo de renderização permitem alcançar vários aspectos visuais de forma otimizada \cite{barre2019hybrid}.
 
-O PICA PICA é um otimo exemplo. PICA PICA é um experimento de traçado de raios em tempo real com agentes de autoaprendizagem em um mundo gerado proceduralmente. O sistema adota um \textit{pipeline} de renderização híbrida que combina rasterização, \textit{shaders} de computação e técnicas de \textit{ray tracing} para compor a imagem final. A arquitetura do \textit{pipeline} é organizada em múltiplas etapas, cada uma responsável por um aspecto específico da renderização, utiliza uma abordagem modular para maximizar eficiência e qualidade visual \cite{barre2019hybrid}.
+O PICA PICA é um experimento de traçado de raios em tempo real com agentes de autoaprendizagem em um mundo gerado proceduralmente. O sistema adota um \textit{pipeline} de renderização híbrida que combina rasterização, \textit{shaders} de computação e técnicas de \textit{ray tracing} para compor a imagem final. A arquitetura do \textit{pipeline} é organizada em múltiplas etapas, cada uma responsável por um aspecto específico da renderização, utiliza uma abordagem modular para maximizar eficiência e qualidade visual \cite{barre2019hybrid}.
 
 Para gerar imagens de alta qualidade, seria necessário gerar milhares de amostras por pixel. Mesmo com uma \gls{bvh} otimizada, algoritmos eficientes de busca e \glspl{gpu} rápidas, isso não é possível em tempo real atualmente, exceto para as cenas mais simples. As imagens que podem ser geradas com as restrições de desempenho atuais possuem muito ruído. Porém, elas podem ser tratadas com algoritmos de redução de ruído (\textit{denoising}), podendo gerar imagens com apenas um raio por pixel com qualidade próxima a um \textit{ray tracing offline} \cite{akenine2019real}.
 
@@ -171,13 +170,15 @@ Para gerar imagens de alta qualidade, seria necessário gerar milhares de amostr
 \end{figure}
 
 
-O \textit{pipeline} do PICA PICA se inicia com o \textit{object-space rendering} (renderização no espaço de objetos), trata as estruturas geométricas e coordenadas de textura. Faz o cálculo de transparência e translucidez para raios. Depois, com \textit{global illumination}, calcula oclusão (esse processo é limitado a um número máximo de testes por quadro) \cite{barre2019hybrid}. G-buffer, uma abreviação de \textit{geometric buffers} (\textit{buffers} geométricos), refere-se a \textit{buffers} usados para armazenar propriedades de superfície. Cada G-buffer é um alvo de renderização separado. Esse alvo pode ser  mapa de profundidade, \textit{buffer} normal, \textit{buffer} de rugosidade, oclusão, cor da textura (albedo), intensidade da luz, intensidade especular e imagem quase final \cite{akenine2019real}.
+O \textit{pipeline} do PICA PICA se inicia com o \textit{object-space rendering} (renderização no espaço de objetos), trata as estruturas geométricas e coordenadas de textura, faz o cálculo de transparência e translucidez para raios. Depois, com \textit{global illumination}, calcula oclusão (esse processo é limitado a um número máximo de testes por quadro) \cite{barre2019hybrid}.
 
-Usando dados do G-buffer, gera sombras a partir da fonte de luz e remove possíveis ruídos. Pega pontos de partida do G-buffer para lançar raios de reflexão. Calcula a luz direta que vem de uma fonte até o material. Por fim, pós-processamento que adiciona efeitos como \textit{anti-aliasing} (suavização de serrilhado) e desfoque de movimento \cite{barre2019hybrid}.
+G-buffer, uma abreviação de \textit{geometric buffers} (\textit{buffers} geométricos), refere-se a \textit{buffers} usados para armazenar propriedades de superfície. Cada G-buffer é um alvo de renderização separado. Esse alvo pode ser  mapa de profundidade, \textit{buffer} normal, \textit{buffer} de rugosidade, oclusão, cor da textura (albedo), intensidade da luz, intensidade especular e imagem quase final \cite{akenine2019real}.
+
+A partir das informações armazenadas nos G-buffers, o \textit{pipeline} cálcula sombras geradas pelas fonte de luz e remove possíveis ruídos. O \textit{pipeline} usa os dados geométricos e de material para determinar os pontos de origem dos raios de reflexão. Em seguida, é computada a iluminação direta proveniente das fontes de luz e sua interação com os materiais dos objetos. Por fim, a imagem resultante passa por etapas de pós-processamento, nas quais são aplicados efeitos como \textit{anti-aliasing} (suavização de serrilhado) e desfoque de movimento (\textit{motion blur}) \cite{barre2019hybrid}.
 
 \subsection{Estruturas de aceleração}
 
-O \textit{ray tracing} vem se tornando cada vez mais importante para aplicações em tempo real. No entanto, exige alto poder computacional e depende de estruturas de dados pré-processadas para alcançar um desempenho em tempo real. Dentre os métodos para melhorar a eficiência do traçado de raios, as estruturas de dados hierárquicas são extremamente importantes e populares \cite{stich2009spatial}.
+O \textit{ray tracing} vem se tornando cada vez mais importante para aplicações em tempo real. No entanto, exige alto poder computacional e depende de estruturas de dados pré-processadas para alcançar um desempenho em tempo real. Dentre os métodos para melhorar a eficiência do \textit{ray tracing}, as estruturas de dados hierárquicas são extremamente importantes e populares \cite{stich2009spatial}.
 
 Representações hierárquicas de objetos tridimensionais são eficientes tanto em tempo quanto em uso de memória. Essas representações tipicamente consistem em árvores cujos ramos representam volumes delimitadores \cite{rubin19803}. A ideia por trás de uma \gls{bvh} é subdividir as primitivas de uma cena em conjuntos possivelmente sobrepostos. Para cada um desses conjuntos, um \gls{bv} (volume delimitador) é calculado e estes são organizados em uma estrutura de árvore. Os limites de cada nó nesta árvore são escolhidos de forma que ele delimite exatamente todos os nós na subárvore correspondente e cada nó folha delimite exatamente as primitivas contidas \cite{bauszat2010minimal}.
 
@@ -188,7 +189,7 @@ Representações hierárquicas de objetos tridimensionais são eficientes tanto 
     \label{fig:bvh_example}
 \end{figure}
 
-Para encontrar a interseção mais próxima. A travessia de um raio inicia-se no nó raiz e é realizada de forma \textit{top-down} (de cima para baixo). Geralmente, utilizando uma pilha para armazenar nós internos que podem conter a interseção mais próxima. A cada iteração, o nó do topo é removido e o raio é testado contra seu \gls{bv}. Caso haja interseção, seus nós filhos são adicionados à pilha, no caso de nós internos, ou as primitivas são testadas diretamente, no caso de nós folha. Testando as primitivas, armazenamos a distância até a interseção mais próxima encontrada até o momento. Usando essa distância, podemos ignorar os nós que estão mais distantes do que a interseção encontrada anteriormente. A travessia continua até que a pilha esteja vazia. Para um teste de oclusão, quando queremos saber apenas se o ponto está visível ou ocluído, podemos, portanto, usar um \textit{early exit} (saída antecipada) após encontrar a primeira interseção \cite{meister2021survey}.
+Para encontrar a interseção mais próxima, a travessia de um raio inicia-se no nó raiz e é realizada de forma \textit{top-down} (de cima para baixo). Geralmente, utilizando uma pilha para armazenar nós internos que podem conter a interseção mais próxima. A cada iteração, o nó do topo é removido e o raio é testado contra seu \gls{bv}. Caso haja interseção, seus nós filhos são adicionados à pilha, no caso de nós internos, ou as primitivas são testadas diretamente, no caso de nós folha. Testando as primitivas, a distância até a interseção mais próxima encontrada até o momento é armazenada. Essa distância permite ignorar os nós que estão mais distantes do que a interseção encontrada anteriormente. A travessia continua até que a pilha esteja vazia. Para um teste de oclusão, quando apenas precisa testar se o ponto está visível ou ocluído, é possivel usar um \textit{early exit} (saída antecipada) após encontrar a primeira interseção \cite{meister2021survey}.
 
 \begin{figure}[H]
     \centering
@@ -218,7 +219,7 @@ O código de Morton é gerado a partir das coordenadas espaciais das primitivas.
 % Compressed BVH
 Uma maneira de reduzir a sobrecarga de memória é comprimir a estrutura de dados de aceleração. A compressão funciona particularmente bem para \glspl{bvh}, reduzindo \textit{memory footprint} e o uso de banda. Porém, essa compressão adiciona um custo de descompressão durante a travessia, o que deve resultar em uma diminuição de desempenho. Em cenas grandes, quando a memória dedicada da \gls{gpu} não é suficiente, essa perda de desempenho é compensada pela possibilidade de manter toda a \gls{bvh} na memória principal e por um melhor uso do \textit{cache} \cite{benthin2018compressed}.
 
-Existem várias versões de compressão: \gls{cbvh} comprime a árvore por completo; \gls{clbvh} comprime apenas as folhas da árvore, tendo uma travessia mais rápida; \gls{mvh} usa a \textit{bounding box} do pai para construir a os filhos, consegue trabalhar com apenas 2 bytes, guardando nos filhos e folhas em uma pilha de dados \cite{bauszat2010minimal} \cite{benthin2018compressed}.
+Existem várias versões de compressão: \gls{cbvh} comprime a árvore por completo; \gls{clbvh} comprime apenas as folhas da árvore, tendo uma travessia mais rápida; \gls{mvh} usa a \textit{bounding box} do pai para construir os filhos, conseguindo trabalhar com apenas 2 bytes, guardando nos filhos e folhas em uma pilha de dados \cite{bauszat2010minimal} \cite{benthin2018compressed}.
 
 % Wide BVH (BVH4, BVH8)
 % Multi-BVH(QBVH)
@@ -227,7 +228,7 @@ Além do consumo de memória, o tempo de travessia também se torna um problema 
 Por esse motivo, as estruturas \gls{wbvh} comprimidas são uma escolha interessante para a travessia, com nós internos comprimidos resultando em taxas de acerto de \textit{cache} aprimoradas e maior taxa de transferência de raios \cite{vaidyanathan2019wide} \cite{tsakok2009faster}.
 
 % top-down Surface Area Heuristic BVH(SAH-BVH)
-Nenhuma dessas técnicas anteriores melhora a qualidade da árvore. \gls{sah} \gls{bvh} é um algoritmo aplicado na separação dos objetos geométricos, considera a densidade da geometria no espaço 3D e elimina eficientemente regiões vazias e reduz interações. Infelizmente, construir uma árvore de alta qualidade é custoso. Esse custo computacional torna a técnica inviável para cenas dinâmicas e animadas, onde são reconstruídas a cada quadro.
+Nenhuma dessas técnicas anteriores melhora a qualidade da árvore. \gls{sah} \gls{bvh} é um algoritmo aplicado na separação dos objetos geométricos, que considera a densidade da geometria no espaço 3D, elimina eficientemente regiões vazias e reduz interações. Infelizmente, construir uma árvore de alta qualidade é custoso. Esse custo computacional torna a técnica inviável para cenas dinâmicas e animadas, onde são reconstruídas a cada quadro.
 
 O \gls{bsah} é uma aproximação do \gls{sah} que reduz o custo de construção. Em vez de avaliar todos os planos de divisão entre primitivas, o espaço do nó é dividido em um número fixo de regiões chamadas \textit{bins}. As primitivas são distribuídas entre essas regiões e o algoritmo avalia planos de corte entre os \textit{bins}, calculando o custo \gls{sah} de cada divisão com base na quantidade de primitivas e na área das \glspl{aabb} resultantes. O plano com menor custo é selecionado e o processo é aplicado recursivamente até completar a árvore. Existem híbridos como, \gls{hlbvh} que tem a construção mais rápida, mas perde mais qualidade \cite{garanzha2011grid} ou \gls{sbvh} com menor custo, mas maior uso de memoria.
 
