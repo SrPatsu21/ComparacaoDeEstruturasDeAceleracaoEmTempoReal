@@ -1,0 +1,25 @@
+{
+    "cSpell.ignoreWords": [
+        "Bittner",
+        "HLBVH",
+        "Khronos",
+        "LBVH",
+        "Lauterbach",
+        "Luebke",
+        "Meister",
+        "Nsight",
+        "Pantaleoni",
+        "Plücker",
+        "QBVH",
+        "Radeon",
+        "SBVH",
+        "Whitted",
+        "assimp",
+        "denoising",
+        "glfw",
+        "imgui",
+        "microfacets",
+        "powercap",
+        "rapl"
+    ]
+}
