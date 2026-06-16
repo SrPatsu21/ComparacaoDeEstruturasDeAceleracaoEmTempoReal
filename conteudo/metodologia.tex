@@ -4,7 +4,7 @@
 
 \section{Abordagem da pesquisa}
 
-Esta pesquisa possui abordagem predominantemente quantitativa, uma vez que serão realizadas medições e comparações de desempenho relacionadas às estruturas de aceleração utilizadas em algoritmos hibridos de rasterizacao e \textit{ray tracing}. Serão analisadas métricas como tempo de construção, tempo de travessia, uso de memória e desempenho geral da renderização em diferentes abordagens de \gls{bvh}.
+Esta pesquisa possui abordagem predominantemente quantitativa, uma vez que serão realizadas medições e comparações de desempenho relacionadas às estruturas de aceleração utilizadas em algoritmos híbridos de rasterização e \textit{ray tracing}. Serão analisadas métricas como tempo de construção, tempo de travessia, uso de memória e desempenho geral da renderização em diferentes abordagens de \gls{bvh}.
 
 A partir dos resultados obtidos, também será realizada uma análise qualitativa, buscando interpretar os impactos das diferentes técnicas na qualidade da hierarquia gerada, na complexidade de implementação e na adequação de cada abordagem para diferentes tipos de cena, aplicações e dispositivos. Dessa forma, a pesquisa combina a análise objetiva de dados experimentais com uma discussão descritiva dos resultados observados.
 
@@ -12,13 +12,13 @@ A partir dos resultados obtidos, também será realizada uma análise qualitativ
 
 \subsection{Instrumentos de coleta de dados}
 
-Para a extração das métricas será necessário o desenvolvimento de uma aplicação própria capaz de executar os cenários de teste e registrar os dados obtidos durante a execução. Ferramentas como o \textit{NVIDIA Nsight Compute}, o \textit{NVIDIA Nsight Graphics} e interfaces de monitoramento do Linux fornecem parte das métricas desejadas, porém não oferecem, de forma integrada, suporte à avaliação das diferentes variantes de \glspl{bvh} e dos cenários dinâmicos considerados nesta pesquisa.
+Para a extração das métricas, será necessário o desenvolvimento de uma aplicação própria capaz de executar os cenários de teste e registrar os dados obtidos durante a execução. Ferramentas como o \textit{NVIDIA Nsight Compute}, o \textit{NVIDIA Nsight Graphics} e interfaces de monitoramento do Linux fornecem parte das métricas desejadas, porém não oferecem, de forma integrada, suporte à avaliação das diferentes variantes de \glspl{bvh} e dos cenários dinâmicos considerados nesta pesquisa.
 
 Além disso, algumas métricas disponibilizadas pelo \textit{Nsight Graphics} dependem de integração direta com o código da aplicação. Dessa forma, o desenvolvimento de um sistema próprio de testes também permite maior controle sobre os experimentos, a implementação das estruturas avaliadas e a coleta padronizada dos resultados.
 
 Para a coleta de dados será necessário o uso de uma \gls{gpu}. Apesar de ser possível executar esses algoritmos em uma \gls{cpu}, simulações com alta complexidade gráfica, geometria dinâmica e execução em tempo real tornam-se mais viáveis em \glspl{gpu}. Além disso, as bibliotecas e ferramentas de coleta de métricas utilizadas neste trabalho são específicas para \glspl{gpu} da Nvidia.
 
-Os experimentos serão realizados utilizando \textit{hardware} próprio. Específicações \gls{gpu} NVIDIA GeForce RTX 1050 Ti com 4 GB de memória VRAM, processador intel i5 10600k, 16 GB de memória RAM DDR4, sistema operacional KDE neon baseado no Ubuntu 24.04 e kernel x86\_64 Linux 6.17.0-23-generic.
+Os experimentos serão realizados utilizando \textit{hardware} próprio. Especificações \gls{gpu} NVIDIA GeForce RTX 1050 Ti com 4 GB de memória VRAM, processador Intel i5 10600k, 16 GB de memória RAM DDR4, sistema operacional KDE neon baseado no Ubuntu 24.04 e kernel x86\_64 Linux 6.17.0-23-generic.
 
 A aplicação precisará implementar todo o \textit{pipeline} gráfico Vulkan juntamente com algoritmos híbridos de \textit{ray tracing}. Será necessário desenvolver interfaces para as estruturas de aceleração, permitindo padronizar suas implementações e facilitar a substituição e comparação entre diferentes abordagens de \glspl{bvh}.
 
@@ -30,7 +30,7 @@ Mesmo utilizando técnicas básicas, a quantidade reduzida de amostras pode gera
 
 % ---------------------------
 
-% metricas extraidas direteamente do Nsight Compute :
+% metrics extraídas diretamente do Nsight Compute :
     % utilização dos recursos computacionais dos \gls{sm}
     % Instruções por ciclo (Instructions per Cycle / IPC)
     % Utilização de \textit{pipeline}
@@ -108,7 +108,7 @@ Serão coletadas métricas relacionadas ao desempenho computacional da \gls{gpu}
 
 Nem todas as métricas coletadas serão necessariamente utilizadas na análise final. Após a etapa de experimentação preliminar, será realizada uma avaliação da relevância de cada métrica em relação aos objetivos da pesquisa. Métricas que não apresentarem contribuição significativa para a comparação entre as diferentes estruturas de \gls{bvh}, ou que apresentarem elevada redundância em relação a outros indicadores já analisados, poderão ser desconsideradas nas etapas posteriores de análise e discussão dos resultados.
 
-Além disso serão coletadas métricas temporais e estruturais relacionadas ao \textit{pipeline} gráfico e ao \textit{ray tracing}, incluindo tempo de construção das \glspl{bvh}, tempo de travessia, tempo de quadro (\textit{frame time}), latência, sobrecarga de execução (\textit{overhead}), sincronização entre filas, operações de espera e sinalização, barreiras de recursos, concorrência entre \textit{workloads} e paralelismo entre filas de execução. Para o \textit{ray tracing} em \textit{hardware}, serão avaliadas métricas como utilização dos \textit{RT Cores}, taxa de travessia (\textit{traversal throughput}), divergência de raios e custo de construção das estruturas de aceleração.
+Além disso, serão coletadas métricas temporais e estruturais relacionadas ao \textit{pipeline} gráfico e ao \textit{ray tracing}, incluindo tempo de construção das \glspl{bvh}, tempo de travessia, tempo de quadro (\textit{frame time}), latência, sobrecarga de execução (\textit{overhead}), sincronização entre filas, operações de espera e sinalização, barreiras de recursos, concorrência entre \textit{workloads} e paralelismo entre filas de execução. Para o \textit{ray tracing} em \textit{hardware}, serão avaliadas métricas como utilização dos \textit{RT Cores}, taxa de travessia (\textit{traversal throughput}), divergência de raios e custo de construção das estruturas de aceleração.
 
 Além das métricas extraídas diretamente das ferramentas de monitoramento, também serão analisados indicadores derivados obtidos a partir da combinação das métricas base. Esses indicadores permitirão avaliar saturação de \textit{hardware}, saturação de largura de banda, gargalos computacionais, gargalos de memória, gargalos de sincronização, dependências entre \textit{workloads}, paralelismo, eficiência de execução e taxa de processamento das \glspl{bvh}. A utilização de métricas derivadas busca fornecer uma análise mais abrangente do comportamento dos algoritmos e do impacto das diferentes estruturas de aceleração no desempenho geral do sistema.
 
@@ -129,10 +129,10 @@ Os testes serão executados em um ambiente controlado, porém não completamente
 
 A aplicação desenvolvida possuirá, em seu próprio código, uma quantidade máxima de \textit{frames} definida previamente. Ao atingir esse limite, a execução será encerrada automaticamente. Após cada teste, as métricas de desempenho serão extraídas e armazenadas para posterior análise.
 
-As métricas poderão ser coletadas de diferentes formas dependendo da ferramenta utilizada. A \textit{NVIDIA Nsight Compute} permite exportar automaticamente as métricas selecionadas para arquivos no formato `.csv`. Já a \textit{NVIDIA Nsight Graphics} gera arquivos de captura no formato `.nsgfx`, contendo informações detalhadas sobre a execução gráfica da aplicação. Por sua vez, a \textit{NVIDIA Management Library} será integrada diretamente ao programa, permitindo que métricas de consumo energético sejam registradas em arquivos para posterior análise.
+As métricas poderão ser coletadas de diferentes formas, dependendo da ferramenta utilizada. A \textit{NVIDIA Nsight Compute} permite exportar automaticamente as métricas selecionadas para arquivos no formato `.csv`. Já a \textit{NVIDIA Nsight Graphics} gera arquivos de captura no formato `.nsgfx`, contendo informações detalhadas sobre a execução gráfica da aplicação. Por sua vez, a \textit{NVIDIA Management Library} será integrada diretamente ao programa, permitindo que métricas de consumo energético sejam registradas em arquivos para posterior análise.
 
 % quantas execuções;
-Para cada \gls{bvh} em cada cena, serão executadas inicialmente cinco medições independentes. Em seguida, serão calculados a média aritmética e o desvio padrão dos resultados de cada metrica. Caso o coeficiente de variação ultrapasse 2\%, novas execuções serão adicionadas até que a dispersão dos dados seja reduzida a um nível aceitável. Medições classificadas como \textit{outliers}, identificadas por critérios estatísticos de dispersão, poderão ser removidas do conjunto de dados antes do cálculo da média final.
+Para cada \gls{bvh} em cada cena, serão executadas inicialmente cinco medições independentes. Em seguida, serão calculadas a média aritmética e o desvio padrão dos resultados de cada métrica. Caso o coeficiente de variação ultrapasse 2\%, novas execuções serão adicionadas até que a dispersão dos dados seja reduzida a um nível aceitável. Medições classificadas como \textit{outliers}, identificadas por critérios estatísticos de dispersão, poderão ser removidas do conjunto de dados antes do cálculo da média final.
 
 % quais cenas;
 As cenas utilizadas serão dinâmicas, contendo objetos em constante movimentação, além de elementos entrando e saindo da cena. Esse comportamento tem como objetivo provocar atualizações frequentes nas estruturas de \glspl{bvh}, permitindo avaliar o desempenho dos algoritmos em situações mais próximas de aplicações reais.
@@ -153,7 +153,7 @@ Como as diferenças estruturais entre os algoritmos são relativamente pequenas,
 
 Todos os algoritmos serão avaliados utilizando as mesmas cenas, resolução de renderização, quantidade de raios por pixel, configurações de iluminação e parâmetros de câmera, garantindo que as diferenças observadas estejam relacionadas exclusivamente às estruturas de aceleração utilizadas.
 
-Vale resaltar que os resultados obtidos estarão limitados ao \textit{hardware} e às tecnologias utilizadas, especialmente \glspl{gpu} Nvidia com suporte a \textit{ray tracing} em \textit{hardware} e à \gls{api} Vulkan.
+Vale ressaltar que os resultados obtidos estarão limitados ao \textit{hardware} e às tecnologias utilizadas, especialmente \glspl{gpu} Nvidia com suporte a \textit{ray tracing} em \textit{hardware} e à \gls{api} Vulkan.
 
 \subsection{Procedimentos de análise de dados}
 
@@ -165,9 +165,9 @@ A análise dos dados será realizada a partir das métricas coletadas durante a 
 
 Além das tabelas comparativas, serão produzidos gráficos para facilitar a visualização do comportamento dos algoritmos em diferentes cenários. Esses gráficos permitirão analisar a relação entre o custo de construção das \glspl{bvh} e o ganho obtido durante a travessia dos raios, além de possibilitar a identificação de padrões de desempenho em cenas estáticas e dinâmicas. Também serão comparados fatores como impacto da movimentação dos objetos e custo de atualização ou reconstrução das estruturas.
 
-A partir da análise dessas tabelas e graficos, será possível identificar quais algoritmos apresentam melhor desempenho em cenários específicos, como ambientes com grande quantidade de objetos dinâmicos, cenas com alta complexidade geométrica ou aplicações que exigem reconstruções frequentes das \glspl{bvh}.
+A partir da análise dessas tabelas e gráficos, será possível identificar quais algoritmos apresentam melhor desempenho em cenários específicos, como ambientes com grande quantidade de objetos dinâmicos, cenas com alta complexidade geométrica ou aplicações que exigem reconstruções frequentes das \glspl{bvh}.
 
-% interpretação qualitativa.
+% Interpretação qualitativa.
 Além da análise quantitativa, será realizada uma interpretação qualitativa dos resultados. O objetivo será discutir qual tipo de \gls{bvh} é mais adequado dependendo das características do sistema utilizado. Em máquinas com maior capacidade de processamento na \gls{gpu}, por exemplo, pode ser vantajoso utilizar estruturas mais complexas e custosas de construir, mas que ofereçam melhor desempenho durante a travessia dos raios. Em contrapartida, sistemas com recursos computacionais mais limitados podem se beneficiar de estruturas mais simples e rápidas de atualizar.
 
 Também será analisado o equilíbrio entre utilização de \gls{cpu} e \gls{gpu}, considerando cenários em que reduzir a carga sobre um dos componentes possa ser vantajoso para liberar recursos para outros processos, reduzir consumo energético, preservar bateria em dispositivos móveis ou diminuir o uso de memória. Dessa forma, a análise buscará não apenas identificar o algoritmo mais rápido, mas também compreender quais estruturas oferecem o melhor custo de construção, desempenho de renderização e utilização de recursos computacionais em diferentes contextos de execução.
