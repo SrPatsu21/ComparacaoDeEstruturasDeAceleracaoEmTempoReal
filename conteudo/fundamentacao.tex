@@ -8,14 +8,14 @@ No início, a aparência dos gráficos baseados em \gls{gpu} era um tanto monót
 
 Uma grande parte do trabalho no \textit{pipeline} gráfico, principalmente a execução de \textit{shaders} de \textit{vertex} (vértice) e \textit{fragment} (fragmento), mas também outros estágios programáveis, é realizada pelos núcleos de \textit{shader} programáveis. Entre esses processos destacam-se \textit{marshaling} (organização de dados) e \textit{scheduling} (agendamento de operações) de dados. Esses processos incluem gerenciamento de filas FIFO, controle de \textit{buffer} de quadro na memória da \gls{gpu}, busca de dados de entrada do \textit{shader} na memória local antes da execução do \textit{shader}, acionamento de execuções de \textit{shader}, execução de operações de rasterização. Além dessas tarefas, os núcleos também realizam cálculos mais triviais, como a construção de equações de borda e plano, rasterização e \textit{clipping} \cite{laine2011high}.
 
-A Nvidia introduziu o \gls{cuda} em 2007. Por meio do \gls{cuda}, os núcleos programáveis (\textit{shader cores}) passaram a ser acessíveis para aplicações de propósito geral \cite{laine2011high}. Tal abordagem possibilita a implementação de algoritmos fora do \textit{pipeline} gráfico tradicional, ampliando a flexibilidade no desenvolvimento.
+A NVIDIA introduziu o \gls{cuda} em 2007. Por meio do \gls{cuda}, os núcleos programáveis (\textit{shader cores}) passaram a ser acessíveis para aplicações de propósito geral \cite{laine2011high}. Tal abordagem possibilita a implementação de algoritmos fora do \textit{pipeline} gráfico tradicional, ampliando a flexibilidade no desenvolvimento.
 
 A plataforma \gls{cuda} apresenta limitações de compatibilidade entre plataformas \cite{song2024parallel}. A fim de ampliar a portabilidade do código, a \gls{amd} criou o \gls{hip}, que permite aos desenvolvedores migrarem o código \gls{cuda} existente para plataformas \gls{amd} \cite{amd_hip_docs}. Para cenários que exigem maior independência de fornecedor e suporte a diferentes arquiteturas de hardware, o OpenCL surge como uma alternativa multiplataforma para computação paralela, abrangendo \glspl{cpu}, \glspl{gpu} e outros dispositivos \cite{song2024parallel}.
 
 
 As placas gráficas começaram a oferecer cada vez mais funcionalidades e algumas causam incompatibilidade no código. Como, por exemplo, sintaxe para \textit{shaders}, que geram inconsistência entre fornecedores e \glspl{gpu} móveis que possuem arquitetura baseada em seus requisitos de energia e espaço. O Vulkan\footnote{Vulkan é uma API gráfica e de computação multiplataforma mantida pelo \textit{Khronos Group}, projetada para oferecer acesso de baixo nível ao hardware gráfico moderno.} resolve esses problemas de compatibilidade por ser projetado para arquiteturas gráficas modernas. Vulkan reduz a sobrecarga de lidar com diversos \textit{drivers}, permitindo que programadores especifiquem suas intenções por meio de uma \gls{api} \cite{vulkan_tutorial}. Diferentemente das outras plataformas, OpenCL, voltadas à computação de propósito geral, o Vulkan é mais direcionado ao desenvolvimento de aplicações gráficas, como renderização.
 
-\subsection{Arquitetura \glspl{gpu} Nvidia}
+\subsection{Arquitetura \glspl{gpu} NVIDIA}
 
 O \gls{cuda} permite definir funções especiais chamadas \textit{kernels}. Diferente de funções comuns, um \textit{kernel} é executado paralelamente por múltiplas \textit{threads} da \gls{gpu}. Essas funções são executadas por blocos de \textit{thread}, que são grupos de \textit{threads} que têm sua memória compartilhada e sincronizam sua execução para coordenar acessos à memória \cite{guide2020cuda}.
 
@@ -117,7 +117,7 @@ O \textit{clipping} (recorte) à esquerda e à direita pode ser tratado como are
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.7\textwidth]{images/ClippingATriangle.png}
-    \caption{Exemplo de triangulo sendo recortado. Fonte: \cite{pineda1988parallel}}
+    \caption{Exemplo de triângulo sendo recortado. Fonte: \cite{pineda1988parallel}}
     \label{fig:ClippingATriangle}
 \end{figure}
 
@@ -153,7 +153,7 @@ Os dois principais algoritmos usados em computação gráfica para gerar imagens
 
 Com a rasterização 3D, as principais diferenças entre as abordagens passam a se concentrar em dois pontos. A travessia da cena, como identificar os objetos relevantes para a cena, usando estruturas e organizações das primitivas. A enumeração de amostras potencialmente cobertas no plano da imagem (\textit{binning}), que determina quais pixels ou amostras podem ser influenciados por cada primitiva \cite{davidovivc20123d}.
 
-Rasterização e \textit{ray tracing} são abordagens distintas. Porém, não são técnicas distintas, são pontos extremos de um mesmo espectro contínuo. Sendo assim, diferentes comportamentos podem ser obtidos por meio da ativação ou desativação de determinados componentes, como geração de amostras, \textit{binning} e testes de oclusão. Permitindo aplicar tanto estratégia de rasterização quanto de \textit{ray tracing} \cite{davidovivc20123d}.
+Rasterização e \textit{ray tracing} são abordagens distintas. Porém, não são técnicas distintas, são pontos extremos de um mesmo espectro contínuo. Sendo assim, diferentes comportamentos podem ser obtidos por meio da ativação ou desativação de determinados componentes, como geração de amostras, \textit{binning} e testes de oclusão. Permitindo aplicar tanto estratégias de rasterização quanto de \textit{ray tracing} \cite{davidovivc20123d}.
 
 O \textit{pipeline} de renderização híbrida (\textit{hybrid rendering pipeline}) combina técnicas de rasterização, computação paralela e \textit{ray tracing} para produzir imagens em tempo real com qualidade visual próxima à obtida por métodos de \textit{ray tracing offline}. A interação de múltiplas etapas gráficas, a utilização das capacidades únicas de cada etapa e a modularização do processo de renderização permitem alcançar vários aspectos visuais de forma otimizada \cite{barre2019hybrid}.
 
@@ -164,7 +164,7 @@ Para gerar imagens de alta qualidade, seria necessário gerar milhares de amostr
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.7\textwidth]{images/UmaAmostraPorPixelPathTraced.png}
-    \caption{Imagem path-traced (esquerda). Imagem suavizada (centro). A qualidade de referência renderizada com 2048 amostras por pixel (direita). Fonte \cite{akenine2019real} cortesia da Nvidia Corporation.}
+    \caption{Imagem path-traced (esquerda). Imagem suavizada (centro). A qualidade de referência renderizada com 2048 amostras por pixel (direita). Fonte \cite{akenine2019real} cortesia da NVIDIA Corporation.}
     \label{fig:UmaAmostraPorPixelPathTraced}
 \end{figure}
 
@@ -206,7 +206,7 @@ Comparadas a outras abordagens, as \glspl{bvh} têm geralmente os menores requis
 % Linear BVH (LBVH)
 O primeiro método paralelo de construção de \gls{lbvh} foi introduzido por Lauterbach. O método inicia atribuindo um código de Morton ao centroide de cada primitiva geométrica. Em seguida, as primitivas são ordenadas de acordo com esses códigos e a hierarquia é construída dividindo os nós nos pontos em que ocorre a maior diferença de bits entre dois códigos de Morton consecutivos. O código de Morton é calculado mapeando as coordenadas espaciais para um cubo unitário tridimensional e intercalando os bits binários de cada coordenada \cite{apetrei2014fast}.
 
-O código de Morton é gerado a partir das coordenadas espaciais das primitivas. Esse processo converte posições tridimensionais em valores lineares que preservam a proximidade espacial entre os objetos. O algoritmo envolve múltiplas etapas de processamento dependentes entre si, e requer grandes \textit{buffers} temporários e é uma ordem de magnitude mais lento do que, por exemplo, ordenar os códigos. Posteriormente, Pantaleoni e Luebke aprimoraram o método geraram a hierarquia sequencialmente a partir da raiz, processando cada nível em paralelo \cite{apetrei2014fast}.
+O código de Morton é gerado a partir das coordenadas espaciais das primitivas. Esse processo converte posições tridimensionais em valores lineares que preservam a proximidade espacial entre os objetos. O algoritmo envolve múltiplas etapas de processamento dependentes entre si, e requer grandes \textit{buffers} temporários e é uma ordem de magnitude mais lento do que, por exemplo, ordenar os códigos. Posteriormente, Pantaleoni e Luebke aprimoraram o método que gera a hierarquia sequencialmente a partir da raiz, processando cada nível em paralelo \cite{apetrei2014fast}.
 
 \begin{figure}[H]
     \centering
@@ -235,20 +235,20 @@ O \gls{bsah} é uma aproximação do \gls{sah} que reduz o custo de construção
 A \gls{hlbvh} foi proposta por Pantaleoni como uma extensão da \gls{lbvh} tradicional, buscando melhorar a eficiência da construção paralela da hierarquia, mas que reduz substancialmente tanto a quantidade de cálculos quanto o tráfego de memória necessários para construir a \gls{bvh}. O algoritmo introduz três modificações principais. Primeiramente, uma reformulação na etapa de ordenação baseada na Morton \textit{curve-based}, exigida pelo procedimento original, na qual foi empregada uma decomposição hierárquica em grade para explorar a coerência espacial presente na malha de entrada. Em segundo lugar, um novo procedimento de emissão de hierarquia de nós que aprimora a técnica de Lauterbach. Terceiro, um novo algoritmo híbrido que usa a \gls{sah} para construir os níveis \gls{bvh} superiores e usa particionamento rápido baseado na curva de Morton dentro das subárvores do conjunto \cite{pantaleoni2010hlbvh}.
 
 % BVH com Divisões Espaciais (SBVH)
-Ainda uma outra forma de gerar uma árvore com qualidade \gls{sbvh} que usa \gls{bsah} para dividir o espaço. O grande diferencial ocorre no plano de divisão, caso a primitiva esteja atravessando o plano escolhido, a primitiva é dividida em duas \gls{aabb}, uma para cada lado do plano. As \gls{aabb} geradas dessa divisão são menores, consequentemente isso gera um custo menor, porém gerar mais \glspl{aabb} aumenta o uso de memória \cite{stibora2016building}.
+Há ainda uma outra forma de gerar uma árvore com qualidade \gls{sbvh} que usa \gls{bsah} para dividir o espaço. O grande diferencial ocorre no plano de divisão, caso a primitiva esteja atravessando o plano escolhido, a primitiva é dividida em duas \gls{aabb}, uma para cada lado do plano. As \gls{aabb} geradas dessa divisão são menores, consequentemente isso gera um custo menor, porém gerar mais \glspl{aabb} aumenta o consumo de memória \cite{stibora2016building}.
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.7\textwidth]{images/binningTechnic.png}
-    \caption{ilustração da técnica de \textit{binning}. À esquerda: \textit{binning} de um nó \gls{bvh} com dois planos divididos em um eixo. Os valores \glspl{aabb} são recalculados para cada parte das primitivas cortadas. À direita: as caixas delimitadoras dos nós filhos esquerdo e direito para o segundo plano dividido. Fonte: \cite{stibora2016building}}
+    \caption{Ilustração da técnica de \textit{binning}. À esquerda: \textit{binning} de um nó \gls{bvh} com dois planos divididos em um eixo. Os valores \glspl{aabb} são recalculados para cada parte das primitivas cortadas. À direita: as caixas delimitadoras dos nós filhos esquerdo e direito para o segundo plano dividido. Fonte: \cite{stibora2016building}}
     \label{fig:binning_technic}
 \end{figure}
 
 \subsection{Métricas de \gls{gpu}}
 
-Para saber o desempenho de cada tipo de \gls{bvh}, é preciso coletar métricas de processamento, memória, uso de núcleos \gls{cuda}, métricas de \gls{gpu} e \gls{cpu} no geral. Para possibilitar uma maior quantidade de métricas. A Nvidia possui duas ferramentas: \textit{Nvidia Nsight Compute} e \textit{Nvidia Nsight Graphics}. Essas ferramentas são específicas da arquitetura das \glspl{gpu} Nvidia, mas existem ferramentas equivalentes para outros dispositivos. A \textit{\gls{amd} Radeon \gls{gpu} Profiler} é específica para \glspl{gpu} \gls{amd}.
+Para saber o desempenho de cada tipo de \gls{bvh}, é preciso coletar métricas de processamento, memória, uso de núcleos \gls{cuda}, métricas de \gls{gpu} e \gls{cpu} no geral. Para possibilitar uma maior quantidade de métricas. A NVIDIA possui duas ferramentas: \textit{NVIDIA Nsight Compute} e \textit{NVIDIA Nsight Graphics}. Essas ferramentas são específicas da arquitetura das \glspl{gpu} NVIDIA, mas existem ferramentas equivalentes para outros dispositivos. A \textit{\gls{amd} Radeon \gls{gpu} Profiler} é específica para \glspl{gpu} \gls{amd}.
 
-A \textit{Nvidia Nsight Compute} é uma interface que fornece métricas de desempenho detalhadas, podendo ser acessada por \gls{ui} ou \gls{cli} \cite{nvidia_developer_nsight_compute}.  A ferramenta inicia a aplicação e insere bibliotecas de medição no processo executado. Essas bibliotecas permitem interceptar a comunicação com o \textit{driver} \gls{cuda} e coletar métricas de desempenho da \gls{gpu} durante a execução dos \textit{kernels}. Os resultados obtidos são então enviados de volta para a interface \cite{nvidia_nsight_compute}.
+A \textit{NVIDIA Nsight Compute} é uma interface que fornece métricas de desempenho detalhadas, podendo ser acessada por \gls{ui} ou \gls{cli} \cite{nvidia_developer_nsight_compute}.  A ferramenta inicia a aplicação e insere bibliotecas de medição no processo executado. Essas bibliotecas permitem interceptar a comunicação com o \textit{driver} \gls{cuda} e coletar métricas de desempenho da \gls{gpu} durante a execução dos \textit{kernels}. Os resultados obtidos são então enviados de volta para a interface \cite{nvidia_nsight_compute}.
 
 \begin{figure}[H]
     \centering
@@ -311,7 +311,7 @@ Barreiras de recursos (\textit{resource barriers}) são mecanismos de sincroniza
 
 A troca frequente entre contextos pode reduzir o paralelismo disponível e introduzir sobrecarga devido à necessidade de troca de estado e reconfiguração interna da \gls{gpu}. O \textit{Nsight Graphics} permite identificar os intervalos temporais associados a cada contexto ativo durante a execução da aplicação \cite{nvidia_nsight_graphics_gpu_trace_ui}.
 
-As \glspl{gpu} Nvidia possuem múltiplos motores; esses motores podem operar em paralelo por meio de filas independentes de execução, permitindo sobreposição temporal entre diferentes tarefas da aplicação, como processamento gráfico, computacional e operações de cópia de memória \cite{cuda_programming_guide}. O \textit{Nsight Graphics} permite observar a distribuição temporal dessas atividades, possibilitando identificar regiões de paralelismo e concorrência entre cargas de trabalho gráficas e computacionais \cite{nvidia_nsight_graphics_gpu_trace_ui}.
+As \glspl{gpu} NVIDIA possuem múltiplos motores; esses motores podem operar em paralelo por meio de filas independentes de execução, permitindo sobreposição temporal entre diferentes tarefas da aplicação, como processamento gráfico, computacional e operações de cópia de memória \cite{cuda_programming_guide}. O \textit{Nsight Graphics} permite observar a distribuição temporal dessas atividades, possibilitando identificar regiões de paralelismo e concorrência entre cargas de trabalho gráficas e computacionais \cite{nvidia_nsight_graphics_gpu_trace_ui}.
 
 % Métricas estruturais
 %     queue synchronization
@@ -344,11 +344,11 @@ A memória \gls{ram} armazena geometrias, materiais, descritores e demais estrut
 
 O consumo energético da \gls{cpu} é uma métrica relevante para análise de desempenho e eficiência computacional, principalmente em aplicações com elevada carga de processamento geométrico e gerenciamento de estruturas espaciais. Essa métrica tem muito mais relevância quando se aplica a sistemas móveis, como notebooks e celulares, que têm o tempo de uso baseado no consumo. Em sistemas Linux, esse consumo pode ser monitorado por meio da interface \gls{rapl}, que disponibiliza estimativas de energia consumida pelos componentes do processador por meio da interface \texttt{/ sys/ class/ powercap/ intel-rapl/} \cite{hackenberg2013power} \cite{intel_rapl}.
 
-O consumo energético da \gls{gpu} pode ser monitorado utilizando a \gls{nvml}, uma interface de programação disponibilizada pela Nvidia para monitoramento e gerenciamento de dispositivos gráficos. A biblioteca fornece métricas relacionadas à potência instantânea, utilização da \gls{gpu}, frequência de operação e uso de memória, permitindo acompanhar o comportamento energético da \gls{gpu} \cite{nvml_api}\cite{nvml_power_usage}.
+O consumo energético da \gls{gpu} pode ser monitorado utilizando a \gls{nvml}, uma interface de programação disponibilizada pela NVIDIA para monitoramento e gerenciamento de dispositivos gráficos. A biblioteca fornece métricas relacionadas à potência instantânea, utilização da \gls{gpu}, frequência de operação e uso de memória, permitindo acompanhar o comportamento energético da \gls{gpu} \cite{nvml_api}\cite{nvml_power_usage}.
 
 % Uso da CPU - leitura de /proc/stat
 % Uso de memória \gls{ram} - leitura de /proc/meminfo
-% Consumo energético da \gls{gpu} - Nvidia Management Library
+% Consumo energético da \gls{gpu} - NVIDIA Management Library
 % Consumo energético da CPU - Intel RAPL via /sys/class/powercap/intel-rapl/
 
 

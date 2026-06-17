@@ -16,9 +16,9 @@ Para a extração das métricas, será necessário o desenvolvimento de uma apli
 
 Além disso, algumas métricas disponibilizadas pelo \textit{Nsight Graphics} dependem de integração direta com o código da aplicação. Dessa forma, o desenvolvimento de um sistema próprio de testes também permite maior controle sobre os experimentos, a implementação das estruturas avaliadas e a coleta padronizada dos resultados.
 
-Para a coleta de dados será necessário o uso de uma \gls{gpu}. Apesar de ser possível executar esses algoritmos em uma \gls{cpu}, simulações com alta complexidade gráfica, geometria dinâmica e execução em tempo real tornam-se mais viáveis em \glspl{gpu}. Além disso, as bibliotecas e ferramentas de coleta de métricas utilizadas neste trabalho são específicas para \glspl{gpu} da Nvidia.
+Para a coleta de dados será necessário o uso de uma \gls{gpu}. Apesar de ser possível executar esses algoritmos em uma \gls{cpu}, simulações com alta complexidade gráfica, geometria dinâmica e execução em tempo real tornam-se mais viáveis em \glspl{gpu}. Além disso, as bibliotecas e ferramentas de coleta de métricas utilizadas neste trabalho são específicas para \glspl{gpu} da NVIDIA.
 
-Os experimentos serão realizados utilizando \textit{hardware} próprio. Especificações \gls{gpu} NVIDIA GeForce RTX 1050 Ti com 4 GB de memória VRAM, processador Intel i5 10600k, 16 GB de memória RAM DDR4, sistema operacional KDE neon baseado no Ubuntu 24.04 e kernel x86\_64 Linux 6.17.0-23-generic.
+Os experimentos serão realizados utilizando \textit{hardware} próprio. Especificações \gls{gpu} NVIDIA GeForce GTX 1050 Ti com 4 GB de memória VRAM, processador Intel i5 10600k, 16 GB de memória RAM DDR4, sistema operacional KDE neon baseado no Ubuntu 24.04 e kernel x86\_64 Linux 6.17.0-23-generic.
 
 A aplicação precisará implementar todo o \textit{pipeline} gráfico Vulkan juntamente com algoritmos híbridos de \textit{ray tracing}. Será necessário desenvolver interfaces para as estruturas de aceleração, permitindo padronizar suas implementações e facilitar a substituição e comparação entre diferentes abordagens de \glspl{bvh}.
 
@@ -42,7 +42,7 @@ Mesmo utilizando técnicas básicas, a quantidade reduzida de amostras pode gera
     % Número de blocos
     % Uso de registradores
     % Uso de memória compartilhada
-    % Largura de banda de memória
+    % Largura de banda da memória
     % Taxa de transferência de instruções de memória
     % Ocupação
     % \textit{warps} ativos
@@ -84,7 +84,7 @@ Mesmo utilizando técnicas básicas, a quantidade reduzida de amostras pode gera
 % Metricas extraidas por outras APIs
     % Uso da CPU - leitura de /proc/stat
     % Uso de memória \gls{ram} - leitura de /proc/meminfo
-    % Consumo energético da \gls{gpu} - Nvidia Management Library
+    % Consumo energético da \gls{gpu} - NVIDIA Management Library
     % Consumo energético da CPU - Intel RAPL via /sys/class/powercap/intel-rapl/
 
 % outras metricas extraidas a partir das metricas base:
@@ -104,7 +104,7 @@ Mesmo utilizando técnicas básicas, a quantidade reduzida de amostras pode gera
 
 % ---------------------------
 
-Serão coletadas métricas relacionadas ao desempenho computacional da \gls{gpu}, utilização dos recursos de execução e comportamento das estruturas de aceleração durante a travessia e construção das \glspl{bvh}. Entre as métricas analisadas estão utilização dos \glspl{sm}, instruções por ciclo, ocupação, utilização de \textit{pipelines}, quantidade de \textit{warps} ativos, estatísticas do escalonador, utilização de registradores, uso de memória compartilhada, largura de banda de memória e motivos de paralisação de \textit{warps} (\textit{warp stall reasons}). Também serão consideradas métricas relacionadas à eficiência de execução \gls{simd}, divergência de execução e utilização computacional e de memória em relação aos limites teóricos do \textit{hardware}.
+Serão coletadas métricas relacionadas ao desempenho computacional da \gls{gpu}, utilização dos recursos de execução e comportamento das estruturas de aceleração durante a travessia e construção das \glspl{bvh}. Entre as métricas analisadas estão utilização dos \glspl{sm}, instruções por ciclo, ocupação, utilização de \textit{pipelines}, quantidade de \textit{warps} ativos, estatísticas do escalonador, utilização de registradores, uso de memória compartilhada, largura de banda da memória e motivos de paralisação de \textit{warps} (\textit{warp stall reasons}). Também serão consideradas métricas relacionadas à eficiência de execução \gls{simd}, divergência de execução e utilização computacional e de memória em relação aos limites teóricos do \textit{hardware}.
 
 Nem todas as métricas coletadas serão necessariamente utilizadas na análise final. Após a etapa de experimentação preliminar, será realizada uma avaliação da relevância de cada métrica em relação aos objetivos da pesquisa. Métricas que não apresentarem contribuição significativa para a comparação entre as diferentes estruturas de \gls{bvh}, ou que apresentarem elevada redundância em relação a outros indicadores já analisados, poderão ser desconsideradas nas etapas posteriores de análise e discussão dos resultados.
 
@@ -112,7 +112,7 @@ Além disso, serão coletadas métricas temporais e estruturais relacionadas ao 
 
 Além das métricas extraídas diretamente das ferramentas de monitoramento, também serão analisados indicadores derivados obtidos a partir da combinação das métricas base. Esses indicadores permitirão avaliar saturação de \textit{hardware}, saturação de largura de banda, gargalos computacionais, gargalos de memória, gargalos de sincronização, dependências entre \textit{workloads}, paralelismo, eficiência de execução e taxa de processamento das \glspl{bvh}. A utilização de métricas derivadas busca fornecer uma análise mais abrangente do comportamento dos algoritmos e do impacto das diferentes estruturas de aceleração no desempenho geral do sistema.
 
-Por fim, também serão monitorados o uso da \gls{cpu}, consumo de memória \gls{ram} e consumo energético da \gls{gpu} e da \gls{cpu}, utilizando interfaces de monitoramento disponibilizadas pelo sistema operacional Linux e bibliotecas específicas da Nvidia.
+Por fim, também serão monitorados o uso da \gls{cpu}, consumo de memória \gls{ram} e consumo energético da \gls{gpu} e da \gls{cpu}, utilizando interfaces de monitoramento disponibilizadas pelo sistema operacional Linux e bibliotecas específicas da NVIDIA.
 
 Como ambiente de desenvolvimento e compilação, será utilizada uma imagem Docker baseada em Ubuntu 24.04. A imagem, desenvolvida pelo próprio autor, contém suporte para compilação de aplicações em C++ com Vulkan, além de bibliotecas auxiliares para matemática, gerenciamento de janelas, carregamento de modelos e manipulação de texturas.
 
@@ -153,7 +153,7 @@ Como as diferenças estruturais entre os algoritmos são relativamente pequenas,
 
 Todos os algoritmos serão avaliados utilizando as mesmas cenas, resolução de renderização, quantidade de raios por pixel, configurações de iluminação e parâmetros de câmera, garantindo que as diferenças observadas estejam relacionadas exclusivamente às estruturas de aceleração utilizadas.
 
-Vale ressaltar que os resultados obtidos estarão limitados ao \textit{hardware} e às tecnologias utilizadas, especialmente \glspl{gpu} Nvidia com suporte a \textit{ray tracing} em \textit{hardware} e à \gls{api} Vulkan.
+Vale ressaltar que os resultados obtidos estarão limitados ao \textit{hardware} e às tecnologias utilizadas, especialmente \glspl{gpu} NVIDIA com suporte a \textit{ray tracing} em \textit{hardware} e à \gls{api} Vulkan.
 
 \subsection{Procedimentos de análise de dados}
 

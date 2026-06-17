@@ -2,7 +2,7 @@
 
 A computação gráfica tem evoluído significativamente nas últimas décadas, impulsionada pela necessidade de gerar imagens cada vez mais realistas em diferentes contextos. Nesse cenário, o uso de algoritmos de \textit{ray tracing} tem se destacado pela sua capacidade de produzir imagens altamente realistas. No entanto, o custo computacional associado a essa técnica ainda é um desafio, especialmente em cenários dinâmicos.
 
-Para viabilizar o \textit{ray tracing} em tempo real, torna-se fundamental o uso de estruturas de aceleração. As \glspl{bvh} permitem reduzir significativamente o número de testes de interseção entre raios e primitivas geométricas. Com o avanço do hardware dedicado, como \gls{gpu} moderna, diferentes estratégias de construção e atualização dessas estruturas têm sido propostas, cada uma apresentando características distintas em termos de desempenho e eficiência.
+Para viabilizar o \textit{ray tracing} em tempo real, torna-se fundamental o uso de estruturas de aceleração. As \glspl{bvh} permitem reduzir significativamente o número de testes de interseção entre raios e primitivas geométricas. Com o avanço do hardware dedicado, como uma \gls{gpu} moderna, diferentes estratégias de construção e atualização dessas estruturas têm sido propostas, cada uma apresentando características distintas em termos de desempenho e eficiência.
 
 Diante desse cenário, torna-se relevante investigar como essas diferentes abordagens se comportam em aplicações de tempo real, considerando tanto as características das cenas quanto as limitações do hardware utilizado.
 
@@ -10,7 +10,7 @@ Diante desse cenário, torna-se relevante investigar como essas diferentes abord
 
 Com o avanço de aplicações em tempo real, como renderização gráfica e simulações interativas, torna-se essencial o uso de estruturas de aceleração eficientes, como as variantes de \gls{bvh}. No entanto, diferentes algoritmos e estratégias de construção e atualização dessas estruturas, como o \textit{rebuild} completo e o \textit{refit} incremental, apresentam comportamentos distintos dependendo do tipo de hardware utilizado e das características da cena.
 
-Diante disso, surge o seguinte problema de pesquisa: qual abordagem de construção e atualização de \gls{bvh} apresenta melhor desempenho em simulações de tempo real, considerando diferentes cenários de hardware dedicado e cenas dinâmicas?
+Diante disso, surge o seguinte problema de pesquisa: qual abordagem de construção e atualização de uma \gls{bvh} apresenta melhor desempenho em simulações de tempo real, considerando diferentes cenários de hardware dedicado e cenas dinâmicas?
 
 \section{Objetivos}
 
@@ -26,7 +26,7 @@ Analisar e comparar diferentes estruturas de aceleração baseadas em \gls{bvh},
     \item Investigar abordagens de construção de \gls{bvh}, incluindo \textit{rebuild} completo e \textit{refit} incremental, em cenas dinâmicas e semi-dinâmicas;
     \item Comparar diferentes estruturas \gls{bvh} considerando aspectos:
     \begin{itemize}
-        \item Latência por frame;
+        \item Latência por quadro (\textit{frame});
         \item Uso de memória;
         \item Ocupação da \gls{gpu} e \gls{cpu};
         \item Consumo energético médio;
@@ -37,6 +37,6 @@ Analisar e comparar diferentes estruturas de aceleração baseadas em \gls{bvh},
 
 A utilização de estruturas de aceleração, como \gls{bvh}, é fundamental para viabilizar aplicações de alto desempenho em computação gráfica, especialmente em contextos de tempo real. Com a crescente adoção de hardware dedicado, como GPUs modernas e unidades específicas para \textit{ray tracing}, torna-se necessário compreender como diferentes estratégias de construção e atualização dessas estruturas impactam o desempenho geral do sistema.
 
-Além disso, abordagens como \textit{rebuild} completo e \textit{refit} incremental apresentam características distintas, que podem influenciar diretamente a eficiência da aplicação dependendo do cenário de uso. A análise desses fatores é importante não apenas do ponto de vista teórico, mas também prático, contribuindo para a escolha de técnicas mais adequadas em aplicações reais.
+Além disso, abordagens como \textit{rebuild} completo e \textit{refit} incremental apresentam características distintas, que podem influenciar diretamente a eficiência da aplicação dependendo do cenário de uso. A análise desses fatores é importante não apenas do ponto de vista teórico, mas também prático, contribuindo para a escolha de técnicas mais adequadas para aplicações reais.
 
 Dessa forma, este trabalho se justifica pela necessidade de avaliar e comparar essas abordagens, considerando múltiplas métricas de desempenho, a fim de fornecer subsídios para o desenvolvimento de sistemas mais eficientes em ambientes de tempo real.
