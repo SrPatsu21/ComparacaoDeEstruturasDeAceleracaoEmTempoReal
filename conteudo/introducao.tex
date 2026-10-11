@@ -8,22 +8,23 @@ Diante desse cenário, torna-se relevante investigar como essas diferentes abord
 
 \section{Problema de Pesquisa}
 
-Com o avanço de aplicações em tempo real, como renderização gráfica e simulações interativas, torna-se essencial o uso de estruturas de aceleração eficientes, como as variantes de \gls{bvh}. No entanto, diferentes algoritmos e estratégias de construção e atualização dessas estruturas, como o \textit{rebuild} completo e o \textit{refit} incremental, apresentam comportamentos distintos dependendo do tipo de hardware utilizado e das características da cena.
+Com o avanço de aplicações em tempo real, como renderização gráfica e simulações interativas, torna-se essencial o uso de estruturas de aceleração eficientes, como as variantes de \gls{bvh}. No entanto, diferentes algoritmos e estratégias de construção e atualização dessas estruturas, apresentam comportamentos distintos dependendo do tipo de hardware utilizado e das características da cena.
 
-Diante disso, surge o seguinte problema de pesquisa: qual abordagem de construção e atualização de uma \gls{bvh} apresenta melhor desempenho em simulações de tempo real, considerando diferentes cenários de hardware dedicado e cenas dinâmicas?
+Diante disso, surge o seguinte problema de pesquisa: qual abordagem de construção de uma \gls{bvh} apresenta melhor desempenho em simulações de tempo real, considerando diferentes cenários de hardware dedicado e cenas dinâmicas?
 
 \section{Objetivos}
 
 \subsection{Objetivo Geral}
 
 Analisar e comparar diferentes estruturas de aceleração baseadas em \gls{bvh}, avaliando seu desempenho em simulações de tempo real, quando utilizadas em conjunto com hardware dedicado.
+% adicionar a ideia de crioar uma aplicacao que facilite esses testes
 
-\subsection{Objetivos Específicos}
+\subsection{Objetivos Específicos} 
 
 \begin{itemize}
     \item Analisar as características de diferentes estruturas \gls{bvh} em simulações de tempo real;
     \item Avaliar a relevância das estruturas de aceleração em cenários com hardware dedicado;
-    \item Investigar abordagens de construção de \gls{bvh}, incluindo \textit{rebuild} completo e \textit{refit} incremental, em cenas dinâmicas e semi-dinâmicas;
+    \item Investigar abordagens de construção de \gls{bvh} em cenas dinâmicas;
     \item Comparar diferentes estruturas \gls{bvh} considerando aspectos:
     \begin{itemize}
         \item Latência por quadro (\textit{frame});
@@ -35,8 +36,7 @@ Analisar e comparar diferentes estruturas de aceleração baseadas em \gls{bvh},
 
 \section{Justificativa}
 
-A utilização de estruturas de aceleração, como \gls{bvh}, é fundamental para viabilizar aplicações de alto desempenho em computação gráfica, especialmente em contextos de tempo real. Com a crescente adoção de hardware dedicado, como GPUs modernas e unidades específicas para \textit{ray tracing}, torna-se necessário compreender como diferentes estratégias de construção e atualização dessas estruturas impactam o desempenho geral do sistema.
+A utilização de estruturas de aceleração geométrica, como \gls{bvh}, é fundamental para viabilizar aplicações de alto desempenho em computação gráfica, especialmente em contextos de tempo real. Com a crescente adoção de hardware dedicado, como \gls{gpu} modernas, torna-se necessário compreender como diferentes estratégias de construção e atualização dessas estruturas impactam o desempenho geral do sistema.
 
-Além disso, abordagens como \textit{rebuild} completo e \textit{refit} incremental apresentam características distintas, que podem influenciar diretamente a eficiência da aplicação dependendo do cenário de uso. A análise desses fatores é importante não apenas do ponto de vista teórico, mas também prático, contribuindo para a escolha de técnicas mais adequadas para aplicações reais.
 
 Dessa forma, este trabalho se justifica pela necessidade de avaliar e comparar essas abordagens, considerando múltiplas métricas de desempenho, a fim de fornecer subsídios para o desenvolvimento de sistemas mais eficientes em ambientes de tempo real.
