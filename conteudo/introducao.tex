@@ -1,42 +1,49 @@
 \chapter{INTRODUÇÃO}
 
-A computação gráfica tem evoluído significativamente nas últimas décadas, impulsionada pela necessidade de gerar imagens cada vez mais realistas em diferentes contextos. Nesse cenário, o uso de algoritmos de \textit{ray tracing} tem se destacado pela sua capacidade de produzir imagens altamente realistas. No entanto, o custo computacional associado a essa técnica ainda é um desafio, especialmente em cenários dinâmicos.
+A computação gráfica tem evoluído significativamente nas últimas décadas, impulsionada pela necessidade de gerar imagens cada vez mais realistas em diferentes contextos. Nesse cenário, o uso de algoritmos de \textit{ray tracing} tem se destacado pela sua capacidade de produzir imagens altamente realistas. No entanto, o custo computacional associado a essa técnica ainda representa um desafio, especialmente em aplicações de tempo real.
 
-Para viabilizar o \textit{ray tracing} em tempo real, torna-se fundamental o uso de estruturas de aceleração. As \glspl{bvh} permitem reduzir significativamente o número de testes de interseção entre raios e primitivas geométricas. Com o avanço do hardware dedicado, como uma \gls{gpu} moderna, diferentes estratégias de construção e atualização dessas estruturas têm sido propostas, cada uma apresentando características distintas em termos de desempenho e eficiência.
+Para viabilizar o \textit{ray tracing} em tempo real, torna-se fundamental o uso de estruturas de aceleração. As \glspl{bvh} permitem reduzir significativamente o número de testes de interseção entre raios e primitivas geométricas, evitando que toda a geometria da cena precise ser examinada durante cada consulta. Com o avanço do hardware dedicado, como as \glspl{gpu} modernas, diferentes estratégias de construção e representação dessas estruturas têm sido propostas, apresentando características distintas em termos de qualidade da hierarquia, custo de construção, utilização de memória e desempenho durante a travessia \cite{meister2022performance}.
 
-Diante desse cenário, torna-se relevante investigar como essas diferentes abordagens se comportam em aplicações de tempo real, considerando tanto as características das cenas quanto as limitações do hardware utilizado.
+Além da utilização em \textit{ray tracing}, estruturas baseadas em \glspl{bvh} também podem ser empregadas em outras aplicações que envolvem consultas espaciais, como processamento de nuvens de pontos, consultas de vizinhança e detecção de colisões. Essa diversidade de aplicações reforça a importância de avaliar o comportamento dessas estruturas sob diferentes condições de execução.
+
+Diante desse cenário, torna-se relevante investigar como diferentes abordagens de construção e representação de \glspl{bvh} se comportam em aplicações de tempo real, considerando tanto as características das cenas quanto os recursos computacionais disponíveis.
 
 \section{Problema de Pesquisa}
 
-Com o avanço de aplicações em tempo real, como renderização gráfica e simulações interativas, torna-se essencial o uso de estruturas de aceleração eficientes, como as variantes de \gls{bvh}. No entanto, diferentes algoritmos e estratégias de construção e atualização dessas estruturas, apresentam comportamentos distintos dependendo do tipo de hardware utilizado e das características da cena.
+Com o avanço das aplicações de renderização em tempo real, torna-se essencial o uso de estruturas de aceleração eficientes, como as variantes de \gls{bvh}. No entanto, diferentes estratégias de construção e representação dessas estruturas apresentam comportamentos distintos de acordo com as características das cenas e das cargas de trabalho utilizadas.
 
-Diante disso, surge o seguinte problema de pesquisa: qual abordagem de construção de uma \gls{bvh} apresenta melhor desempenho em simulações de tempo real, considerando diferentes cenários de hardware dedicado e cenas dinâmicas?
+Além disso, o desempenho de uma \gls{bvh} não depende exclusivamente do tempo necessário para sua construção. A qualidade da hierarquia e sua representação podem influenciar o desempenho durante a travessia, bem como o uso dos recursos computacionais disponíveis \cite{meister2022performance}.
+
+Diante disso, surge o seguinte problema de pesquisa: qual das abordagens de \gls{bvh} avaliadas apresenta melhor desempenho em aplicações de \textit{ray tracing} em tempo real, considerando diferentes características das cenas?
 
 \section{Objetivos}
 
 \subsection{Objetivo Geral}
 
-Analisar e comparar diferentes estruturas de aceleração baseadas em \gls{bvh}, avaliando seu desempenho em simulações de tempo real, quando utilizadas em conjunto com hardware dedicado.
-% adicionar a ideia de crioar uma aplicacao que facilite esses testes
+Analisar e comparar diferentes abordagens de estruturas de aceleração baseadas em \gls{bvh}, avaliando seu desempenho em aplicações de \textit{ray tracing} em tempo real, por meio do desenvolvimento de uma aplicação que permita a execução e comparação sistemática dos métodos avaliados.
 
-\subsection{Objetivos Específicos} 
+\subsection{Objetivos Específicos}
 
 \begin{itemize}
-    \item Analisar as características de diferentes estruturas \gls{bvh} em simulações de tempo real;
-    \item Avaliar a relevância das estruturas de aceleração em cenários com hardware dedicado;
-    \item Investigar abordagens de construção de \gls{bvh} em cenas dinâmicas;
-    \item Comparar diferentes estruturas \gls{bvh} considerando aspectos:
+    \item Analisar as características das abordagens de \gls{bvh} utilizadas no trabalho;
+    \item Implementar as estruturas \gls{bvh}, \gls{lbvh}, \gls{bsah} e \gls{bvh8};
+    \item Desenvolver uma aplicação que permita configurar, executar e comparar as diferentes abordagens de \gls{bvh};
+    \item Avaliar o desempenho das estruturas em aplicações de \textit{ray tracing} em tempo real;
+    \item Comparar as estruturas considerando aspectos:
     \begin{itemize}
         \item Latência por quadro (\textit{frame});
+        \item Tempo de construção e atualização da estrutura;
         \item Uso de memória;
         \item Ocupação da \gls{gpu} e \gls{cpu};
         \item Consumo energético médio;
     \end{itemize}
+    \item Disponibilizar uma aplicação que possa ser utilizada como base para a realização de novos experimentos e para a avaliação de outras abordagens de \gls{bvh}.
 \end{itemize}
 
 \section{Justificativa}
 
-A utilização de estruturas de aceleração geométrica, como \gls{bvh}, é fundamental para viabilizar aplicações de alto desempenho em computação gráfica, especialmente em contextos de tempo real. Com a crescente adoção de hardware dedicado, como \gls{gpu} modernas, torna-se necessário compreender como diferentes estratégias de construção e atualização dessas estruturas impactam o desempenho geral do sistema.
+A utilização de estruturas de aceleração geométrica, como \gls{bvh}, é fundamental para viabilizar aplicações de alto desempenho em computação gráfica, especialmente em contextos de tempo real. A necessidade de reduzir o custo das consultas geométricas torna essas estruturas relevantes em diferentes aplicações que envolvem processamento espacial.
 
+A relevância dessas estruturas também pode ser observada em dispositivos com recursos computacionais mais restritos. Chung et al. \cite{chung2018comparison} demonstraram a utilização de estruturas de aceleração para reduzir o tempo de execução de \textit{path tracing} em um dispositivo móvel real. Além disso, estruturas baseadas em \glspl{bvh} podem ser utilizadas em aplicações envolvendo processamento de nuvens de pontos e consultas de vizinhança \cite{jakob2021optimizing}, bem como em detecção de colisões \cite{larsson2006dynamic}.
 
-Dessa forma, este trabalho se justifica pela necessidade de avaliar e comparar essas abordagens, considerando múltiplas métricas de desempenho, a fim de fornecer subsídios para o desenvolvimento de sistemas mais eficientes em ambientes de tempo real.
+Diante disso, este trabalho se justifica pela necessidade de comparar diferentes abordagens de construção e representação de \glspl{bvh}, considerando métricas de desempenho relevantes para aplicações de tempo real. Além da comparação entre as estruturas avaliadas, a aplicação desenvolvida estabelece um ambiente para execução dos experimentos e pode servir como base para que outros pesquisadores realizem novos testes e avaliem diferentes modelos de \gls{bvh}.
