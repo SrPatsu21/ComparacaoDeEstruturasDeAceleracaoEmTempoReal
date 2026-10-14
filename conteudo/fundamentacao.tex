@@ -8,10 +8,13 @@ No início, a aparência dos gráficos baseados em \gls{gpu} era um tanto monót
 
 Uma grande parte do trabalho no \textit{pipeline} gráfico, principalmente a execução de \textit{shaders} de \textit{vertex} (vértice) e \textit{fragment} (fragmento), mas também outros estágios programáveis, é realizada pelos núcleos de \textit{shader} programáveis. Entre esses processos destacam-se \textit{marshaling} (organização de dados) e \textit{scheduling} (agendamento de operações) de dados. Esses processos incluem gerenciamento de filas FIFO, controle de \textit{buffer} de quadro na memória da \gls{gpu}, busca de dados de entrada do \textit{shader} na memória local antes da execução do \textit{shader}, acionamento de execuções de \textit{shader}, execução de operações de rasterização. Além dessas tarefas, os núcleos também realizam cálculos mais triviais, como a construção de equações de borda e plano, rasterização e \textit{clipping} \cite{laine2011high}.
 
+\subsection{CUDA}
+
 A NVIDIA introduziu o \gls{cuda} em 2007. Por meio do \gls{cuda}, os núcleos programáveis (\textit{shader cores}) passaram a ser acessíveis para aplicações de propósito geral \cite{laine2011high}. Tal abordagem possibilita a implementação de algoritmos fora do \textit{pipeline} gráfico tradicional, ampliando a flexibilidade no desenvolvimento.
 
 A plataforma \gls{cuda} apresenta limitações de compatibilidade entre plataformas \cite{song2024parallel}. A fim de ampliar a portabilidade do código, a \gls{amd} criou o \gls{hip}, que permite aos desenvolvedores migrarem o código \gls{cuda} existente para plataformas \gls{amd} \cite{amd_hip_docs}. Para cenários que exigem maior independência de fornecedor e suporte a diferentes arquiteturas de hardware, o OpenCL surge como uma alternativa multiplataforma para computação paralela, abrangendo \glspl{cpu}, \glspl{gpu} e outros dispositivos \cite{song2024parallel}.
 
+\subsection{Vulkan}
 
 As placas gráficas começaram a oferecer cada vez mais funcionalidades e algumas causam incompatibilidade no código. Como, por exemplo, sintaxe para \textit{shaders}, que geram inconsistência entre fornecedores e \glspl{gpu} móveis que possuem arquitetura baseada em seus requisitos de energia e espaço. O Vulkan\footnote{Vulkan é uma API gráfica e de computação multiplataforma mantida pelo \textit{Khronos Group}, projetada para oferecer acesso de baixo nível ao hardware gráfico moderno.} resolve esses problemas de compatibilidade por ser projetado para arquiteturas gráficas modernas. Vulkan reduz a sobrecarga de lidar com diversos \textit{drivers}, permitindo que programadores especifiquem suas intenções por meio de uma \gls{api} \cite{vulkan_tutorial}. Diferentemente das outras plataformas, OpenCL, voltadas à computação de propósito geral, o Vulkan é mais direcionado ao desenvolvimento de aplicações gráficas, como renderização.
 
@@ -377,6 +380,8 @@ Se esses \textit{slabs} são perpendiculares aos eixos do sistema de coordenadas
 
 Comparadas a outras abordagens, as \glspl{bvh} têm geralmente os menores requisitos de memória e um \textit{memory footprint} (uso de memória) pré-computável \cite{bauszat2010minimal}. Técnicas híbridas têm sido investigadas minuciosamente nos últimos anos, buscando combinar os benefícios das árvores \glspl{bvh}. Alguns modelos serão apresentados.
 
+\subsubsection{Linear BVH (LBVH)}
+
 % Linear BVH (LBVH)
 O primeiro método paralelo de construção de \gls{lbvh} foi introduzido por Lauterbach. O método inicia atribuindo um código de Morton ao centroide de cada primitiva geométrica. Em seguida, as primitivas são ordenadas de acordo com esses códigos e a hierarquia é construída dividindo os nós nos pontos em que ocorre a maior diferença de bits entre dois códigos de Morton consecutivos. O código de Morton é calculado mapeando as coordenadas espaciais para um cubo unitário tridimensional e intercalando os bits binários de cada coordenada \cite{apetrei2014fast}.
 
@@ -394,10 +399,14 @@ O código de Morton é gerado a partir das coordenadas espaciais das primitivas.
     }
 \end{figure}
 
+\subsubsection{BVH comprimida}
+
 % Compressed BVH
 Uma maneira de reduzir a sobrecarga de memória é comprimir a estrutura de dados de aceleração. A compressão funciona particularmente bem para \glspl{bvh}, reduzindo \textit{memory footprint} e o uso de banda. Porém, essa compressão adiciona um custo de descompressão durante a travessia, o que deve resultar em uma diminuição de desempenho. Em cenas grandes, quando a memória dedicada da \gls{gpu} não é suficiente, essa perda de desempenho é compensada pela possibilidade de manter toda a \gls{bvh} na memória principal e por um melhor uso do \textit{cache} \cite{benthin2018compressed}.
 
 Existem várias versões de compressão: \gls{cbvh} comprime a árvore por completo; \gls{clbvh} comprime apenas as folhas da árvore, tendo uma travessia mais rápida; \gls{mvh} usa a \textit{bounding box} do pai para construir os filhos, conseguindo trabalhar com apenas 2 bytes, guardando nos filhos e folhas em uma pilha de dados \cite{bauszat2010minimal} \cite{benthin2018compressed}.
+
+\subsubsection{BVH larga}
 
 % Wide BVH (BVH4, BVH8)
 % Multi-BVH(QBVH)
@@ -405,13 +414,19 @@ Além do consumo de memória, o tempo de travessia também se torna um problema 
 
 Por esse motivo, as estruturas \gls{wbvh} comprimidas são uma escolha interessante para a travessia, com nós internos comprimidos resultando em taxas de acerto de \textit{cache} aprimoradas e maior taxa de transferência de raios \cite{vaidyanathan2019wide} \cite{tsakok2009faster}.
 
+\subsubsection{Binned Surface Area Heuristic BVH (BSAH)}
+
 % top-down Surface Area Heuristic BVH(SAH-BVH)
 Nenhuma dessas técnicas anteriores melhora a qualidade da árvore. \gls{sah} \gls{bvh} é um algoritmo aplicado na separação dos objetos geométricos, que considera a densidade da geometria no espaço 3D, elimina eficientemente regiões vazias e reduz interações. Infelizmente, construir uma árvore de alta qualidade é custoso. Esse custo computacional torna a técnica inviável para cenas dinâmicas e animadas, onde são reconstruídas a cada quadro.
 
 O \gls{bsah} é uma aproximação do \gls{sah} que reduz o custo de construção. Em vez de avaliar todos os planos de divisão entre primitivas, o espaço do nó é dividido em um número fixo de regiões chamadas \textit{bins}. As primitivas são distribuídas entre essas regiões e o algoritmo avalia planos de corte entre os \textit{bins}, calculando o custo \gls{sah} de cada divisão com base na quantidade de primitivas e na área das \glspl{aabb} resultantes. O plano com menor custo é selecionado e o processo é aplicado recursivamente até completar a árvore. Existem híbridos como \gls{hlbvh} que têm a construção mais rápida, mas perdem mais qualidade \cite{garanzha2011grid} ou \gls{sbvh} com menor custo de travessia, mas maior uso de memória.
 
+\subsubsection{Hierarchical LBVH (HLBVH)}
+
 % Hierarchical LBVH (HLBVH)
 A \gls{hlbvh} foi proposta por Pantaleoni como uma extensão da \gls{lbvh} tradicional, buscando melhorar a eficiência da construção paralela da hierarquia, mas que reduz substancialmente tanto a quantidade de cálculos quanto o tráfego de memória necessários para construir a \gls{bvh}. O algoritmo introduz três modificações principais. Primeiramente, uma reformulação na etapa de ordenação baseada na Morton \textit{curve-based}, exigida pelo procedimento original, na qual foi empregada uma decomposição hierárquica em grade para explorar a coerência espacial presente na malha de entrada. Em segundo lugar, um novo procedimento de emissão de hierarquia de nós que aprimora a técnica de Lauterbach. Terceiro, um novo algoritmo híbrido que usa a \gls{sah} para construir os níveis \gls{bvh} superiores e usa particionamento rápido baseado na curva de Morton dentro das subárvores do conjunto \cite{pantaleoni2010hlbvh}.
+
+\subsubsection{BVH com Divisões Espaciais (SBVH)}
 
 % BVH com Divisões Espaciais (SBVH)
 Há ainda uma outra forma de gerar uma árvore com qualidade \gls{sbvh} que usa \gls{bsah} para dividir o espaço. O grande diferencial ocorre no plano de divisão, caso a primitiva esteja atravessando o plano escolhido, a primitiva é dividida em duas \gls{aabb}, uma para cada lado do plano. As \gls{aabb} geradas dessa divisão são menores, consequentemente isso gera um custo menor, porém gerar mais \glspl{aabb} aumenta o consumo de memória \cite{stibora2016building}.
@@ -459,10 +474,10 @@ Embora ambos os trabalhos investiguem o desempenho de estruturas de aceleração
     % 2.2.3 Ray Tracing
     % 2.2.4 Rasterização
     % 2.2.5 Abordagem híbrida
-    2.2.6 Estruturas de aceleração
-        2.2.6.1 BVH
-        2.2.6.2 LBVH
-        2.2.6.3 BSAH
-        2.2.6.4 BVH8
+    % 2.2.6 Estruturas de aceleração
+    %     2.2.6.1 BVH
+    %     2.2.6.2 LBVH
+    %     2.2.6.3 BSAH
+    %     2.2.6.4 BVH8
 
 % 2.3 Trabalhos Correlatos
