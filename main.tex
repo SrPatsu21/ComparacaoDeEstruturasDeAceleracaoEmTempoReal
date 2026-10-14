@@ -56,8 +56,8 @@
 % Inserir FOLHA DE APROVAÇÃO
 \include{pretextuais/folhadeaprovacao}
 
-% Inserir FOLHA DE AUTORIZAÇÃO
-\include{pretextuais/folhadeautorizacao}
+% % Inserir FOLHA DE AUTORIZAÇÃO
+% \include{pretextuais/folhadeautorizacao}
 
 % DEDICATÓRIA
 \include{pretextuais/dedicatoria}
@@ -65,8 +65,8 @@
 % AGRADECIMENTO
 \include{pretextuais/agradecimentos}
 
-%EPÍGRAFE
-\include{pretextuais/epigrafe}
+% %EPÍGRAFE
+% \include{pretextuais/epigrafe}
 
 % RESUMO
 \include{pretextuais/resumo}
@@ -96,15 +96,15 @@
 \include{pretextuais/acronimos}
 % Custom Glossary Style
 \renewcommand*{\acronymname}{LISTA DE ACR\^ONIMOS}
-\newglossarystyle{mylong}{%
-  \setglossarystyle{long}%
-  \renewenvironment{theglossary}%
-    {\begin{longtable}[c]{@{}p{2.8cm}p{\dimexpr\textwidth-2.8cm-2\tabcolsep\relax}@{}}}%
-    {\end{longtable}}%
-  \renewcommand{\glsgroupskip}{}%
-  \renewcommand{\glossentry}[2]{%
-    \glsentryitem{##1}\glstarget{##1}{\glossentryname{##1}} & \glossentrydesc{##1} \\[0.6em]%
-  }%
+\newglossarystyle{mylong}{
+	\setglossarystyle{long}
+	\renewenvironment{theglossary}
+		{\begin{longtable}[c]{@{}p{2.8cm}p{\dimexpr\textwidth-2.8cm-2\tabcolsep\relax}@{}}}%
+		{\end{longtable}}
+	\renewcommand{\glsgroupskip}{}
+	\renewcommand{\glossentry}[2]{
+		\glsentryitem{##1}\glstarget{##1}{\glossentryname{##1}} & \glossentrydesc{##1} \\[0.6em]%
+	}
 }
 \printglossary[toctitle=Acronymstype=acronym, style=mylong, title=LISTA DE ACR\^ONIMOS]
 \newpage
@@ -140,11 +140,11 @@
 %Metodologia
 \include{conteudo/metodologia}
 
-%cronograma
-\include{conteudo/cronograma}
+% %cronograma
+% \include{conteudo/cronograma}
 
-%RESULTADOS ESPERADOS
-\include{conteudo/resultadosesperados}
+% %RESULTADOS ESPERADOS
+% \include{conteudo/resultadosesperados}
 
 %Revisão
 \include{conteudo/desenvolvimento}
@@ -163,11 +163,12 @@
 
 \bibliography{referencias}
 
+%TODO verificar se precisa
 %Apêndices
-\include{postextuais/apendice}
+% \include{postextuais/apendice}
 
 %Anexos
-\include{postextuais/anexo}
+% \include{postextuais/anexo}
 
 %---------------------------------------------------------------------
 % INDICE REMISSIVO
