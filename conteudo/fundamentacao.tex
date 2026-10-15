@@ -55,7 +55,7 @@ O \textit{NVIDIA Nsight Systems} é uma ferramenta de análise de desempenho que
 
 \subsection{Métricas do \textit{Pipeline}}
 
-Apesar do \textit{Nsight Systems} conseguir coletar uma grande variedade de métricas, a ferramenta possui limitações. Por exemplo coletar etapas do shaders.
+Apesar do \textit{Nsight Systems} conseguir coletar uma grande variedade de métricas, a ferramenta possui limitações. Por exemplo, a ferramenta não apresenta o mesmo nível de detalhamento para as etapas de execução dos \textit{shaders} que ferramentas específicas para análise da \gls{gpu}. Dessa forma, outras ferramentas podem ser utilizadas para complementar as informações obtidas.
 
 O desempenho de uma aplicação de \textit{ray tracing} não depende apenas da utilização individual dos recursos da \gls{gpu}, mas também da forma como as diferentes etapas do \textit{pipeline} são executadas e sincronizadas. Por esse motivo, são consideradas métricas relacionadas à duração dos \textit{frames}, construção das estruturas de aceleração, chamadas da API Vulkan, atividade das filas e operações de sincronização.
 
@@ -63,17 +63,9 @@ O \textit{NVIDIA Nsight Graphics}, por meio do \textit{GPU Trace}, permite obser
 
 \subsection{Métricas do sistema}
 
-Além das métricas diretamente relacionadas à execução do \textit{pipeline} gráfico, o desempenho da aplicação pode ser influenciado pelos recursos gerais do sistema. Dessa forma, são consideradas métricas relacionadas à utilização da \gls{cpu}, memoria \gls{ram}, ao consumo energético e temperatura da \gls{gpu}.
+Além das métricas diretamente relacionadas à execução do \textit{pipeline} gráfico, o desempenho da aplicação pode ser influenciado pelos recursos gerais do sistema. Dessa forma, são consideradas métricas relacionadas à utilização da \gls{cpu}, memória \gls{ram}, ao consumo energético e à temperatura da \gls{gpu}.
 
 O conjunto dessas métricas permite complementar a análise de desempenho das estruturas \gls{bvh}. Enquanto as métricas da \gls{gpu} caracterizam a utilização dos recursos computacionais do dispositivo, as métricas do \textit{pipeline} permitem observar a duração e a organização das diferentes etapas da execução. Por sua vez, as métricas do sistema permitem identificar condições externas à execução direta do \textit{pipeline} que podem influenciar os resultados.
-
-
-
-
-
-
-
-
 
 
 
