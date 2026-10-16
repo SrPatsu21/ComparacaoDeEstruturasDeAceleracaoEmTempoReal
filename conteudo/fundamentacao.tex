@@ -361,6 +361,15 @@ Há ainda uma outra forma de gerar uma árvore com qualidade \gls{sbvh} que usa 
     }
 \end{figure}
 
+\subsubsection{Estruturas de Aceleração no Vulkan}
+
+No \textit{Vulkan}, as estruturas de aceleração são divididas em dois níveis: \gls{blas} e \gls{tlas}. A \gls{blas} armazena a geometria utilizada para representar uma \textit{mesh}, sendo formada principalmente pelas primitivas geométricas, como triângulos. Dessa forma, diferentes \textit{meshes} ou partes de uma \textit{mesh} podem possuir suas próprias estruturas \gls{blas} \cite{vulkan_tutorial_acceleration_structures}.
+
+A \gls{tlas}, por outro lado, não armazena diretamente os triângulos da geometria. Ela armazena instâncias que referenciam estruturas \gls{blas}, juntamente com informações como a transformação de cada instância. Dessa forma, uma mesma \gls{blas} pode ser utilizada por diferentes instâncias em posições, rotações ou escalas diferentes, permitindo representar a cena completa a partir das geometrias armazenadas nas \glspl{blas} \cite{vulkan_tutorial_acceleration_structures}.
+
+Durante a criação dessas estruturas, o \textit{Vulkan} fornece uma interface para descrever as geometrias, consultar os requisitos de memória, criar as estruturas e executar os comandos de construção. A implementação utilizada durante a travessia dos raios é dependente da \gls{gpu} e não é exposta diretamente ao usuário. Dessa forma, a aplicação fornece ao \textit{Vulkan} as informações necessárias para a construção das estruturas, enquanto os detalhes de sua implementação permanecem ocultos \cite{vulkan_tutorial_acceleration_structures}.
+
+Essa divisão também permite atualizar a cena sem necessariamente reconstruir toda a geometria. Quando uma instância é movimentada, por exemplo, sua transformação pode ser atualizada na \gls{tlas}, mantendo a geometria armazenada na \gls{blas}. O \textit{Vulkan} também permite que uma \gls{tlas} seja atualizada quando ela foi criada com suporte a atualizações, possibilitando modificar as transformações das instâncias durante a execução \cite{vulkan_tutorial_tlas_animation}.
 
 
 
