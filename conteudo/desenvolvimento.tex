@@ -1,39 +1,48 @@
 \chapter{DESENVOLVIMENTO}
 
-Neste capítulo é apresentada a implementação da aplicação desenvolvida para a realização dos experimentos. São descritas as principais decisões de desenvolvimento, a organização da aplicação, as estruturas \gls{bvh} utilizadas e os métodos empregados para a coleta dos dados.
-
-
+Neste capítulo é apresentada a implementação da aplicação desenvolvida para a realização dos experimentos. São descritas as principais decisões de desenvolvimento, a organização da aplicação, as estruturas \gls{bvh} utilizadas e os métodos empregados para a coleta dos dados. Antes da apresentação da aplicação, são apresentadas algumas decisões tomadas durante o desenvolvimento, principalmente em relação à utilização das estruturas de aceleração e à forma de execução da renderização.
 
 \section{Decisões de Desenvolvimento}
 
-Antes de Apresentar a aplicacao e os resultados. É necessario exclarecer algumas decisões tomadas
-
-
+Antes de apresentar a aplicação e os resultados obtidos, é necessário esclarecer algumas decisões tomadas durante o desenvolvimento. Essas decisões foram importantes para definir como as diferentes estruturas \gls{bvh} seriam utilizadas e comparadas, além de estabelecer uma forma de execução que permitisse controlar as principais etapas do processo de renderização.
 
 \subsection{Estrutura da Aplicação}
 
-A aplicação foi construida a partir de uma aplicação ja existente, chamada atualmente de \textit{Apotheosis}. De forma resumida, \textit{Apotheosis} é um motor grafico para um jogo \textit{open source} de autoria do autor deste trabalho. Este motor grafico foi escolhido por ser uma aplicacao \textit{Vulkan} (mais controle sobre o hardware), \textit{open source}, facilmente compilavel(utilizando uma \textit{Open Container Initiative Image Format}) e o conhecimento previo do autor sobre a aplicacao \cite{apotheosis}.
+A aplicação foi construída a partir de uma aplicação já existente, chamada atualmente de \textit{Apotheosis}. De forma resumida, o \textit{Apotheosis} é um motor gráfico desenvolvido para um jogo \textit{open source}, de autoria do autor deste trabalho. Esse motor gráfico foi escolhido por utilizar \textit{Vulkan}, possibilitando maior controle sobre as etapas de renderização e sobre os recursos disponibilizados pelo \textit{hardware}, além de possuir código aberto, ser facilmente compilável por meio de uma \textit{Open Container Initiative Image Format} e já ser conhecido pelo autor deste trabalho \cite{apotheosis}.
 
-O \textit{Apotheosis} ja tinha muito do que foi utilizado neste trabalho. O codigo era baseado principalmente no tutorial \textit{Vulkan} \cite{vulkan_tutorial} e na documentacao do GLFW \cite{glfw_docs}. Com as alteracoes para suportar as \glspl{bvh} e aprimoramento das interfaces o codigo mudou e perdeu algumas de suas caracteristicas, algumas das principais foi a perda do suporte a dispositivos que não suportam \textit{Indexing}, \textit{Buffer Device Address} e para questao de coleta de dados também é necessario \textit{Host Query Reset}. O que se manteve do \textit{Apotheosis} foi principalmente a organizacao, bibliotecas e arquivos de compilacao, com pequenas adicoes.
+O \textit{Apotheosis} já possuía grande parte dos componentes utilizados neste trabalho. O código era baseado principalmente no tutorial de \textit{Vulkan} \cite{vulkan_tutorial} e na documentação do GLFW \cite{glfw_docs}. A partir das alterações realizadas para suportar as diferentes estruturas \glspl{bvh} e do aprimoramento das interfaces da aplicação, o código passou a possuir algumas diferenças em relação à versão original.
 
+Uma das principais mudanças foi a redução da compatibilidade com dispositivos que não possuem suporte a alguns recursos utilizados pela aplicação, como \textit{Indexing} e \textit{Buffer Device Address}. Além disso, para a coleta de algumas métricas, também é necessário o suporte a \textit{Host Query Reset}. Dessa forma, a aplicação passou a exigir um conjunto maior de recursos do dispositivo utilizado nos experimentos.
 
+Apesar dessas alterações, a estrutura geral do \textit{Apotheosis} foi mantida. Entre os elementos reaproveitados estão principalmente a organização do projeto, as bibliotecas utilizadas e os arquivos relacionados à compilação. Foram realizadas pequenas adições e alterações nesses componentes para permitir a implementação das estruturas \gls{bvh}, a configuração dos experimentos e a coleta dos dados.
+
+A utilização de uma aplicação já existente também permitiu concentrar o desenvolvimento nas partes relacionadas à comparação das estruturas de aceleração, evitando a necessidade de desenvolver novamente componentes que não fazem parte do objetivo principal deste trabalho.
 
 \subsection{Estruturas de Aceleração}
 
-Apesar da aplicação usar vulkan, as estruturas utilizadas pelo vulkan apresentam um problema para essa pesquisa. Como ja citado as estruturas do vulkan acabam abstraindo o formato da estrutura de aceleracao, o que impede a criacao de uma estrutura propria e ainda limita a utilizacao a apenas dispositivos que possuem suporte para a extencao \textit{VK_KHR_ray_query} que seria o requisito minimo. Entao com o proposito de testar como cada \gls{bvh} se comporta e lembrando que nem todo dispositivo tem suporte as extencoes necessarias \cite{vulkan_tutorial_acceleration_structures}.
-% talvez explicar um pouco melhor e com mais detalhes oq essa extencao faz e oq ela usa porem precisa buscar uma referencia especifica sobre ela e RT cores
+Apesar de a aplicação utilizar \textit{Vulkan}, as estruturas de aceleração disponibilizadas pela \gls{api} apresentam algumas limitações para os objetivos deste trabalho. Como apresentado anteriormente, as estruturas \gls{blas} e \gls{tlas} utilizadas pelo \textit{Vulkan} possuem sua implementação interna abstraída da aplicação. Dessa forma, não é possível definir diretamente como a estrutura da árvore será organizada ou implementar diferentes estratégias de construção utilizando a estrutura fornecida pela \gls{api} \cite{vulkan_tutorial_acceleration_structures}.
 
-Pelo fato de nao usarmos as estruturas de aceleracao do \textit{vulkan}, é preciso criar no shaders um algoritmo para percorrer a \gls{bvh}, que precisa conhecer como a estrutura esta organizada e como acessar ela.
+Essa abstração é adequada para aplicações que utilizam o sistema de \textit{ray tracing} fornecido pelo \textit{Vulkan}, porém não atende diretamente ao objetivo de comparar diferentes formas de construção e organização de \glspl{bvh}. Para este trabalho, é necessário possuir controle sobre a estrutura de dados utilizada, permitindo implementar e testar diferentes abordagens, como \gls{bvh}, \gls{lbvh}, \gls{bsah} e \gls{bvh8}.
 
+Outro fator considerado foi a necessidade de utilizar recursos específicos da API para realizar a travessia das estruturas fornecidas pelo \textit{Vulkan}. Dessa forma, a utilização dessas estruturas também restringiria a execução da aplicação aos dispositivos que possuem suporte aos recursos necessários para essa abordagem. Neste trabalho, optou-se por manter a utilização do \textit{Vulkan} para as demais etapas da renderização, mas implementar as estruturas \glspl{bvh} utilizadas nos experimentos de forma própria.
 
+Por não serem utilizadas as estruturas de aceleração fornecidas diretamente pelo \textit{Vulkan}, é necessário implementar nos \textit{shaders} o algoritmo responsável pela travessia da \gls{bvh}. Esse algoritmo precisa conhecer a organização dos nós da estrutura, a forma como os dados são armazenados e como acessar os diferentes elementos durante a execução. Essa decisão permite que a mesma aplicação utilize diferentes estruturas e que o processo de travessia seja controlado pelo próprio código desenvolvido para os experimentos.
+
+Essa abordagem também permite separar a estrutura utilizada para armazenar e percorrer a \gls{bvh} da implementação específica das estruturas de aceleração do \textit{Vulkan}. Com isso, as estruturas avaliadas neste trabalho podem ser construídas e armazenadas de acordo com suas próprias características, enquanto a aplicação mantém uma forma comum de execução para realizar a comparação entre elas.
 
 \subsection{Organização da Renderização}
 
-O processo de renderizacao foi dividido 3 etapas principais, primeiramente a criachao de um \textit{Gbuffer} utilizando tecnica de rasterizacao, porem contrariamente a rasterizacao comum aqui salvamos \textit{position}; \textit{normal}; \textit{albedo}; \textit{material}; \textit{depth}. Essa estrutura é um buffer geometrico, esse buffer pula uma etapa que seria encontrar o alvo dos raios. Para uma melhor qualidade ainda tem um segundo buffer, praticamente igual, porem esse nao possue \textit{depth}, nesse buffer armazeno materiais considerados transparentes ou \textit{blend}, como por exemplo vidro, agua e alguns cristais.
+O processo de renderização foi dividido em três etapas principais. A primeira etapa consiste na criação de um \textit{G-buffer} utilizando a técnica de rasterização. Diferentemente de uma utilização convencional da rasterização, nessa etapa são armazenadas informações que serão utilizadas posteriormente durante o processamento dos raios. Entre essas informações estão \textit{position}, \textit{normal}, \textit{albedo}, \textit{material} e \textit{depth}.
 
-A segunda etapa é onde o \textit{Gbuffer} é usado para calcular um efeito, como reflesos e sombras, é aqui onde a \gls{bvh} é usada. Como não estamos usando as estruturas de aceleracao proprias do \textit{vulkan} a sombra em si ja fica extremamente cara, entao nao sera feito nenhum teste com algoritmo de \textit{raytracing} complexo, apenas \textit{shadows}
+O \textit{G-buffer} funciona como uma representação das informações da cena visíveis pela câmera. Dessa forma, a etapa posterior não precisa realizar novamente a busca da geometria correspondente a cada pixel para obter essas informações. A posição, a normal e os demais dados necessários já foram obtidos durante a rasterização e podem ser utilizados pelos \textit{shaders} responsáveis pelo processamento dos efeitos.
 
-A terceira parte o pipeline ira pegar todas essas as imagens geradas, juntalas e traformar em um formato apresentavel para a sistema. Alem disso ele pode passar algum algoritmo de correcao luminosa ou aplicar filtros.
+Além do \textit{G-buffer} principal, é utilizado um segundo \textit{buffer} com informações semelhantes, porém sem o \textit{depth}. Nesse \textit{buffer} são armazenados materiais considerados transparentes ou que utilizam \textit{blend}, como vidro, água e alguns cristais. Essa separação permite tratar esses materiais de forma diferente durante as etapas posteriores da renderização.
+
+A segunda etapa utiliza as informações armazenadas nos \textit{buffers} para calcular os efeitos de iluminação que dependem da geometria da cena. Entre esses efeitos estão as sombras e os reflexos. É nessa etapa que as estruturas \glspl{bvh} desenvolvidas neste trabalho são utilizadas para realizar a busca das interseções entre os raios e a geometria da cena.
+
+Como a travessia da \gls{bvh} é realizada por meio de uma implementação própria nos \textit{shaders}, o custo dessa etapa pode ser elevado, principalmente quando comparado à utilização das estruturas de aceleração específicas fornecidas pelo \textit{Vulkan}. Por esse motivo, o trabalho concentra a utilização do \textit{ray tracing} em sombras, evitando a inclusão de algoritmos mais complexos de iluminação que poderiam aumentar significativamente o custo da renderização e dificultar a análise do comportamento das estruturas avaliadas.
+
+A terceira etapa é responsável por combinar as imagens geradas nas etapas anteriores e produzir a imagem final apresentada ao sistema. Nessa etapa, os diferentes \textit{buffers} são combinados e podem ser aplicados algoritmos de correção de luminosidade, filtros e outros processos necessários para transformar os resultados intermediários em uma imagem final adequada para apresentação.
 
 
 \section{Aplicação Desenvolvida}
