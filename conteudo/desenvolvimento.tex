@@ -44,6 +44,39 @@ Como a travessia da \gls{bvh} é realizada por meio de uma implementação próp
 
 A terceira etapa é responsável por combinar as imagens geradas nas etapas anteriores e produzir a imagem final apresentada ao sistema. Nessa etapa, os diferentes \textit{buffers} são combinados e podem ser aplicados algoritmos de correção de luminosidade, filtros e outros processos necessários para transformar os resultados intermediários em uma imagem final adequada para apresentação.
 
+\begin{figure}[htb]
+	\caption{Organização das etapas da aplicação}
+    \centering
+    {\parbox{16cm}
+        {
+            \includegraphics[width=1\textwidth]{images/OrganizacaoDosPipelines.png}
+            \label{fig:organizacao_dos_pipelines}
+            \hspace{0.0cm}{Fonte: Elaborado pelo autor, utilizando draw.io}
+        }
+    }
+\end{figure}
+
+Neste trabalho, a segunda etapa implementa apenas o cálculo de sombras (\textit{shadows}). Outros efeitos podem ser implementados posteriormente sem a necessidade de alterar as demais etapas da renderização, sendo necessário apenas incluí-los no processo de geração da imagem final, realizado na terceira etapa, também denominada \textit{Composite}. Dessa forma, a organização adotada permite adicionar diferentes efeitos que utilizem as estruturas \glspl{bvh} sem modificar a etapa responsável pela geração do \textit{G-buffer}.
+
+\subsection{Configuração das Estruturas \gls{bvh}}
+
+Para evitar alguns custos associados ao uso de polimorfismo, optou-se pela utilização de \textit{templates} da linguagem C++. \textit{Templates} permitem definir famílias de classes, funções ou tipos que podem ser especializadas a partir dos parâmetros fornecidos. Quando os argumentos são fornecidos, esses parâmetros são substituídos para obter uma especialização específica do \textit{template}, que pode ser instanciada durante a compilação \cite{cppreference_templates}.
+
+Neste trabalho, essa característica é utilizada pelos construtores das estruturas \glspl{bvh}. Os diferentes construtores possuem uma implementação baseada em \textit{templates}, permitindo utilizar diferentes tipos de nós sem a necessidade de criar uma implementação independente para cada combinação. Dessa forma, o tipo de nó e o construtor utilizados podem ser definidos durante a compilação da aplicação.
+
+A seleção da estrutura utilizada é realizada por meio de definições fornecidas ao compilador. Por exemplo, o trecho utilizado para configurar a \gls{blas} verifica se a definição \textit{USE\_BLAS\_BVH8}, \textit{USE\_BLAS\_BSAH} ou \textit{USE\_BLAS\_LBVH} foi fornecida. Caso nenhuma dessas definições esteja presente, é utilizada a implementação padrão da \gls{bvh}. O mesmo processo é aplicado à \gls{tlas}, permitindo selecionar sua estrutura de forma independente da \gls{blas}.
+
+Essa configuração permite realizar diferentes combinações entre as estruturas sem modificar diretamente o código-fonte da aplicação. A escolha pode ser realizada no momento da compilação por meio de parâmetros fornecidos ao \textit{CMake}. Por exemplo, o comando a seguir seleciona a \gls{bvh8} tanto para a \gls{blas} quanto para a \gls{tlas}:
+
+\begin{verbatim}
+cmake .. -DCMAKE_CXX_FLAGS="-DUSE_BLAS_BVH8 -DUSE_TLAS_BVH8" -DSHADER_DEFINITIONS="-DUSE_BLAS_BVH8 -DUSE_TLAS_BVH8"
+make -j$(nproc)
+\end{verbatim}
+
+Além de definir essas opções para o código C++, as mesmas definições são fornecidas aos \textit{shaders} por meio do parâmetro \textit{SHADER\_DEFINITIONS}. Isso é necessário porque a construção da estrutura e sua travessia precisam utilizar a mesma organização de dados. Dessa forma, quando uma estrutura é selecionada para a \gls{blas} ou para a \gls{tlas}, a implementação responsável pela travessia nos \textit{shaders} também pode ser configurada para utilizar a estrutura correspondente.
+
+
+
 
 \section{Aplicação Desenvolvida}
 
