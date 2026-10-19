@@ -69,8 +69,8 @@ A seleção da estrutura utilizada é realizada por meio de definições forneci
 Essa configuração permite realizar diferentes combinações entre as estruturas sem modificar diretamente o código-fonte da aplicação. A escolha pode ser realizada no momento da compilação por meio de parâmetros fornecidos ao \textit{CMake}. Por exemplo, o comando a seguir seleciona a \gls{bvh8} tanto para a \gls{blas} quanto para a \gls{tlas}:
 
 \begin{verbatim}
-cmake .. -DCMAKE_CXX_FLAGS="-DUSE_BLAS_BVH8 -DUSE_TLAS_BVH8" -DSHADER_DEFINITIONS="-DUSE_BLAS_BVH8 -DUSE_TLAS_BVH8"
-make -j$(nproc)
+cmake .. -DCMAKE_CXX_FLAGS="-DUSE_BLAS_BVH8 -DUSE_TLAS_BVH8" \
+    -DSHADER_DEFINITIONS="-DUSE_BLAS_BVH8 -DUSE_TLAS_BVH8"
 \end{verbatim}
 
 Além de definir essas opções para o código C++, as mesmas definições são fornecidas aos \textit{shaders} por meio do parâmetro \textit{SHADER\_DEFINITIONS}. Isso é necessário porque a construção da estrutura e sua travessia precisam utilizar a mesma organização de dados. Dessa forma, quando uma estrutura é selecionada para a \gls{blas} ou para a \gls{tlas}, a implementação responsável pela travessia nos \textit{shaders} também pode ser configurada para utilizar a estrutura correspondente.
@@ -84,17 +84,49 @@ principais partes do desenvolvimento relevante para a construcao das \glspl{bvh}
 
 \subsection{Criacao de instancias}
 
-As instancias ficam em um vetor de ponteiros, cada uma dessas instancias tem um ou mais \textit{sub meshs} que são pedacoes da mesh em que temos uma troca de material, por exemplo uma faca simples, ela teria um cabo de madeira e uma lamina de aço. Para a criacao do \textit{Gbuffer}, essas submeshs sao organizadas em um hashmap chamado de batch_map com varais batchs, cada batch é a representacao de uma submesh e dentro dela existe um vetor com a posicao das submeshs que sao iguais mas estao em posicao diferente, isso permite usarmos o vkCmdDrawIndexed, essa estrutura ajuda a \gls{gpu} a evitar troca de contexto acelerando significativamente o processo de renderizacao \cite{vulkan_vk_cmd_draw_indexed}.
+As instancias ficam em um vetor de ponteiros, cada uma dessas instancias tem um ou mais \textit{sub meshs} que são pedacoes da mesh em que temos uma troca de material, por exemplo uma faca simples, ela teria um cabo de madeira e uma lamina de aço. Para a criacao do \textit{Gbuffer}, essas submeshs sao organizadas em um hashmap chamado de batch\_map com varais batchs, cada batch é a representacao de uma submesh e dentro dela existe um vetor com a posicao das submeshs que sao iguais mas estao em posicao diferente, isso permite usarmos o vkCmdDrawIndexed, essa estrutura ajuda a \gls{gpu} a evitar troca de contexto acelerando significativamente o processo de renderizacao \cite{vulkan_vk_cmd_draw_indexed}.
 
 É comum criar uma \gls{blas} para cada \textit{sub mesh}, isso permite especificar texturas e o material como um todo antes de entrar na \gls{blas}, porem n foi o que aconteceu neste trabalho, seria interesante é ate melhor pois reduz o tamanho da folha da \gls{blas} que n precisaria mais fornecer o material.
 
-Durante a criacao das intancias é criado um registro que guarda a conexao da instancia com o index no vetor de posicao da batch. Isso garante que seja possivel atualizar e remover as inteancias sem ter que recriar as batchs, esse sistema ja existia no \textit{Apotheosis}.
+Durante a criacao das intancias é criado um registro (\textit{BatchRegistration}) que guarda a conexao da instancia com o index no vetor de posicao da batch e um ponteiro para a batch. Isso garante que seja possivel atualizar e remover as inteancias sem ter que recriar as batchs, esse sistema ja existia no \textit{Apotheosis}.
 
-% figura das batchs
+Para criar a \textit{batch} é ter as informações que estao contidas na mesh e a partir da mesh conseguimos extrair todas as informacoes necessarias, alem disso guardamos essas informações dentro de \textit{ResourceManager}, esssa classe permite consultar e saber o que ja esta na \gls{gpu} e na \gls{cpu}.
+
+O \textit{ResourceManager} faz o gerenciamento da maioria dos recursos na /gls{gpu}, e é nele onde ocorre as chamadas para a criacao da mesh, e usando os mesmo recursos da mesh a criacao da \gls{blas} ocorre.
+
+\begin{figure}[htb]
+	\caption{Funcionamento das \textit{Batchs}}
+    \centering
+    {\parbox{16cm}
+        {
+            \includegraphics[width=1\textwidth]{images/FuncionamentoDasBatchs.png}
+            \label{fig:organizacao_dos_pipelines}
+            \hspace{0.0cm}{Fonte: Elaborado pelo autor, utilizando draw.io}
+        }
+    }
+\end{figure}
+
+
 
 \subsection{Criacao das \glspl{bvh}}
 
 Nesta aplicacao a \gls{bvh} é por mesh e não por submesh entao ela pode ser simplemente guardada na instancia. Quando criamos uma batch nova com uma mesh que nao existia ainda, ja podemos aproveitar o momento em que as primitivas estao acessiveis em \gls{cpu} e construir a \gls{blas}
+
+A construcao exige alguns parametro e transformacoes para a abstracao para todas as implementacoes.
+
+Parametros seriam os \textit{vertices} e \textit{indices} alem da \textit{submesh}. Apesar da implementacao das \glspl{bvh} nao ser por \textit{submesh} e sim por \textit{mesh} ainda precisamos separar as submesh dentro das primitivas para que o material nao se misture, no caso do objeto ter mais de 1 textura e uma delas sendo possivelmente transparente ou para o caso do \textit{ray tracing} com material diferente.
+
+% adicionar indices na fundamentacao
+
+
+% ta errado tudo aqui XD reescrever.
+Os \textit{vertices} e \textit{indices} sao extremamente importantes para cirar as primitivas da \gls{blas}. Porem antes criamos uma interface \textit{PrimitiveRef} que é definida de forma generica para ser usada pelos  argoritmos de construcao da \gls{bvh}.
+
+
+\subsection{Criacao da \gls{tlas}}
+
+
+\subsection{Preparacao para os Experimentos}
 
 
 \subsection{Execução dos Experimentos}
