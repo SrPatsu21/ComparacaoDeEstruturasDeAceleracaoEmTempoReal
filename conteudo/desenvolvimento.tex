@@ -80,9 +80,22 @@ Além de definir essas opções para o código C++, as mesmas definições são 
 
 \section{Aplicação Desenvolvida}
 
-\subsection{Arquitetura da Aplicação}
+principais partes do desenvolvimento relevante para a construcao das \glspl{bvh}.
 
-\subsection{Configuração das Estruturas \gls{bvh}}
+\subsection{Criacao de instancias}
+
+As instancias ficam em um vetor de ponteiros, cada uma dessas instancias tem um ou mais \textit{sub meshs} que são pedacoes da mesh em que temos uma troca de material, por exemplo uma faca simples, ela teria um cabo de madeira e uma lamina de aço. Para a criacao do \textit{Gbuffer}, essas submeshs sao organizadas em um hashmap chamado de batch_map com varais batchs, cada batch é a representacao de uma submesh e dentro dela existe um vetor com a posicao das submeshs que sao iguais mas estao em posicao diferente, isso permite usarmos o vkCmdDrawIndexed, essa estrutura ajuda a \gls{gpu} a evitar troca de contexto acelerando significativamente o processo de renderizacao \cite{vulkan_vk_cmd_draw_indexed}.
+
+É comum criar uma \gls{blas} para cada \textit{sub mesh}, isso permite especificar texturas e o material como um todo antes de entrar na \gls{blas}, porem n foi o que aconteceu neste trabalho, seria interesante é ate melhor pois reduz o tamanho da folha da \gls{blas} que n precisaria mais fornecer o material.
+
+Durante a criacao das intancias é criado um registro que guarda a conexao da instancia com o index no vetor de posicao da batch. Isso garante que seja possivel atualizar e remover as inteancias sem ter que recriar as batchs, esse sistema ja existia no \textit{Apotheosis}.
+
+% figura das batchs
+
+\subsection{Criacao das \glspl{bvh}}
+
+Nesta aplicacao a \gls{bvh} é por mesh e não por submesh entao ela pode ser simplemente guardada na instancia. Quando criamos uma batch nova com uma mesh que nao existia ainda, ja podemos aproveitar o momento em que as primitivas estao acessiveis em \gls{cpu} e construir a \gls{blas}
+
 
 \subsection{Execução dos Experimentos}
 
