@@ -118,10 +118,40 @@ Parametros seriam os \textit{vertices} e \textit{indices} alem da \textit{submes
 
 % adicionar indices na fundamentacao
 
+Primeiramente o é necessario criar o \textit{PrimitiveRef}, essa \textit{struct} representa uma folha da \gls{blas}, primeiro precisamos criar essa folha abstrata para depois conseguimos montar a arvore de forma mais facil. Essa referencia é praticamente igual o que sera a folha, a unica diferenca é q ela possue uma \textit{struct} para o \gls{aabb} e no caso a folha nao tera pois para tentar acelerar os teste e tornar a aplicacao com um cash melhor, os nos da arvore carregam as \glspl{aabb} dos nos filhos
 
-% ta errado tudo aqui XD reescrever.
-Os \textit{vertices} e \textit{indices} sao extremamente importantes para cirar as primitivas da \gls{blas}. Porem antes criamos uma interface \textit{PrimitiveRef} que é definida de forma generica para ser usada pelos  argoritmos de construcao da \gls{bvh}.
+A primitiva teoricamente poderia ter quantos triangulos elas quiser, porem defini uma constante com valor 4 para limite de traingulos por instancia. Isso ajuda a reduzir o tamanho da arvore, pois percebi q estava muito grande, mas em alguns casos como um cubo ou figuras menores, essa tecnicas acaba prejudicando a arvore, tornando todas as intancias  com \glspl{aabb} iguais. Fazendo o teste da \gls{aabb} revelar pouco e passar muito mais resposabilidade para o teste com triangulos.
 
+O correto seria crair um algoritmo para identificar qual seria a melhor divisao, porem isso n foi feito, esta para planos futuros
+
+\begin{lstlisting}[caption={\textit{Struct} da instancia da \gls{blas}}, label={cod:blas_instance}]
+struct BLASInstance
+{
+    uint32_t firstTriangle; //4
+    uint32_t triangleCount; //4
+
+    uint32_t materialOffset; //4
+    uint32_t pad0; //4
+}; //16
+\end{lstlisting}
+\fonte{Elaborado pelo autor (2026).}
+
+\begin{lstlisting}[caption={\textit{Struct} do no da \gls{blas}}, label={cod:blas_node}]
+struct BVHNode
+{
+    AABB childBounds[2]; //128
+
+    uint32_t children[2]; //8
+
+    uint32_t leaf; //4
+    uint32_t pad0;//4
+}; // 128 + 16 = 144
+\end{lstlisting}
+\fonte{Elaborado pelo autor (2026).}
+
+Nos nos temos uma mudanca importante,
+
+O motivo de termos alguns \textit{pad} ou \textit{padding}, é porque nas estruturas precisamos ter um multiplo de 32 isso se deve a uma questao de acesso no shaders. %buscar mais informacoes e fonte confiaver  e add na metodologia
 
 \subsection{Criacao da \gls{tlas}}
 

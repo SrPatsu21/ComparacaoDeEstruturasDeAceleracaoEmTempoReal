@@ -77,3 +77,42 @@
 % ---
 \makeindex
 % ---
+
+% =======================================================================
+% CONFIGURAÇÃO DE CÓDIGO C++ CONFORME ABNT
+% =======================================================================
+\usepackage{listings}
+\usepackage{xcolor}
+
+% Definindo cores para destaque de sintaxe
+\definecolor{cppkeyword}{rgb}{0.0, 0.2, 0.8}    % Azul para palavras-chave
+\definecolor{cppcomment}{rgb}{0.25, 0.5, 0.35}  % Verde para comentários
+\definecolor{cppstring}{rgb}{0.7, 0.1, 0.1}     % Vermelho/Vinho para strings
+\definecolor{cppbackground}{rgb}{0.97, 0.97, 0.97} % Cinza claro para o fundo
+
+% Configuração global do estilo do C++
+\lstset{
+  language=C++,
+  basicstyle=\ttfamily\small,            % Fonte monoespaçada pequena
+  keywordstyle=\color{cppkeyword}\bfseries,
+  commentstyle=\color{cppcomment}\itshape,
+  stringstyle=\color{cppstring},
+  backgroundcolor=\color{cppbackground},
+  numbers=left,                          % Numeração de linhas à esquerda
+  numberstyle=\tiny\color{gray},         % Estilo do número das linhas
+  stepnumber=1,                          % Número em todas as linhas
+  numbersep=8pt,                         % Distância entre o número e o código
+  showspaces=false,
+  showstringspaces=false,
+  showtabs=false,
+  frame=single,                          % Moldura simples ao redor do código
+  frameround=ffff,
+  rulecolor=\color{lightgray},
+  tabsize=2,
+  breaklines=true,                       % Quebra de linha automática
+  breakatwhitespace=true,
+  captionpos=t                           % ABNT: Legenda/Título SEMPRE no topo
+}
+
+% Nomeia as listagens como "Código" (ou altere para "Quadro" se preferir)
+\renewcommand{\lstlistingname}{Código}
