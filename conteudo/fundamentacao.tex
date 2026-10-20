@@ -78,6 +78,20 @@ Em um sistema de modelagem hierárquica, objetos complexos são construídos a p
 
 No \textit{ray tracing}, as primitivas podem ser: polígonos, objetos geométricos como a esfera ou objetos mais complexos como \textit{patches} paramétricos \cite{wyvill1995practical}. Na rasterização, é possível usar figuras mais complexas, porém o Vulkan usa apenas pontos, linhas e triângulos, pois são as mais otimizadas. Em especial, os triângulos são amplamente utilizados uma vez que permitem a aproximação de superfícies arbitrárias e complexas \cite{vulkan_docs}.
 
+Uma otimização importante de ser citada é o \textit{Index Buffer}. \cite{vulkan_docs_index_buffer} Em uma malha 3D, é comum que diferentes triângulos compartilhem os mesmos vértices. Sem um \textit{Index Buffer}, cada triângulo precisaria armazenar novamente os vértices que utiliza, gerando dados duplicados e aumentando desnecessariamente o consumo de memória. O \textit{Index Buffer} resolve esse problema armazenando índices que apontam para os vértices já existentes no \textit{vertex buffer}, permitindo que um mesmo vértice seja reutilizado por vários triângulos.
+
+\begin{figure}[htb]
+	\caption{Exemplo de \textit{Index Buffer}}
+    \centering
+    {\parbox{16cm}
+        {
+            \includegraphics[width=1\textwidth]{images/exemploIndexBuffer.png}
+            \label{fig:exemplo_ray_casting}
+            \hspace{0.0cm}{Fonte: \cite{wang2022development}}
+        }
+    }
+\end{figure}
+
 \subsection{Efeitos físicos da luz}
 
 O objetivo de um algoritmo de \textit{ray tracing} é simular diversos efeitos ópticos. Entre os principais efeitos estão a reflexão, refração, transparência, translucidez e oclusão.

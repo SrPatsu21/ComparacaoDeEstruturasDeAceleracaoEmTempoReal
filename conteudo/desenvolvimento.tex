@@ -116,8 +116,6 @@ A construcao exige alguns parametro e transformacoes para a abstracao para todas
 
 Parametros seriam os \textit{vertices} e \textit{indices} alem da \textit{submesh}. Apesar da implementacao das \glspl{bvh} nao ser por \textit{submesh} e sim por \textit{mesh} ainda precisamos separar as submesh dentro das primitivas para que o material nao se misture, no caso do objeto ter mais de 1 textura e uma delas sendo possivelmente transparente ou para o caso do \textit{ray tracing} com material diferente.
 
-% adicionar indices na fundamentacao
-
 Primeiramente o é necessario criar o \textit{PrimitiveRef}, essa \textit{struct} representa uma folha da \gls{blas}, primeiro precisamos criar essa folha abstrata para depois conseguimos montar a arvore de forma mais facil. Essa referencia é praticamente igual o que sera a folha, a unica diferenca é q ela possue uma \textit{struct} para o \gls{aabb} e no caso a folha nao tera pois para tentar acelerar os teste e tornar a aplicacao com um cash melhor, os nos da arvore carregam as \glspl{aabb} dos nos filhos
 
 A primitiva teoricamente poderia ter quantos triangulos elas quiser, porem defini uma constante com valor 4 para limite de traingulos por instancia. Isso ajuda a reduzir o tamanho da arvore, pois percebi q estava muito grande, mas em alguns casos como um cubo ou figuras menores, essa tecnicas acaba prejudicando a arvore, tornando todas as intancias  com \glspl{aabb} iguais. Fazendo o teste da \gls{aabb} revelar pouco e passar muito mais resposabilidade para o teste com triangulos.
@@ -149,9 +147,11 @@ struct BVHNode
 \end{lstlisting}
 \fonte{Elaborado pelo autor (2026).}
 
-Nos nos temos uma mudanca importante,
+Na criaca da arvore usamos \textit{PrimitiveRef} para criar os nos e depois transformamos a \textit{PrimitiveRef} na instancia da \gls{blas}.
 
-O motivo de termos alguns \textit{pad} ou \textit{padding}, é porque nas estruturas precisamos ter um multiplo de 32 isso se deve a uma questao de acesso no shaders. %buscar mais informacoes e fonte confiaver  e add na metodologia
+Depois os nos e as instancias são carregadas em dois \textit{buffer} da \gls{gpu}. Um buffer especifico para instancia e outro para os nos da /gls{blas}. Ate poderiam ser armazenados no mesmo buffer mas isso aumenta a complexidade e dificulta o acesso.
+
+O uso de \textit{pad} ou \textit{padding} em algumas estruturas está relacionado aos requisitos de alinhamento de memória para o acesso aos dados pelos \textit{shaders}. O Vulkan define diferentes regras de alinhamento para os dados armazenados em buffers \cite{vulkan_guide_shader_memory_layout}. Além disso, quando utilizado \textit{Buffer Device Address}, o endereço de memória fornecido ao \textit{shader} também deve respeitar o alinhamento especificado para o tipo de dado, permitindo que o compilador gere instruções de acesso compatíveis com esse alinhamento \cite{vulkan_guide_bda_alignment}.
 
 \subsection{Criacao da \gls{tlas}}
 
