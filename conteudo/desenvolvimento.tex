@@ -80,49 +80,53 @@ Além de definir essas opções para o código C++, as mesmas definições são 
 
 \section{Aplicação Desenvolvida}
 
-principais partes do desenvolvimento relevante para a construcao das \glspl{bvh}.
+Nesta seção são apresentadas as principais partes do desenvolvimento relacionadas à construção e à utilização das estruturas \glspl{bvh}. São descritos o gerenciamento das instâncias, a organização das geometrias e o processo de construção das estruturas de aceleração utilizadas nos experimentos.
 
-\subsection{Criacao de instancias}
+\subsection{Criação de instâncias}
 
-As instancias ficam em um vetor de ponteiros, cada uma dessas instancias tem um ou mais \textit{sub meshs} que são pedacoes da mesh em que temos uma troca de material, por exemplo uma faca simples, ela teria um cabo de madeira e uma lamina de aço. Para a criacao do \textit{Gbuffer}, essas submeshs sao organizadas em um hashmap chamado de batch\_map com varais batchs, cada batch é a representacao de uma submesh e dentro dela existe um vetor com a posicao das submeshs que sao iguais mas estao em posicao diferente, isso permite usarmos o vkCmdDrawIndexed, essa estrutura ajuda a \gls{gpu} a evitar troca de contexto acelerando significativamente o processo de renderizacao \cite{vulkan_vk_cmd_draw_indexed}.
+As instâncias dos objetos presentes na cena são armazenadas em um vetor de ponteiros. Cada instância pode possuir uma ou mais \textit{submeshes}, que representam partes de uma mesma \textit{mesh} associadas a materiais diferentes. Por exemplo, uma faca pode ser representada por uma única \textit{mesh}, mas possuir uma \textit{submesh} para o cabo de madeira e outra para a lâmina de aço.
 
-É comum criar uma \gls{blas} para cada \textit{sub mesh}, isso permite especificar texturas e o material como um todo antes de entrar na \gls{blas}, porem n foi o que aconteceu neste trabalho, seria interesante é ate melhor pois reduz o tamanho da folha da \gls{blas} que n precisaria mais fornecer o material.
+Durante a criação do \textit{G-buffer}, essas \textit{submeshes} são organizadas em uma estrutura de dados baseada em \textit{hashmap}, denominada \textit{batch\_map}, que armazena diferentes \textit{batches}. Cada \textit{batch} representa uma \textit{submesh} e contém um vetor com as posições das instâncias que utilizam a mesma geometria, mas podem estar localizadas em posições diferentes da cena. Essa organização permite agrupar chamadas de desenho e utilizar a função \textit{vkCmdDrawIndexed} para renderizar múltiplas instâncias da mesma geometria. Dessa forma, é possível reduzir a quantidade de chamadas de desenho necessárias e a sobrecarga associada ao envio de comandos para a \gls{gpu} \cite{vulkan_vk_cmd_draw_indexed}.
 
-Durante a criacao das intancias é criado um registro (\textit{BatchRegistration}) que guarda a conexao da instancia com o index no vetor de posicao da batch e um ponteiro para a batch. Isso garante que seja possivel atualizar e remover as inteancias sem ter que recriar as batchs, esse sistema ja existia no \textit{Apotheosis}.
+Uma abordagem possível seria criar uma \gls{blas} para cada \textit{submesh}. Isso permitiria associar a geometria e seu material de forma mais direta, facilitando a identificação do material correspondente durante a travessia da estrutura. Entretanto, essa não foi a abordagem adotada neste trabalho. A \gls{blas} é construída por \textit{mesh}, abrangendo suas diferentes \textit{submeshes}. Essa decisão exige que as informações de material sejam mantidas e identificadas durante a travessia da \gls{blas}, pois uma mesma estrutura pode conter primitivas associadas a materiais diferentes.
 
-Para criar a \textit{batch} é ter as informações que estao contidas na mesh e a partir da mesh conseguimos extrair todas as informacoes necessarias, alem disso guardamos essas informações dentro de \textit{ResourceManager}, esssa classe permite consultar e saber o que ja esta na \gls{gpu} e na \gls{cpu}.
+Durante a criação das instâncias, também é criado um registro denominado \textit{BatchRegistration}. Esse registro mantém a associação entre a instância, sua posição no vetor de instâncias do \textit{batch} e um ponteiro para o próprio \textit{batch}. Dessa forma, é possível atualizar ou remover instâncias sem precisar reconstruir todos os \textit{batches}. Esse mecanismo já existia no \textit{Apotheosis} e foi mantido na aplicação desenvolvida.
 
-O \textit{ResourceManager} faz o gerenciamento da maioria dos recursos na /gls{gpu}, e é nele onde ocorre as chamadas para a criacao da mesh, e usando os mesmo recursos da mesh a criacao da \gls{blas} ocorre.
+Para criar um \textit{batch}, são necessárias as informações presentes na \textit{mesh}, a partir das quais podem ser obtidos os dados utilizados na renderização. Essas informações são gerenciadas pelo \textit{ResourceManager}, responsável por organizar e disponibilizar os recursos utilizados pela aplicação, incluindo aqueles armazenados na \gls{cpu} e na memória da \gls{gpu}. Dessa forma, a aplicação pode consultar os recursos existentes e reutilizá-los quando necessário.
+
+O \textit{ResourceManager} também participa do processo de criação das \textit{meshes}. Como as informações necessárias para a construção da \gls{blas} já estão disponíveis nesse processo, a estrutura de aceleração pode ser construída utilizando os mesmos dados da geometria, evitando a necessidade de realizar uma nova busca pelos recursos correspondentes.
 
 \begin{figure}[htb]
-	\caption{Funcionamento das \textit{Batchs}}
+    \caption{Funcionamento dos \textit{batches}}
     \centering
     {\parbox{16cm}
         {
             \includegraphics[width=1\textwidth]{images/FuncionamentoDasBatchs.png}
-            \label{fig:organizacao_dos_pipelines}
+            \label{fig:funcionamento_das_batches}
             \hspace{0.0cm}{Fonte: Elaborado pelo autor, utilizando draw.io}
         }
     }
 \end{figure}
 
+\subsection{Criação das \glspl{bvh}}
 
+Na aplicação desenvolvida, a \gls{bvh} é construída por \textit{mesh}, e não individualmente para cada \textit{submesh}. Dessa forma, a estrutura de aceleração pode ser associada à instância correspondente. Quando uma nova \textit{mesh} é adicionada e ainda não possui os recursos necessários registrados, a construção da \gls{blas} pode aproveitar o momento em que os dados das primitivas estão disponíveis na \gls{cpu}.
 
-\subsection{Criacao das \glspl{bvh}}
+Para permitir a utilização de diferentes implementações de \gls{bvh}, foi necessário definir uma representação comum para os dados utilizados durante a construção. Entre os parâmetros necessários estão os \textit{vertices}, os índices que definem os triângulos e as informações das \textit{submeshes}. Embora a \gls{bvh} seja construída por \textit{mesh}, as informações das \textit{submeshes} ainda precisam ser consideradas para preservar a associação entre as primitivas e seus respectivos materiais. Isso é importante quando um objeto possui mais de um material ou quando algum deles apresenta: transparência, utiliza \textit{blend} ou \textit{mask}.
 
-Nesta aplicacao a \gls{bvh} é por mesh e não por submesh entao ela pode ser simplemente guardada na instancia. Quando criamos uma batch nova com uma mesh que nao existia ainda, ja podemos aproveitar o momento em que as primitivas estao acessiveis em \gls{cpu} e construir a \gls{blas}
+Inicialmente, é criada uma estrutura denominada \textit{PrimitiveRef}, que representa uma primitiva durante o processo de construção da \gls{bvh}. Essa estrutura funciona como uma representação intermediária, permitindo organizar as primitivas antes da criação dos nós da árvore. A partir dessas referências, os algoritmos de construção podem organizar as primitivas e gerar a hierarquia correspondente.
 
-A construcao exige alguns parametro e transformacoes para a abstracao para todas as implementacoes.
+A \textit{PrimitiveRef} também contém uma estrutura \textit{AABB} utilizada para representar os limites espaciais da primitiva. Na estrutura final dos nós, entretanto, os limites são armazenados de outra forma: cada nó mantém as \glspl{aabb} dos seus filhos. Assim, durante a travessia, é possível testar os limites dos filhos antes de acessar os nós correspondentes. Essa organização busca reduzir a quantidade de acessos necessários aos dados dos nós durante a execução do algoritmo.
 
-Parametros seriam os \textit{vertices} e \textit{indices} alem da \textit{submesh}. Apesar da implementacao das \glspl{bvh} nao ser por \textit{submesh} e sim por \textit{mesh} ainda precisamos separar as submesh dentro das primitivas para que o material nao se misture, no caso do objeto ter mais de 1 textura e uma delas sendo possivelmente transparente ou para o caso do \textit{ray tracing} com material diferente.
+Outro parâmetro definido durante a construção é a quantidade máxima de triângulos associados a uma instância da \gls{blas}. Nesta implementação, foi estabelecido um limite de quatro triângulos por instância. Essa decisão foi tomada após observar que a árvore apresentava um tamanho elevado, buscando reduzir a quantidade de nós e o espaço necessário para armazenar a estrutura.
 
-Primeiramente o é necessario criar o \textit{PrimitiveRef}, essa \textit{struct} representa uma folha da \gls{blas}, primeiro precisamos criar essa folha abstrata para depois conseguimos montar a arvore de forma mais facil. Essa referencia é praticamente igual o que sera a folha, a unica diferenca é q ela possue uma \textit{struct} para o \gls{aabb} e no caso a folha nao tera pois para tentar acelerar os teste e tornar a aplicacao com um cash melhor, os nos da arvore carregam as \glspl{aabb} dos nos filhos
+Entretanto, esse limite também apresenta desvantagens. Em geometrias pequenas, como cubos e outros objetos com poucos triângulos, diferentes instâncias podem acabar apresentando \glspl{aabb} iguais ou muito semelhantes. Nesses casos, o teste de interseção com as caixas delimitadoras consegue descartar menos primitivas, transferindo uma parcela maior do trabalho para os testes de interseção com os triângulos.
 
-A primitiva teoricamente poderia ter quantos triangulos elas quiser, porem defini uma constante com valor 4 para limite de traingulos por instancia. Isso ajuda a reduzir o tamanho da arvore, pois percebi q estava muito grande, mas em alguns casos como um cubo ou figuras menores, essa tecnicas acaba prejudicando a arvore, tornando todas as intancias  com \glspl{aabb} iguais. Fazendo o teste da \gls{aabb} revelar pouco e passar muito mais resposabilidade para o teste com triangulos.
+Uma alternativa seria implementar um algoritmo capaz de determinar uma divisão mais adequada para cada geometria, considerando suas características espaciais e a quantidade de triângulos. No entanto, essa estratégia não foi implementada neste trabalho e fica como uma possibilidade para trabalhos futuros.
 
-O correto seria crair um algoritmo para identificar qual seria a melhor divisao, porem isso n foi feito, esta para planos futuros
+A estrutura utilizada para representar uma instância da \gls{blas} é apresentada no Código \ref{cod:blas_instance}.
 
-\begin{lstlisting}[caption={\textit{Struct} da instancia da \gls{blas}}, label={cod:blas_instance}]
+\begin{lstlisting}[caption={\textit{Struct} da instância da \gls{blas}}, label={cod:blas_instance}]
 struct BLASInstance
 {
     uint32_t firstTriangle; //4
@@ -134,7 +138,11 @@ struct BLASInstance
 \end{lstlisting}
 \fonte{Elaborado pelo autor (2026).}
 
-\begin{lstlisting}[caption={\textit{Struct} do no da \gls{blas}}, label={cod:blas_node}]
+A estrutura armazena o índice do primeiro triângulo associado à instância, a quantidade de triângulos e o deslocamento utilizado para acessar as informações de material. O campo \textit{pad0} é utilizado como preenchimento, contribuindo para manter o tamanho e o alinhamento esperados para a estrutura.
+
+A representação dos nós da \gls{bvh} é apresentada no Código \ref{cod:blas_node}.
+
+\begin{lstlisting}[caption={\textit{Struct} do nó da \gls{blas}}, label={cod:blas_node}]
 struct BVHNode
 {
     AABB childBounds[2]; //128
@@ -147,19 +155,58 @@ struct BVHNode
 \end{lstlisting}
 \fonte{Elaborado pelo autor (2026).}
 
-Na criaca da arvore usamos \textit{PrimitiveRef} para criar os nos e depois transformamos a \textit{PrimitiveRef} na instancia da \gls{blas}.
+Nesse formato, cada nó armazena as caixas delimitadoras dos dois filhos, os índices utilizados para acessá-los e um campo que identifica a condição de folha. O campo \textit{pad0} é utilizado como preenchimento. Essa representação corresponde à estrutura binária utilizada pelas implementações que adotam o tipo \textit{BVHNode}; a \gls{bvh8}, por utilizar nós com maior quantidade de filhos, emprega uma estrutura específica.
 
-Depois os nos e as instancias são carregadas em dois \textit{buffer} da \gls{gpu}. Um buffer especifico para instancia e outro para os nos da /gls{blas}. Ate poderiam ser armazenados no mesmo buffer mas isso aumenta a complexidade e dificulta o acesso.
+Durante a construção da árvore, as referências \textit{PrimitiveRef} são utilizadas para organizar as primitivas e gerar os nós da \gls{bvh}. Após a conclusão desse processo, os dados intermediários são convertidos para o formato utilizado durante a execução, incluindo as instâncias da \gls{blas} e os nós da árvore.
 
-O uso de \textit{pad} ou \textit{padding} em algumas estruturas está relacionado aos requisitos de alinhamento de memória para o acesso aos dados pelos \textit{shaders}. O Vulkan define diferentes regras de alinhamento para os dados armazenados em buffers \cite{vulkan_guide_shader_memory_layout}. Além disso, quando utilizado \textit{Buffer Device Address}, o endereço de memória fornecido ao \textit{shader} também deve respeitar o alinhamento especificado para o tipo de dado, permitindo que o compilador gere instruções de acesso compatíveis com esse alinhamento \cite{vulkan_guide_bda_alignment}.
+Por fim, os nós e as instâncias são transferidos para dois \textit{buffers} distintos na memória da \gls{gpu}: um destinado às instâncias da \gls{blas} e outro destinado aos nós da estrutura. Embora fosse possível armazenar os dois tipos de dados em um único \textit{buffer}, optou-se por separá-los para simplificar a organização e o acesso aos dados durante a travessia.
+
+O uso de campos de preenchimento, denominados \textit{padding}, em algumas estruturas está relacionado aos requisitos de alinhamento de memória para o acesso aos dados pelos \textit{shaders}. O \textit{Vulkan} define regras de alinhamento para os dados armazenados em \textit{buffers}, que devem ser consideradas na organização das estruturas compartilhadas entre a aplicação e os \textit{shaders} \cite{vulkan_guide_shader_memory_layout}. Além disso, quando é utilizado \textit{Buffer Device Address}, os endereços de memória e os dados acessados precisam respeitar os requisitos de alinhamento aplicáveis \cite{vulkan_guide_bda_alignment}.
+
 
 \subsection{Criacao da \gls{tlas}}
 
+A \gls{tlas} possue um processo de criacao parecido com a \gls{blas} em certos pontos. Primeiramente precisamos criar as referencias para a \gls{blas} de cada instancia que foi renderizada, da mesma forma que na criacao da \gls{blas} aqui tambem usamos \textit{PrimitiveRef}, porem nao usamos a variavel \textit{materialOffset}, que no caso fica serve apenas para as instancias da \gls{blas}.
+
+Usnado as \textit{PrimitiveRef} o processo de construcao dos nos segue identico ao da \gls{blas}. Apos a criacao dos nos as \textit{PrimitiveRef} sao transformadas em instancias. Por fim a \gls{tlas} é carregada na \gls{gpu} da mesma forma que a \gls{blas}, porem em um outro buffer.
+
+\begin{lstlisting}[caption={\textit{Struct} da instancia da \gls{tlas}}, label={cod:tlas_instance}]
+struct TLASInstance
+{
+    glm::mat4 inverseTransform; // 4*4*32 512
+
+    uint64_t vertexAddress; //8
+    uint64_t indexAddress; //8
+
+    uint32_t blasIndex; // 4
+    uint32_t nodeOffset; // 4
+    uint32_t nodeCount; // 4
+    uint32_t instanceOffset; // 4
+};
+\end{lstlisting}
+\fonte{Elaborado pelo autor (2026).}
+
+\subsection{Diferentes \glspl{bvh}}
+
+
+
+
+
+\section{Configuração dos Experimentos}
 
 \subsection{Preparacao para os Experimentos}
 
+\subsection{Cenas Utilizadas}
+
+\subsection{Configuração de Hardware e Software}
+
+\subsection{Parâmetros de Execução}
 
 \subsection{Execução dos Experimentos}
+
+
+
+
 
 \section{Coleta e Tratamento dos Dados}
 
@@ -168,11 +215,3 @@ O uso de \textit{pad} ou \textit{padding} em algumas estruturas está relacionad
 \subsection{Execução dos Testes}
 
 \subsection{Tratamento dos Dados}
-
-\section{Configuração dos Experimentos}
-
-\subsection{Cenas Utilizadas}
-
-\subsection{Configuração de Hardware e Software}
-
-\subsection{Parâmetros de Execução}
