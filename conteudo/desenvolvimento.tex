@@ -216,6 +216,20 @@ Por outro lado, caso o nó seja uma folha, o raio é testado diretamente contra 
 
 
 
+\subsection{\gls{lbvh}}
+
+Aqui temos uma mudança na construção em relação à \gls{bvh} tradicional. Enquanto a abordagem padrão divide o espaço geometricamente de forma direta, a \gls{lbvh} (\textit{Linear Bounding Volume Hierarchy}) baseia-se em códigos de espaço preenchido por curvas para organizar as primitivas de forma linearizada e altamente eficiente.
+
+O algoritmo inicia calculando os limites dos centroides de todas as primitivas e normalizando suas posições espaciais. Para cada primitiva, a função \textit{morton3D} converte essas coordenadas em um código de Morton (ou código Z) de 32 bits, intercalando os bits dos eixos X, Y e Z por meio da expansão de bits (\textit{expandBits}). Esses códigos mapeiam a localidade espacial tridimensional em uma ordem unidimensional.
+
+Com os códigos calculados, as primitivas são ordenadas de forma estável (\textit{stable_sort}) com base em seus valores de Morton. Essa ordenação agrupa espacialmente objetos próximos na memória antes da construção da árvore. Em seguida, a função recursiva constrói a hierarquia utilizando a função \textit{determineSplit}, que avalia o prefixo comum em binário entre os códigos extremos de cada intervalo (\textit{commonPrefix}) por meio de busca binária, determinando o ponto ideal de divisão de forma rápida. O processo se repete recursivamente até que os nós alcancem a condição de folha, calculando as caixas delimitadoras (\gls{aabb}) correspondentes para cada ramo gerado.
+
+
+
+\subsection{\gls{bsah}}
+
+
+
 \subsection{\gls{bvh8}}
 
 A estrutura do nó muda em relação à BVH binária tradicional; o nó em si fica maior, mas a ideia principal de hierarquia espacial se mantém.
