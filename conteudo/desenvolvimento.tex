@@ -217,7 +217,7 @@ Por outro lado, caso o nó seja uma folha, o raio é testado diretamente contra 
 
 
 \subsection{\gls{lbvh}}
-
+% todo rever esta parte por causa do codigo errado
 Aqui temos uma mudança na construção em relação à \gls{bvh} tradicional. Enquanto a abordagem padrão divide o espaço geometricamente de forma direta, a \gls{lbvh} (\textit{Linear Bounding Volume Hierarchy}) baseia-se em códigos de espaço preenchido por curvas para organizar as primitivas de forma linearizada e altamente eficiente.
 
 O algoritmo inicia calculando os limites dos centroides de todas as primitivas e normalizando suas posições espaciais. Para cada primitiva, a função \textit{morton3D} converte essas coordenadas em um código de Morton (ou código Z) de 32 bits, intercalando os bits dos eixos X, Y e Z por meio da expansão de bits (\textit{expandBits}). Esses códigos mapeiam a localidade espacial tridimensional em uma ordem unidimensional.
@@ -226,7 +226,16 @@ Com os códigos calculados, as primitivas são ordenadas de forma estável (\tex
 
 
 
-\subsection{\gls{bsah}}
+\subsection{\gls{binned_sah}}
+
+Enquanto a BVH tradicional divide as primitivas simplesmente ao meio usando a mediana, a construção baseada em \gls{sah} (\textit{Surface Area Heuristic}) busca otimizar o custo de intersecção do raio, escolhendo o ponto de corte que minimiza a probabilidade de o raio atingir os nós filhos. Para evitar o alto custo computacional de avaliar todas as posições possíveis de corte, esta implementação utiliza uma abordagem compartimentada (\textit{Binned SAH}).
+
+O processo inicia para cada intervalo gerado iterativamente por pilha, avaliando os eixos espaciais disponíveis. Em vez de ordenar todas as primitivas individualmente para cada teste, o algoritmo distribui as geometrias em um número fixo de compartimentos (\textit{bins}, por padrão 16) com base nas coordenadas de seus centroides. Para cada compartimento, são acumuladas as caixas delimitadoras (\gls{aabb}) e a contagem de elementos.
+
+Em seguida, o algoritmo calcula prefixos e sufixos cumulativos dos custos de superfície utilizando a heurística de área, avaliando rapidamente o custo combinado de dividir o conjunto em cada ponto de fronteira entre os compartimentos. O ponto de corte que apresenta o menor custo global é selecionado.
+
+Com o eixo e o ponto de divisão definidos, a função \textit{std::partition} reagrupa as primitivas em duas metades com base no compartimento correspondente. Caso ocorra algum desbalanceamento extremo que impeça a partição por compartimentos, o algoritmo recorre a um método de divisão alternativa por mediana (\textit{std::nth_element}). Por fim, os sub-intervalos esquerdo e direito são empilhados, calculando-se os \gls{aabb} finais para cada filho criado.
+
 
 
 
@@ -260,9 +269,21 @@ No caso específico da travessia, a \gls{bvh8} aproveita essa alta capacidade de
 
 \section{Configuração dos Experimentos}
 
-\subsection{Preparacao para os Experimentos}
+Nesta seção, serão explicados como ocorreram os testes e o planejamento desses experimentos.
+
+\subsection{Preparação para os Experimentos}
+
+O primeiro ponto, e mais simples, é que o \textit{Nsight Systems} não monitora diretamente o uso de memória \gls{ram} do processo. Para obter essa informação, a forma mais prática seria rodar um \textit{script} em paralelo durante a execução do teste. Contudo, uma métrica ainda mais útil é o consumo específico de memória das estruturas \gls{bvh}; por isso, em um teste isolado, a aplicação foi configurada para retornar no terminal o tamanho exato ocupado pelas estruturas \gls{blas} e \gls{tlas}.
+
+O \textit{Nsight Systems} consegue capturar a grande maioria dos eventos de forma nativa, mas alguns eventos específicos exigem marcações manuais. Para isso, podem ser utilizados marcadores tanto na \gls{cpu} quanto na \gls{gpu} por meio do \gls{nvtx}. Tratando-se de uma \gls{api} para anotação de código que oferece diversas funcionalidades, foi empregado especificamente o recurso \textit{nvtx3::scoped_range} \cite{nvidia_nvtx}. Esse componente funciona como um marcador que armazena um título descritivo e finaliza automaticamente a marcação de tempo assim que o bloco de código sai de escopo.
+
+Esse marcador foi utilizado para isolar e medir precisamente o tempo de construção e de upload das \glspl{bvh}.
 
 \subsection{Cenas Utilizadas}
+
+A cena é a mesma e a disposição das instâncias é igual para todas
+
+a (animação)
 
 \subsection{Configuração de Hardware e Software}
 
@@ -271,7 +292,7 @@ No caso específico da travessia, a \gls{bvh8} aproveita essa alta capacidade de
 \subsection{Execução dos Experimentos}
 
 
-
+% citar de onde tirei os modelos
 
 
 \section{Coleta e Tratamento dos Dados}
