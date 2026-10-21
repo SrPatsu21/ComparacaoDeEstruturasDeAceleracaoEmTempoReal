@@ -281,11 +281,19 @@ Esse marcador foi utilizado para isolar e medir precisamente o tempo de constru�
 
 \subsection{Cenas Utilizadas}
 
-A cena é a mesma e a disposição das instâncias é igual para todas
+A cena é a mesma para todos os experimentos. Ela foi construída de forma rápida, o que significa que não se trata de um cenário realista ou representativo de uma aplicação de produção real. A cena consiste em uma junção de várias instâncias dispostas de forma um tanto desordenada, utilizando alguns modelos 3D que não são de autoria própria (a licença de uso estará disponível junto com o código-fonte).
 
-a (animação)
+Além das múltiplas instâncias, o sistema também conta com animação. A animação compreende o movimento, rotação e alteração de escala do modelo completo. A câmera também se movimenta, rotacionando e se afastando do centro da cena em um trajeto circular.
+
+Todas essas alterações garantem que a \gls{tlas} sofra modificações constantes, ainda que sutis, a cada \textit{frame}. Além disso, a movimentação da câmera modifica os dados enviados ao \textit{buffer} e assegura que novas regiões da \gls{tlas} sejam continuamente exploradas.
+
+
 
 \subsection{Configuração de Hardware e Software}
+
+
+
+
 
 \subsection{Parâmetros de Execução}
 
