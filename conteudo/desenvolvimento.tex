@@ -186,8 +186,60 @@ struct TLASInstance
 \end{lstlisting}
 \fonte{Elaborado pelo autor (2026).}
 
-\subsection{Diferentes \glspl{bvh}}
+\section{Construcão e travessia da \glspl{bvh}}
 
+Esta sesao sera dedicada a mostrar como o no das arvores \gls{bvh} sao construidos.
+
+\subsection{\gls{bvh}}
+
+Exceto para a \gls{bvh8}, todas as demais arvores usam o mesmo no  \ref{cod:blas_node} e a mesma forma de travessia. O que muda é principalmente a construcao entao precisamos explicar como funciona a construcao do que seria a implementacao mais simples para podermos entender as mudancas nas demais.
+
+\subsubsection{construcao}
+
+Dentro de \textit{BLASInstanceBuilder::build} ou \textit{TLASInstanceBuilder::build} (vale resaltar que no nivel de construcao dos nos a implementacao esta generalizada e permite que a funcao seja a mesma). Chamamos a função \textit{BuilderType::build}, que dentro dessa implementacao é uma classe \textit{template} do C++, que permite usar qualquer outra classe no lugar delas desde que tenhas a funcao usada no caso \textit{build} com os mesmos parametros e isso definido em tempo de compilacao.
+
+No caso da \gls{bvh}, a função \textit{build} constrói a árvore de cima para baixo (\textit{top-down}), ou seja, partindo da raiz contendo todas as primitivas e subdividindo o espaço sucessivamente até alcançar as folhas.
+
+O algoritmo inicia considerando todo o conjunto de primitivas como um único bloco. Para evitar chamadas recursivas, ele utiliza uma pilha para controlar o processo de divisão de forma iterativa. A cada etapa, retira-se um intervalo da pilha e cria-se um nó. Caso esse nó possua um pai, ele é vinculado ao slot correspondente do nó superior e a sua caixa delimitadora (\gls{aabb}) é calculada.
+
+Quando o nó contém mais de duas primitivas, ele atua como um nó interno: o algoritmo analisa a posição dos centroides das geometrias para escolher o melhor eixo de corte, reordena as primitivas dividindo-as ao meio com o \textit{std::nth_element} e empilha as duas metades resultantes (esquerda e direita) para serem processadas em seguida. Esse processo de divisão continua até que um grupo passe a ter apenas uma ou duas primitivas. Nessa condição de parada, o nó é finalizado como uma folha (\textit{leaf = 1}) e passa a armazenar diretamente os índices dessas primitivas, encerrando a ramificação daquele ramo.
+
+\subsubsection{travessia}
+
+A travessia ocorre no \textit{shaders}. Da mesma forma que os structs foram criados no C++ tambem é necessario crialos no \textit{shaders}. Dentro do shaders foram criadas algumas funcoes auxiliares para a travessia, como por exemplo \textit{intersectTriangle} para intersecao nos triangulos e \textit{intersectAABB} para intersecao nos \gls{aabb}.
+
+Atualmente a travessia pode buscar por mais de um raio de forma iterativa utilizando uma pilha local na memória do \textit{shader}. O fluxo de execução inicia na raiz da árvore, testando a intersecção do raio com a caixa delimitadora do nó atual por meio da função \textit{intersectAABB}. Caso o raio não atinja o \gls{aabb}, o ramo inteiro é descartado.
+
+Se houver intersecção e o nó for interno, os filhos esquerdo e direito são avaliados e empilhados, priorizando visitar o mais próximo primeiro para encontrar colisões mais cedo. No entanto, essa implementação possui uma limitação: em determinados cenários, o código não consegue realizar a parada antecipada (\textit{early exit}) de forma completa, o que pode obrigar a travessia a explorar nós que poderiam ser descartados.
+
+Por outro lado, caso o nó seja uma folha, o raio é testado diretamente contra as primitivas armazenadas utilizando a função \textit{intersectTriangle}, atualizando o ponto de colisão mais próximo caso haja sucesso. Vale destacar também que, por ser implementado inteiramente via código customizado no \textit{shader}, este algoritmo não consegue aproveitar as estruturas de aceleração de \textit{hardware} nativas disponibilizadas pelo driver da \gls{gpu} (como \textit{RT cores}).
+
+
+
+\subsection{\gls{bvh8}}
+
+A estrutura do nó muda em relação à BVH binária tradicional; o nó em si fica maior, mas a ideia principal de hierarquia espacial se mantém.
+
+\begin{lstlisting}[caption={\textit{Struct} do nó da \gls{bvh8}}, label={cod:bvh8_node}]
+struct BVH8Node
+{
+AABB childBounds[8]; //256
+uint32_t children[8]; //32
+
+uint32_t childCount; //4
+
+uint32_t leaf; //4
+
+uint32_t pad0; //4
+uint32_t pad1; //4
+
+}; //256 + 32 + 16
+\end{lstlisting}
+\fonte{Elaborado pelo autor (2026).}
+
+No que diz respeito à construção (\textit{BVH8Builder}), a principal diferença em relação à BVH binária é o fator de ramificação. Enquanto a árvore binária divide o intervalo de primitivas estritamente em duas metades, a \gls{bvh8} particiona o conjunto em até oito partes a cada nível. O algoritmo utiliza uma função recursiva que ordena as primitivas ao longo do eixo de maior dispersão e as distribui uniformemente entre os filhos disponíveis, calculando o \gls{aabb} correspondente para cada um deles. Além disso, as folhas da \gls{bvh8} suportam armazenar até oito primitivas diretamente (\textit{MAX_LEAF_PRIMS = 8}), reduzindo a profundidade total da árvore.
+
+No caso específico da travessia, a \gls{bvh8} aproveita essa alta capacidade de ramificação: em vez de testar dois filhos, o algoritmo avalia múltiplos \gls{aabb} em paralelo (aproveitando instruções vetoriais ou o paralelismo da \gls{gpu}). Como resultado, a árvore fica muito mais rasa, reduzindo drasticamente o número de saltos na memória durante o rastreio de raios.
 
 
 
