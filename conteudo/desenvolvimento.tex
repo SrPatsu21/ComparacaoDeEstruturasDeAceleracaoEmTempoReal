@@ -271,6 +271,16 @@ No caso específico da travessia, a \gls{bvh8} aproveita essa alta capacidade de
 
 Nesta seção, serão explicados como ocorreram os testes e o planejamento desses experimentos.
 
+
+
+\subsection{Configuração de Hardware e Software}
+
+Os testes foram executados em um ambiente pessoal operando sob o sistema operacional \textit{Arch Linux}, utilizando o \textit{kernel} \textit{Linux} 7.1.11-arch1-1 e o sistema de arquivos \textit{Btrfs} na partição raiz (\textit{/}). O ambiente gráfico utilizado foi o gerenciador de janelas \textit{KDE Plasma} 6.7.4 rodando sobre o protocolo \textit{Wayland}.
+
+Em termos de \textit{hardware}, a máquina é equipada com um processador \textit{Intel Core i5-10600K} (6 núcleos, 12 \textit{threads} operando a uma frequência máxima de 4.10 GHz), acompanhado de 16 GiB de memória \gls{ram}. O processamento gráfico e as execuções de computação paralela via \gls{api} \textit{Vulkan} ficaram a cargo de uma placa de vídeo dedicada \textit{NVIDIA GeForce RTX 5060} com 8 GiB de memória \gls{vram}, controlada pelo \textit{driver} proprietário da \textit{NVIDIA} na versão 610.57.04 e suporte à instância \textit{Vulkan} 1.4.357.
+
+
+
 \subsection{Preparação para os Experimentos}
 
 O primeiro ponto, e mais simples, é que o \textit{Nsight Systems} não monitora diretamente o uso de memória \gls{ram} do processo. Para obter essa informação, a forma mais prática seria rodar um \textit{script} em paralelo durante a execução do teste. Contudo, uma métrica ainda mais útil é o consumo específico de memória das estruturas \gls{bvh}; por isso, em um teste isolado, a aplicação foi configurada para retornar no terminal o tamanho exato ocupado pelas estruturas \gls{blas} e \gls{tlas}.
@@ -289,13 +299,11 @@ Todas essas alterações garantem que a \gls{tlas} sofra modificações constant
 
 
 
-\subsection{Configuração de Hardware e Software}
-
-
-
-
-
 \subsection{Parâmetros de Execução}
+
+Antes de executar os esperimentos, fiz uma verificacao em quais metricas seria possivel coletar e como coletaria essa metrica. Infelizmente algumas metricas não podem ser coletadas na aplicação, mas em variedade ainda é superior aos trabalhos correlatos.
+
+
 
 \subsection{Execução dos Experimentos}
 
