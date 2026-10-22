@@ -127,8 +127,7 @@ Uma alternativa seria implementar um algoritmo capaz de determinar uma divisão 
 A estrutura utilizada para representar uma instância da \gls{blas} é apresentada no Código \ref{cod:blas_instance}.
 
 \begin{lstlisting}[caption={\textit{Struct} da instância da \gls{blas}}, label={cod:blas_instance}]
-struct BLASInstance
-{
+struct BLASInstance {
     uint32_t firstTriangle; //4
     uint32_t triangleCount; //4
 
@@ -143,8 +142,7 @@ A estrutura armazena o índice do primeiro triângulo associado à instância, a
 A representação dos nós da \gls{bvh} é apresentada no Código \ref{cod:blas_node}.
 
 \begin{lstlisting}[caption={\textit{Struct} do nó da \gls{blas}}, label={cod:blas_node}]
-struct BVHNode
-{
+struct BVHNode {
     AABB childBounds[2]; //128
 
     uint32_t children[2]; //8
@@ -171,8 +169,7 @@ A \gls{tlas} possue um processo de criacao parecido com a \gls{blas} em certos p
 Usnado as \textit{PrimitiveRef} o processo de construcao dos nos segue identico ao da \gls{blas}. Apos a criacao dos nos as \textit{PrimitiveRef} sao transformadas em instancias. Por fim a \gls{tlas} é carregada na \gls{gpu} da mesma forma que a \gls{blas}, porem em um outro buffer.
 
 \begin{lstlisting}[caption={\textit{Struct} da instancia da \gls{tlas}}, label={cod:tlas_instance}]
-struct TLASInstance
-{
+struct TLASInstance {
     glm::mat4 inverseTransform; // 4*4*32 512
 
     uint64_t vertexAddress; //8
@@ -202,7 +199,7 @@ No caso da \gls{bvh}, a função \textit{build} constrói a árvore de cima para
 
 O algoritmo inicia considerando todo o conjunto de primitivas como um único bloco. Para evitar chamadas recursivas, ele utiliza uma pilha para controlar o processo de divisão de forma iterativa. A cada etapa, retira-se um intervalo da pilha e cria-se um nó. Caso esse nó possua um pai, ele é vinculado ao slot correspondente do nó superior e a sua caixa delimitadora (\gls{aabb}) é calculada.
 
-Quando o nó contém mais de duas primitivas, ele atua como um nó interno: o algoritmo analisa a posição dos centroides das geometrias para escolher o melhor eixo de corte, reordena as primitivas dividindo-as ao meio com o \textit{std::nth_element} e empilha as duas metades resultantes (esquerda e direita) para serem processadas em seguida. Esse processo de divisão continua até que um grupo passe a ter apenas uma ou duas primitivas. Nessa condição de parada, o nó é finalizado como uma folha (\textit{leaf = 1}) e passa a armazenar diretamente os índices dessas primitivas, encerrando a ramificação daquele ramo.
+Quando o nó contém mais de duas primitivas, ele atua como um nó interno: o algoritmo analisa a posição dos centroides das geometrias para escolher o melhor eixo de corte, reordena as primitivas dividindo-as ao meio com o \textit{std::nth\_element} e empilha as duas metades resultantes (esquerda e direita) para serem processadas em seguida. Esse processo de divisão continua até que um grupo passe a ter apenas uma ou duas primitivas. Nessa condição de parada, o nó é finalizado como uma folha (\textit{leaf = 1}) e passa a armazenar diretamente os índices dessas primitivas, encerrando a ramificação daquele ramo.
 
 \subsubsection{travessia}
 
@@ -222,7 +219,7 @@ Aqui temos uma mudança na construção em relação à \gls{bvh} tradicional. E
 
 O algoritmo inicia calculando os limites dos centroides de todas as primitivas e normalizando suas posições espaciais. Para cada primitiva, a função \textit{morton3D} converte essas coordenadas em um código de Morton (ou código Z) de 32 bits, intercalando os bits dos eixos X, Y e Z por meio da expansão de bits (\textit{expandBits}). Esses códigos mapeiam a localidade espacial tridimensional em uma ordem unidimensional.
 
-Com os códigos calculados, as primitivas são ordenadas de forma estável (\textit{stable_sort}) com base em seus valores de Morton. Essa ordenação agrupa espacialmente objetos próximos na memória antes da construção da árvore. Em seguida, a função recursiva constrói a hierarquia utilizando a função \textit{determineSplit}, que avalia o prefixo comum em binário entre os códigos extremos de cada intervalo (\textit{commonPrefix}) por meio de busca binária, determinando o ponto ideal de divisão de forma rápida. O processo se repete recursivamente até que os nós alcancem a condição de folha, calculando as caixas delimitadoras (\gls{aabb}) correspondentes para cada ramo gerado.
+Com os códigos calculados, as primitivas são ordenadas de forma estável (\textit{stable\_sort}) com base em seus valores de Morton. Essa ordenação agrupa espacialmente objetos próximos na memória antes da construção da árvore. Em seguida, a função recursiva constrói a hierarquia utilizando a função \textit{determineSplit}, que avalia o prefixo comum em binário entre os códigos extremos de cada intervalo (\textit{commonPrefix}) por meio de busca binária, determinando o ponto ideal de divisão de forma rápida. O processo se repete recursivamente até que os nós alcancem a condição de folha, calculando as caixas delimitadoras (\gls{aabb}) correspondentes para cada ramo gerado.
 
 
 
@@ -234,7 +231,7 @@ O processo inicia para cada intervalo gerado iterativamente por pilha, avaliando
 
 Em seguida, o algoritmo calcula prefixos e sufixos cumulativos dos custos de superfície utilizando a heurística de área, avaliando rapidamente o custo combinado de dividir o conjunto em cada ponto de fronteira entre os compartimentos. O ponto de corte que apresenta o menor custo global é selecionado.
 
-Com o eixo e o ponto de divisão definidos, a função \textit{std::partition} reagrupa as primitivas em duas metades com base no compartimento correspondente. Caso ocorra algum desbalanceamento extremo que impeça a partição por compartimentos, o algoritmo recorre a um método de divisão alternativa por mediana (\textit{std::nth_element}). Por fim, os sub-intervalos esquerdo e direito são empilhados, calculando-se os \gls{aabb} finais para cada filho criado.
+Com o eixo e o ponto de divisão definidos, a função \textit{std::partition} reagrupa as primitivas em duas metades com base no compartimento correspondente. Caso ocorra algum desbalanceamento extremo que impeça a partição por compartimentos, o algoritmo recorre a um método de divisão alternativa por mediana (\textit{std::nth\_element}). Por fim, os sub-intervalos esquerdo e direito são empilhados, calculando-se os \gls{aabb} finais para cada filho criado.
 
 
 
@@ -244,8 +241,7 @@ Com o eixo e o ponto de divisão definidos, a função \textit{std::partition} r
 A estrutura do nó muda em relação à BVH binária tradicional; o nó em si fica maior, mas a ideia principal de hierarquia espacial se mantém.
 
 \begin{lstlisting}[caption={\textit{Struct} do nó da \gls{bvh8}}, label={cod:bvh8_node}]
-struct BVH8Node
-{
+struct BVH8Node {
 AABB childBounds[8]; //256
 uint32_t children[8]; //32
 
@@ -255,12 +251,11 @@ uint32_t leaf; //4
 
 uint32_t pad0; //4
 uint32_t pad1; //4
-
 }; //256 + 32 + 16
 \end{lstlisting}
 \fonte{Elaborado pelo autor (2026).}
 
-No que diz respeito à construção (\textit{BVH8Builder}), a principal diferença em relação à BVH binária é o fator de ramificação. Enquanto a árvore binária divide o intervalo de primitivas estritamente em duas metades, a \gls{bvh8} particiona o conjunto em até oito partes a cada nível. O algoritmo utiliza uma função recursiva que ordena as primitivas ao longo do eixo de maior dispersão e as distribui uniformemente entre os filhos disponíveis, calculando o \gls{aabb} correspondente para cada um deles. Além disso, as folhas da \gls{bvh8} suportam armazenar até oito primitivas diretamente (\textit{MAX_LEAF_PRIMS = 8}), reduzindo a profundidade total da árvore.
+No que diz respeito à construção (\textit{BVH8Builder}), a principal diferença em relação à BVH binária é o fator de ramificação. Enquanto a árvore binária divide o intervalo de primitivas estritamente em duas metades, a \gls{bvh8} particiona o conjunto em até oito partes a cada nível. O algoritmo utiliza uma função recursiva que ordena as primitivas ao longo do eixo de maior dispersão e as distribui uniformemente entre os filhos disponíveis, calculando o \gls{aabb} correspondente para cada um deles. Além disso, as folhas da \gls{bvh8} suportam armazenar até oito primitivas diretamente (\textit{MAX\_LEAF\_PRIMS = 8}), reduzindo a profundidade total da árvore.
 
 No caso específico da travessia, a \gls{bvh8} aproveita essa alta capacidade de ramificação: em vez de testar dois filhos, o algoritmo avalia múltiplos \gls{aabb} em paralelo (aproveitando instruções vetoriais ou o paralelismo da \gls{gpu}). Como resultado, a árvore fica muito mais rasa, reduzindo drasticamente o número de saltos na memória durante o rastreio de raios.
 
@@ -285,7 +280,7 @@ Em termos de \textit{hardware}, a máquina é equipada com um processador \texti
 
 O primeiro ponto, e mais simples, é que o \textit{Nsight Systems} não monitora diretamente o uso de memória \gls{ram} do processo. Para obter essa informação, a forma mais prática seria rodar um \textit{script} em paralelo durante a execução do teste. Contudo, uma métrica ainda mais útil é o consumo específico de memória das estruturas \gls{bvh}; por isso, em um teste isolado, a aplicação foi configurada para retornar no terminal o tamanho exato ocupado pelas estruturas \gls{blas} e \gls{tlas}.
 
-O \textit{Nsight Systems} consegue capturar a grande maioria dos eventos de forma nativa, mas alguns eventos específicos exigem marcações manuais. Para isso, podem ser utilizados marcadores tanto na \gls{cpu} quanto na \gls{gpu} por meio do \gls{nvtx}. Tratando-se de uma \gls{api} para anotação de código que oferece diversas funcionalidades, foi empregado especificamente o recurso \textit{nvtx3::scoped_range} \cite{nvidia_nvtx}. Esse componente funciona como um marcador que armazena um título descritivo e finaliza automaticamente a marcação de tempo assim que o bloco de código sai de escopo.
+O \textit{Nsight Systems} consegue capturar a grande maioria dos eventos de forma nativa, mas alguns eventos específicos exigem marcações manuais. Para isso, podem ser utilizados marcadores tanto na \gls{cpu} quanto na \gls{gpu} por meio do \gls{nvtx}. Tratando-se de uma \gls{api} para anotação de código que oferece diversas funcionalidades, foi empregado especificamente o recurso \textit{nvtx3::scoped\_range} \cite{nvidia_nvtx}. Esse componente funciona como um marcador que armazena um título descritivo e finaliza automaticamente a marcação de tempo assim que o bloco de código sai de escopo.
 
 Esse marcador foi utilizado para isolar e medir precisamente o tempo de construção e de upload das \glspl{bvh}.
 
