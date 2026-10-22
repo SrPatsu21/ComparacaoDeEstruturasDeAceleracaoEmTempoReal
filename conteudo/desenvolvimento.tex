@@ -301,11 +301,28 @@ Todas essas alterações garantem que a \gls{tlas} sofra modificações constant
 
 \subsection{Parâmetros de Execução}
 
-Antes de executar os esperimentos, fiz uma verificacao em quais metricas seria possivel coletar e como coletaria essa metrica. Infelizmente algumas metricas não podem ser coletadas na aplicação, mas em variedade ainda é superior aos trabalhos correlatos.
+Antes de iniciar os experimentos, realizou-se um levantamento minucioso para identificar quais métricas descritas na literatura poderiam ser efetivamente coletadas e de que forma essa extração seria realizada. Embora algumas métricas específicas tenham permanecido pendentes por limitações de contadores nas ferramentas de análise, o conjunto de dados obtidos ainda supera a variedade encontrada em trabalhos correlatos.
 
+As métricas foram divididas e estruturadas considerando as capacidades do \textit{NVIDIA Nsight Systems} e do \textit{NVIDIA Nsight Graphics}. Métricas de tempo de construção das estruturas de aceleração (\gls{blas} e \gls{tlas}), tempo de quadro na \gls{gpu} (\textit{GPU Frame Time}), utilização dos multiprocessadores de transmissão (\gls{sm}), execuções de \textit{shaders} e transferência de dados via \textit{PCIe} foram extraídas primariamente com o auxílio do \textit{Nsight Graphics}. Em contrapartida, informações de uso de memória \gls{ram} do sistema, consumo energético monitorado via \gls{nvml}, temperatura da \gls{gpu}, trocas de contexto (\textit{context switches}) e atividades nas filas do \textit{Vulkan} foram coletadas por meio do \textit{Nsight Systems}.
 
+Duas métricas merecem destaque metodológico devido ao seu tratamento específico:
+\begin{enumerate}
+\item \textbf{\textit{Ray Tracing Throughput}:} Como a travessia da \gls{bvh} é realizada diretamente via código customizado em \textit{shaders} (e não pelos núcleos de \textit{ray tracing} dedicados do \textit{hardware}), o rendimento foi calculado derivando o tempo de travessia em relação ao número total de raios processados por quadro (por exemplo, avaliando resoluções fixas em \textit{Mrays/s}).
+\item \textbf{\textit{Warp Divergence}:} Métricas associadas estritamente à divergência de caminhos condicionais dentro de um mesmo \textit{warp} permaneceram pendentes de validação por contadores diretos, evitando o uso de métricas genéricas de ocupação de \gls{sm} como falsos equivalentes.
+\end{enumerate}
+
+Para garantir a justiça na comparação de desempenho entre as diferentes estruturas avaliadas (\gls{bvh} binária, \gls{bvh8}, \gls{lbvh}, etc.), todas as execuções foram submetidas estritamente às mesmas condições de contorno: a mesma cena animada, idêntico número de instâncias geométricas, mesma resolução de tela, mesma disposição de câmera e a mesma carga de trabalho computacional (\textit{workload}).
 
 \subsection{Execução dos Experimentos}
+
+A execução dos testes foi dividida em duas etapas complementares de perfilamento (\textit{profiling}) para contemplar tanto o comportamento dinâmico e temporal da aplicação quanto os detalhes de renderização gráfica:
+
+\begin{enumerate}
+\item \textbf{Coletas de Longa Duração (\textit{Nsight Systems}):} Os testes voltados a capturar o consumo de recursos globais do sistema, uso de memória \gls{ram} (\textit{Peak RAM Usage}), temperatura, energia e atividades de filas do \textit{Vulkan} foram executados com uma janela de duração de 30 segundos contínuos para cada tipo de \gls{bvh}. Isso permitiu estabilizar as médias e registrar o comportamento da aplicação sob a animação contínua da cena e da câmera.
+\item \textbf{Coletas de Quadros Detalhados (\textit{Nsight Graphics}):} Para a análise minuciosa do pipeline gráfico, dos tempos de construção das estruturas de aceleração (\textit{BLAS/TLAS Build Time}) e da execução dos \textit{shaders}, as capturas foram realizadas em momentos específicos da execução. O \textit{profiling} detalhado coletou amostras exatas em instantes distribuídos ao longo do teste: nos primeiros 2 quadros iniciais, e posteriormente em janelas de tempo nos segundos 10 e 20.
+\end{enumerate}
+
+Dessa forma, o isolamento dos dados de memória do sistema através do \textit{Nsight Systems} aliado à precisão temporal do \textit{Nsight Graphics} permitiu mapear com alta fidelidade o impacto de cada variação estrutural de \gls{bvh} sobre a \gls{gpu} e a \gls{cpu}.
 
 
 % citar de onde tirei os modelos
