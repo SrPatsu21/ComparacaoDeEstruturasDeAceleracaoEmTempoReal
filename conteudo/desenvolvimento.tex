@@ -286,7 +286,7 @@ Esse marcador foi utilizado para isolar e medir precisamente o tempo de constru�
 
 \subsection{Cenas Utilizadas}
 
-A cena é a mesma para todos os experimentos. Ela foi construída de forma rápida, o que significa que não se trata de um cenário realista ou representativo de uma aplicação de produção real. A cena consiste em uma junção de várias instâncias dispostas de forma um tanto desordenada, utilizando alguns modelos 3D que não são de autoria própria (a licença de uso estará disponível junto com o código-fonte).
+A cena é a mesma para todos os experimentos. Ela foi construída de forma rápida, o que significa que não se trata de um cenário realista ou representativo de uma aplicação de produção real. A cena consiste em uma junção de várias instâncias dispostas de forma um tanto desordenada, utilizando alguns modelos 3D que não são de autoria própria (a licença de uso estará disponível junto com o código-fonte). Esse modelos vieram de dos usuarios (Eveston - Elite Big Speakerman - Hugo) e (bean(alwayshasbean)) do site \textit{sketchfab}, um site para publicação de modelos 3D.
 
 Além das múltiplas instâncias, o sistema também conta com animação. A animação compreende o movimento, rotação e alteração de escala do modelo completo. A câmera também se movimenta, rotacionando e se afastando do centro da cena em um trajeto circular.
 
@@ -316,19 +316,26 @@ Para garantir a justiça na comparação de desempenho entre as diferentes estru
 
 \section{Coleta e Tratamento dos Dados}
 
+Nesta seção, descreve-se a metodologia adotada para a extração, monitoramento e processamento das métricas de desempenho das diferentes estruturas de aceleração avaliadas.
+
+
+
 \subsection{Execução dos Experimentos}
 
-A execução dos testes foi dividida em duas etapas complementares de perfilamento (\textit{profiling}) para contemplar tanto o comportamento dinâmico e temporal da aplicação quanto os detalhes de renderização gráfica:
+A execução dos testes foi estruturada em duas etapas complementares de perfilamento (\textit{profiling}) para contemplar tanto o comportamento dinâmico e temporal da aplicação quanto os detalhes de renderização gráfica:
 
 \begin{enumerate}
-\item \textbf{Coletas de Longa Duração (\textit{Nsight Systems}):} Os testes voltados a capturar o consumo de recursos globais do sistema, uso de memória \gls{ram} (\textit{Peak RAM Usage}), temperatura, energia e atividades de filas do \textit{Vulkan} foram executados com uma janela de duração de 30 segundos contínuos para cada tipo de \gls{bvh}. Isso permitiu estabilizar as médias e registrar o comportamento da aplicação sob a animação contínua da cena e da câmera.
-\item \textbf{Coletas de Quadros Detalhados (\textit{Nsight Graphics}):} Para a análise minuciosa do pipeline gráfico, dos tempos de construção das estruturas de aceleração (\textit{BLAS/TLAS Build Time}) e da execução dos \textit{shaders}, as capturas foram realizadas em momentos específicos da execução. O \textit{profiling} detalhado coletou amostras exatas em instantes distribuídos ao longo do teste: nos primeiros 2 quadros iniciais, e posteriormente em janelas de tempo nos segundos 10 e 20.
+    \item \textbf{Coletas de Longa Duração (\textit{Nsight Systems}):} Os testes voltados a capturar o consumo de recursos globais do sistema, uso de memória \gls{ram} (\textit{Peak RAM Usage}), temperatura, energia e atividades de filas do \textit{Vulkan} foram executados com uma janela de duração de 30 segundos contínuos para cada tipo de \gls{bvh}. Isso permitiu estabilizar as médias e registrar o comportamento da aplicação sob a animação contínua da cena e da câmera.
+    \item \textbf{Coletas de Quadros Detalhados (\textit{Nsight Graphics}):} Para a análise minuciosa do \textit{pipeline} gráfico, dos tempos de construção das estruturas de aceleração (\textit{BLAS/TLAS Build Time}) e da execução dos \textit{shaders}, as capturas foram realizadas em momentos específicos. O \textit{profiling} detalhado coletou amostras exatas nos primeiros 2 quadros iniciais e em instantes distribuídos nos segundos 10 e 20 de execução.
 \end{enumerate}
 
-Dessa forma, o isolamento dos dados de memória do sistema através do \textit{Nsight Systems} aliado à precisão temporal do \textit{Nsight Graphics} permitiu mapear com alta fidelidade o impacto de cada variação estrutural de \gls{bvh} sobre a \gls{gpu} e a \gls{cpu}.
+Dessa forma, o isolamento dos dados de sistema através do \textit{Nsight Systems} aliado à precisão temporal do \textit{Nsight Graphics} permitiu mapear com alta fidelidade o impacto de cada variação estrutural de \gls{bvh} sobre a \gls{gpu} e a \gls{cpu}.
 
 \subsection{Coleta das Métricas}
 
-\subsection{Execução dos Testes}
+As execuções dos testes para cada tipo de \gls{bvh} foram realizadas em uma mesma sessão experimental, garantindo consistência ambiental. Os artefatos gerados foram organizados em pastas nomeadas de acordo com a respectiva estrutura de aceleração, cujos códigos e arquivos estarão disponíveis no repositório oficial do projeto. Cada diretório contém o executável correspondente, os \textit{shaders} associados e os modelos 3D necessários para a replicação integral dos testes.
+
+Para cada configuração, foram coletados arquivos de registro e relatórios de perfilamento (\textit{profiling}). Especificamente, encontram-se três arquivos com a extensão \textit{.ngfx-capture}, referentes às capturas detalhadas do \textit{Nsight Graphics}, e um arquivo \textit{.nsys-rep}, gerado pelo \textit{Nsight Systems} para a análise global do sistema. Além disso, conforme mencionado anteriormente, o arquivo \textit{bvh\_size\_log.log} armazena os dados textuais referentes ao tamanho em memória de cada estrutura (\gls{blas} e \gls{tlas}).
 
 \subsection{Tratamento dos Dados}
+% [DICA]: Descreva aqui como você limpou ou processou os dados brutos. Por exemplo: remoção de outliers causados por picos de inicialização do sistema, cálculo de médias aritméticas ou medianas das execuções repetidas (se houve mais de uma bateria de testes), conversão de unidades (como ciclos para milissegundos ou bytes para MiB) e a geração dos gráficos finais.
