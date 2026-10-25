@@ -387,5 +387,6 @@ A identificação dos \textit{outliers} é complementada pelo cálculo dos limit
 
 O arquivo final contém, portanto, os dados necessários para comparar as métricas obtidas durante os experimentos de forma organizada. Essa separação entre a coleta, a extração e a análise dos dados também permite repetir o processo para diferentes arquivos de execução sem a necessidade de realizar manualmente os cálculos para cada experimento.
 
+Os dois \textit{scripts} são executados para os arquivos de todas as \glspl{bvh} avaliadas neste trabalho. A partir dos arquivos \textit{*\_report\_analise.xlsx} gerados para cada estrutura, é possível reunir os dados e gerar gráficos que facilitam a visualização e a comparação das métricas.
 
-% [DICA]: Descreva aqui como você limpou ou processou os dados brutos. Por exemplo: remoção de outliers causados por picos de inicialização do sistema, cálculo de médias aritméticas ou medianas das execuções repetidas (se houve mais de uma bateria de testes), conversão de unidades (como ciclos para milissegundos ou bytes para MiB) e a geração dos gráficos finais.
+Para isso, foi desenvolvido um terceiro \textit{script Python}, responsável por reunir os arquivos de análise das diferentes \glspl{bvh} e gerar imagens com os gráficos correspondentes. Esses gráficos auxiliam na identificação de diferenças entre as estruturas e facilitam a análise dos resultados obtidos durante os experimentos.
