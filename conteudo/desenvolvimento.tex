@@ -108,6 +108,40 @@ O \textit{ResourceManager} também participa do processo de criação das \texti
     }
 \end{figure}
 
+\subsection{Criação de luz}
+
+A criação das luzes é uma das partes mais simples da implementação. Para representar uma fonte de luz na cena, foi criada uma estrutura (\textit{struct}) contendo as principais propriedades necessárias para realizar os cálculos de iluminação nos \textit{shaders}.
+
+\begin{lstlisting}[caption={\textit{Struct} com informações da luz}, label={cod:light_data}]
+struct LightData {
+    glm::vec3 position;
+    float intensity;
+
+    glm::vec3 color;
+    float radius;
+
+    Config::LightType type;
+    float range;
+
+    float _pad0;
+    float _pad1;
+};
+\end{lstlisting}
+\fonte{Elaborado pelo autor (2026).}
+
+A estrutura apresentada no Código \ref{cod:light_data} armazena a posição da luz, sua intensidade e sua cor. Também são armazenados o raio, o tipo da luz e o alcance utilizado durante os cálculos de iluminação. Essas informações permitem que o \textit{shader} determine como a luz deve influenciar os objetos presentes na cena.
+
+A posição é utilizada para determinar a direção e a distância entre a fonte de luz e o ponto que está sendo iluminado. A intensidade define a quantidade de iluminação produzida pela fonte, enquanto a cor permite alterar as componentes de cor da luz. O raio e o alcance são utilizados para controlar a região de influência da luz, evitando que sua contribuição seja aplicada de forma uniforme em toda a cena.
+
+Após a criação e configuração da estrutura, os dados são armazenados em um \textit{buffer} da \gls{gpu}. Esse \textit{buffer} é disponibilizado aos \textit{shaders}, permitindo que as propriedades da luz sejam acessadas durante o processo de iluminação. Assim, a aplicação pode alterar as características da luz no lado da \gls{cpu}, enquanto os \textit{shaders} utilizam essas informações durante a renderização.
+
+Durante a etapa de iluminação, as propriedades da luz são combinadas com as informações armazenadas no \textit{G-buffer}, como posição, normal, material e \textit{albedo}. A partir desses dados, o \textit{shader} calcula a contribuição da luz sobre cada ponto da cena.
+
+No caso das sombras, a posição da luz também é utilizada para determinar a direção do raio que deve ser testado. O raio é então percorrido pela estrutura \gls{bvh} para verificar se existe alguma geometria entre o ponto iluminado e a fonte de luz. Caso uma interseção seja encontrada, o ponto é considerado em sombra e a contribuição direta da luz pode ser descartada.
+
+
+
+
 \subsection{Criação das \glspl{bvh}}
 
 Na aplicação desenvolvida, a \gls{bvh} é construída por \textit{mesh}, e não individualmente para cada \textit{submesh}. Dessa forma, a estrutura de aceleração pode ser associada à instância correspondente. Quando uma nova \textit{mesh} é adicionada e ainda não possui os recursos necessários registrados, a construção da \gls{blas} pode aproveitar o momento em que os dados das primitivas estão disponíveis na \gls{cpu}.
@@ -310,8 +344,6 @@ Duas métricas merecem destaque metodológico devido ao seu tratamento específi
 Para garantir a justiça na comparação de desempenho entre as diferentes estruturas avaliadas (\gls{bvh} binária, \gls{bvh8}, \gls{lbvh}, \gls{bsah}.), todas as execuções foram submetidas estritamente às mesmas condições de contorno: a mesma cena animada, idêntico número de instâncias geométricas, mesma resolução de tela, mesma disposição de câmera e a mesma carga de trabalho computacional (\textit{workload}).
 
 
-% citar de onde tirei os modelos
-
 
 
 \section{Coleta e Tratamento dos Dados}
@@ -338,4 +370,22 @@ As execuções dos testes para cada tipo de \gls{bvh} foram realizadas em uma me
 Para cada configuração, foram coletados arquivos de registro e relatórios de perfilamento (\textit{profiling}). Especificamente, encontram-se três arquivos com a extensão \textit{.ngfx-capture}, referentes às capturas detalhadas do \textit{Nsight Graphics}, e um arquivo \textit{.nsys-rep}, gerado pelo \textit{Nsight Systems} para a análise global do sistema. Além disso, conforme mencionado anteriormente, o arquivo \textit{bvh\_size\_log.log} armazena os dados textuais referentes ao tamanho em memória de cada estrutura (\gls{blas} e \gls{tlas}).
 
 \subsection{Tratamento dos Dados}
+
+O \textit{Nsight Systems} permite coletar uma grande quantidade de métricas durante a execução da aplicação. Entretanto, a ferramenta é voltada principalmente para a análise da execução ao longo do tempo e para a identificação de problemas de desempenho. Embora forneça os dados necessários para a análise, a apresentação e o tratamento estatístico dessas informações não são suficientes para a análise geral realizada neste trabalho. Dessa forma, foi necessário desenvolver uma etapa adicional para extrair, organizar e analisar os dados obtidos durante os experimentos.
+
+O \textit{Nsight Graphics} apresenta uma abordagem diferente, pois seu objetivo está mais relacionado à análise de um \textit{frame} específico e à visualização das operações executadas durante sua renderização. Dessa forma, os dados obtidos nessa ferramenta são analisados de acordo com as características de cada métrica e com a forma como ela é disponibilizada pela própria ferramenta. Para as métricas obtidas pelo \textit{Nsight Systems}, foi desenvolvido um processo próprio de extração e tratamento dos dados.
+
+A primeira etapa desse processo é realizada pelo \textit{script Python} \textit{extrair\_nsys.py}. O \textit{script} utiliza o executável \textit{nsys} do \textit{Nsight Systems} para processar o arquivo \textit{.nsys-rep} gerado durante a coleta. Como parte desse processo, os dados da execução são disponibilizados em um banco de dados \textit{SQLite}, permitindo consultar as tabelas e informações registradas pelo \textit{Nsight Systems}. A partir dessas informações, o \textit{script} identifica as métricas utilizadas neste trabalho, realiza a extração dos dados correspondentes e gera um arquivo \textit{Excel} denominado \textit{*\_report\_dados.xlsx}. Essa etapa permite separar os dados relevantes das demais informações registradas durante a execução \cite{nsight_systems_post_collection}.
+
+A localização da instalação do executável \textit{nsys} pode variar de acordo com o ambiente utilizado. Por esse motivo, o \textit{script} possui uma variável denominada \textit{NSYS\_DEFAULT}, que pode precisar ser ajustada para apontar para a instalação correspondente do \textit{Nsight Systems}. Essa configuração permite que o mesmo processo de extração seja utilizado em diferentes ambientes de execução.
+
+Após a extração, os dados passam por uma segunda etapa de processamento realizada pelo \textit{script Python} \textit{analisar\_nsys.py}. Esse \textit{script} utiliza o arquivo gerado na etapa anterior e organiza os dados de acordo com cada métrica, calculando informações estatísticas utilizadas posteriormente na análise dos resultados. O resultado é armazenado em outro arquivo \textit{Excel}, denominado \textit{*\_report\_analise.xlsx}.
+
+Para cada métrica, são calculadas informações como unidade de medida, quantidade de amostras, soma, média, mediana, moda, tipo da moda, desvio padrão, valor mínimo e valor máximo. Também são calculadas as mesmas informações após a remoção dos valores considerados \textit{outliers}, permitindo comparar os resultados antes e depois do tratamento dos dados.
+
+A identificação dos \textit{outliers} é complementada pelo cálculo dos limites inferior e superior do intervalo interquartil. Esses limites são utilizados para identificar valores que se encontram fora da faixa considerada para as amostras da métrica. Dessa forma, além dos valores estatísticos originais, o arquivo de análise registra a quantidade e o percentual de \textit{outliers}, bem como os limites utilizados para sua identificação.
+
+O arquivo final contém, portanto, os dados necessários para comparar as métricas obtidas durante os experimentos de forma organizada. Essa separação entre a coleta, a extração e a análise dos dados também permite repetir o processo para diferentes arquivos de execução sem a necessidade de realizar manualmente os cálculos para cada experimento.
+
+
 % [DICA]: Descreva aqui como você limpou ou processou os dados brutos. Por exemplo: remoção de outliers causados por picos de inicialização do sistema, cálculo de médias aritméticas ou medianas das execuções repetidas (se houve mais de uma bateria de testes), conversão de unidades (como ciclos para milissegundos ou bytes para MiB) e a geração dos gráficos finais.
