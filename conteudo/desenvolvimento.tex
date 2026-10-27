@@ -248,12 +248,22 @@ Por outro lado, caso o nó seja uma folha, o raio é testado diretamente contra 
 
 
 \subsection{\gls{lbvh}}
-% todo rever esta parte por causa do codigo errado
-Aqui temos uma mudança na construção em relação à \gls{bvh} tradicional. Enquanto a abordagem padrão divide o espaço geometricamente de forma direta, a \gls{lbvh} (\textit{Linear Bounding Volume Hierarchy}) baseia-se em códigos de espaço preenchido por curvas para organizar as primitivas de forma linearizada e altamente eficiente.
 
-O algoritmo inicia calculando os limites dos centroides de todas as primitivas e normalizando suas posições espaciais. Para cada primitiva, a função \textit{morton3D} converte essas coordenadas em um código de Morton (ou código Z) de 32 bits, intercalando os bits dos eixos X, Y e Z por meio da expansão de bits (\textit{expandBits}). Esses códigos mapeiam a localidade espacial tridimensional em uma ordem unidimensional.
+A \gls{lbvh} utiliza uma abordagem diferente, em vez de realizar a divisão diretamente a partir de uma ordenação espacial ou de uma divisão geométrica, a \gls{lbvh} utiliza códigos de Morton para representar a posição espacial das primitivas em uma ordem linear. Essa ordenação é utilizada posteriormente para determinar como os nós da árvore serão divididos.
 
-Com os códigos calculados, as primitivas são ordenadas de forma estável (\textit{stable\_sort}) com base em seus valores de Morton. Essa ordenação agrupa espacialmente objetos próximos na memória antes da construção da árvore. Em seguida, a função recursiva constrói a hierarquia utilizando a função \textit{determineSplit}, que avalia o prefixo comum em binário entre os códigos extremos de cada intervalo (\textit{commonPrefix}) por meio de busca binária, determinando o ponto ideal de divisão de forma rápida. O processo se repete recursivamente até que os nós alcancem a condição de folha, calculando as caixas delimitadoras (\gls{aabb}) correspondentes para cada ramo gerado.
+O processo de construção começa com o cálculo dos limites dos centroides das primitivas. A partir desses limites, o centroide de cada primitiva é normalizado para o intervalo entre zero e um em cada eixo. Essa normalização permite representar as posições independentemente da escala da geometria utilizada.
+
+Após a normalização, cada centroide é convertido em um código de Morton por meio da função \textit{morton3D}. Para isso, cada coordenada é convertida para um valor inteiro entre 0 e 1023, utilizando 10 bits por eixo. A função \textit{expandBits} é então utilizada para separar os bits de cada coordenada, permitindo que os bits dos eixos X, Y e Z sejam intercalados. O resultado é um código que representa a posição tridimensional da primitiva em uma ordem linear \cite{lbvh_morton}.
+
+O código de Morton é armazenado juntamente com a \textit{PrimitiveRef} correspondente em uma estrutura denominada \textit{MortonPrimitive}. Após a geração desses valores para todas as primitivas, os elementos são ordenados pelo código de Morton utilizando a função \textit{oneapi::tbb::parallel\_sort}. Dessa forma, primitivas que possuem posições próximas no espaço tendem a permanecer próximas na sequência ordenada.
+
+Com as primitivas ordenadas, a construção da árvore é realizada utilizando intervalos dessa sequência. Para determinar a divisão de cada intervalo, a função \textit{determineSplit} utiliza a quantidade de bits em comum entre os códigos de Morton das primitivas localizadas nas extremidades do intervalo. Essa informação é obtida pela função \textit{commonPrefix}, que compara os códigos por meio da operação \textit{XOR} e determina a quantidade de bits iniciais que são iguais.
+
+A partir desse prefixo comum, a função \textit{determineSplit} procura uma posição adequada para separar o intervalo em dois grupos. A busca utiliza diferentes posições candidatas dentro do intervalo e verifica o prefixo comum entre a primeira primitiva e cada candidata. Quando o prefixo comum da candidata é maior que o prefixo do intervalo completo, a posição é utilizada como uma possível divisão. O processo continua até determinar a posição de separação utilizada para criar os dois filhos do nó.
+
+A construção dos nós é realizada de forma paralela por níveis da árvore. Para cada nível, os intervalos que ainda precisam ser divididos são armazenados em estruturas \textit{BuildTask}. Esses intervalos são processados utilizando \textit{oneapi::tbb::parallel\_for}, permitindo determinar as divisões e inicializar os nós de forma paralela. Os novos intervalos gerados são então utilizados como entrada para o próximo nível da construção.
+
+Dessa forma, a construção implementada utiliza os códigos de Morton principalmente para definir uma ordenação espacial das primitivas e determinar as divisões da hierarquia. Após essa etapa, as \glspl{aabb} são calculadas para os intervalos correspondentes e os nós são organizados em uma estrutura binária. A utilização de operações paralelas durante a geração dos códigos, ordenação e construção dos níveis permite explorar o paralelismo disponível durante a construção da \gls{lbvh}.
 
 
 
