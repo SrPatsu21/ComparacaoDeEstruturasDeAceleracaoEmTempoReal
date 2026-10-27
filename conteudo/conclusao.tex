@@ -3,9 +3,98 @@
 Neste capitulo sera apresentado os resultados e as discucoes sobre as simulacoes das \gls{bvh}.
 
 
+\subsection{Tamnaho da esrtutura}
 
 
-\subsection(\gls{cpu})
+\subsection{\gls{cpu}}
+
+\subsubsection{\gls{blas}}
+
+Comencando com as metricas de construcao das \gls{blas}. Diferente da \gls{tlas} que varia pouco o seu tamanho, aqui temos estruturas que representam de oito vertices ate mais de mil, por isso foi feito uma media e a escala vai estar menor que a \gls{tlas}.
+
+Analisando a figura \ref{blas_build_cpu}, facilmente reparamos que \gls{bsah} levou mais de duas vezes o tempo das demais, com o objetivo de gerar uma arvore de melhor qualidade. E a \gls{bvh8} consegui ser 40\% mais rapida que as demais, o que deve ser justificado por gerar uma arvore mais rasa o que reduz a quantidade de repeticoes para construir a arvore.
+
+A \gls{lbvh} e a \gls{bvh} binaria tiveram um desenpenho parecido, isso se deve ao processo de criar o codigo de Morton e o tempo necessario para criar as \textit{threads}.
+
+\begin{figure}[htb]
+    \caption{Grafico de barras sobre tempo de construcao das \gls{blas}}
+    \centering
+    {\parbox{16cm}
+        {
+            \includegraphics[width=1\textwidth]{images/blas_build_cpu.png}
+            \label{fig:blas_build_cpu}
+            \hspace{0.0cm}{Fonte: Elaborado pelo autor, utilizando Python matplotlib}
+        }
+    }
+\end{figure}
+
+\subsubsection{\gls{tlas}}
+
+Na \gls{tlas} obtivemos um comportamento muito parecido, o que muda é a media do tempo, mas como durante toda a simulacao é a mesma quantidade de instancias, o valor é mais realista com o todo.
+
+\begin{figure}[htb]
+    \caption{Grafico de barras sobre tempo de construcao das \gls{tlas}}
+    \centering
+    {\parbox{16cm}
+        {
+            \includegraphics[width=1\textwidth]{images/tlas_build_cpu.png}
+            \label{fig:tlas_build_cpu}
+            \hspace{0.0cm}{Fonte: Elaborado pelo autor, utilizando Python matplotlib}
+        }
+    }
+\end{figure}
+
+\subsubsection{Tempo de upload}
+
+O grafico de tempo de upload não sera apresentado,o motivo é que nem todo o tempo da operacao representa um trabalho real. Por exemplo em um frame normal, a cpu termina o trabalho de construcao da \gls{tlas} e precisa esperar ate que a \gls{gpu} esteja pronta,ou seja o tempo de upload pode levar de 20ms ate aproximadamente 90ms dependendo da espera pela \textit{vkWaitForFences} e o resto do processo leva menos de 3ms.
+
+\begin{figure}[htb]
+    \caption{\textit{Nsight Systems}, tempo de upload de \gls{tlas}, com 3ms selecionados}
+    \centering
+    {\parbox{16cm}
+        {
+            \includegraphics[width=1\textwidth]{images/tempo_de_upload_tlas.png}
+            \label{fig:tempo_de_upload_tlas}
+            \hspace{0.0cm}{Fonte: Elaborado pelo autor, utilizando textit{Nsight Systems}}
+        }
+    }
+\end{figure}
+
+é possivel filtrar essas esperas e subtrairas, porem existe mais \textit{vkWaitForFences} do que \textit{uploads} de \gls{bvh} devido a outros processos, entao seria necessario identificar exatamente quais comandos ocorrem juntos para podermos tirar o tempo real dessa operacao. O que devido a tempo e a grande complicacao nao foi possivel.
+
+\subsection{Duracao do quadro}
+
+Observando a diferenca entre cada \gls{bvh} no grafico de colunas podemos analisar como elas influenciaram cada execucao. Como o Sistema estava sem nenhuma limitacao de frames, a duracao do frame esta limitada a capacidade da \gls{gpu} de gerar um novo frame.
+
+Ate fiz alguns testes anteriores e quando a cena estava com menos de 10 instancias, foi possivel chegar a duracao de frames menores de que 5 ms.
+
+\begin{figure}[htb]
+    \caption{Grafico de barras sobre tempo medio de producao do quadro em \gls{gpu}}
+    \centering
+    {\parbox{16cm}
+        {
+            \includegraphics[width=1\textwidth]{images/gpu_frame_duration_present_delta.png}
+            \label{fig:gpu_frame_duration_present_delta}
+            \hspace{0.0cm}{Fonte: Elaborado pelo autor, utilizando Python matplotlib}
+        }
+    }
+\end{figure}
+
+Em questao do frame de \gls{cpu}, a aplicacao n tem uma forma de gerar mais que 1 frame a frente da \gls{gpu} entao as operacoes da \gls{cpu} ficam paradas ate a \gls{gpu} terminar, por isso temos um grafico tao parecido.
+
+\begin{figure}[htb]
+    \caption{Grafico de barras sobre tempo medio de producao do quadro em \gls{cpu}}
+    \centering
+    {\parbox{16cm}
+        {
+            \includegraphics[width=1\textwidth]{images/cpu_frame_duration_acquire_delta.png}
+            \label{fig:cpu_frame_duration_acquire_delta}
+            \hspace{0.0cm}{Fonte: Elaborado pelo autor, utilizando Python matplotlib}
+        }
+    }
+\end{figure}
+
+
 
 \subsection{Aplicação da implementacao}
 
