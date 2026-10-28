@@ -4,10 +4,71 @@ Neste capítulo são apresentados e discutidos os resultados obtidos durante os 
 
 \subsection{Consumo de Memoria}
 
-vamos comecar observando o tamanho das estruturas geradas
+Para iniciar a análise do consumo de memória, é necessário observar o tamanho das estruturas \glspl{bvh} geradas durante os experimentos. Embora a \gls{bvh8} seja a única abordagem avaliada que utiliza um tipo de nó diferente, a quantidade de memória utilizada pelas estruturas também depende da quantidade de nós gerados durante a construção da árvore. Dessa forma, mesmo entre as estruturas que utilizam o mesmo tipo de nó, podem existir diferenças no tamanho total da estrutura de acordo com a organização das primitivas e com a quantidade de nós necessária para representar a hierarquia.
 
+\begin{figure}[htb]
+    \caption{Tamanho total das \gls{blas} de cada implementacao}
+    \centering
+    {\parbox{16cm}
+        {
+            \includegraphics[width=1\textwidth]{images/blas_total_size.png}
+            \label{fig:blas_total_size}
+            \hspace{0.0cm}{Fonte: Elaborado pelo autor, utilizando Python matplotlib}
+        }
+    }
+\end{figure}
 
+\begin{figure}[htb]
+    \caption{Tamanho total das \gls{blas} de cada implementacao}
+    \centering
+    {\parbox{16cm}
+        {
+            \includegraphics[width=1\textwidth]{images/tlas_total_size.png}
+            \label{fig:tlas_total_size}
+            \hspace{0.0cm}{Fonte: Elaborado pelo autor, utilizando Python matplotlib}
+        }
+    }
+\end{figure}
 
+Ao analisar os resultados apresentados, observa-se que a \gls{bvh8} apresenta estruturas consideravelmente maiores que as demais abordagens. Esse comportamento está diretamente relacionado ao tamanho do nó utilizado nessa estrutura. Enquanto as demais abordagens utilizam nós binários, a \gls{bvh8} possui espaço para armazenar uma quantidade maior de filhos em cada nó. Entretanto, nem todos os nós necessariamente utilizam todas essas posições, fazendo com que parte do espaço reservado permaneça sem utilização efetiva. Dessa forma, a maior capacidade de cada nó também resulta em um maior consumo de memória para representar a mesma hierarquia.
+
+Também é possível observar diferenças entre as estruturas que utilizam nós binários. A quantidade de memória necessária não depende somente do tamanho individual de cada nó, mas também da quantidade de nós gerados durante a construção. Nesse caso, a forma como cada algoritmo organiza as primitivas pode resultar em árvores com diferentes quantidades de nós e, consequentemente, em diferentes tamanhos finais.
+
+A \gls{bsah} apresentou, em alguns casos, estruturas ligeiramente menores que as demais abordagens binárias. Esse comportamento indica que a estratégia utilizada durante a construção pode influenciar não apenas a qualidade da hierarquia para a travessia, mas também a quantidade de memória necessária para armazená-la. Apesar das diferenças serem menores quando comparadas ao impacto observado na \gls{bvh8}, elas demonstram que a organização da árvore também possui influência sobre o tamanho final da estrutura.
+
+Além do tamanho das estruturas, também foi analisado o comportamento da memória \gls{ram} durante a execução. A utilização da banda de leitura não apresentou diferenças relevantes que permitissem associar diretamente o comportamento observado às diferentes estruturas \glspl{bvh}. Por outro lado, a banda de escrita apresentou diferenças mais evidentes entre as abordagens, principalmente quando comparada a quantidade de memória necessária para armazenar as estruturas.
+
+\begin{figure}[htb]
+    \caption{Uso da banda de escrita da \gls{ram}}
+    \centering
+    {\parbox{16cm}
+        {
+            \includegraphics[width=1\textwidth]{images/dram_write_bandwidth_throughput_percent.png}
+            \label{fig:dram_write_bandwidth_throughput_percent}
+            \hspace{0.0cm}{Fonte: Elaborado pelo autor, utilizando Python matplotlib}
+        }
+    }
+\end{figure}
+
+A \gls{bvh8} apresentou uma utilização de banda de escrita consideravelmente superior às demais abordagens. Esse comportamento é compatível com o maior volume de dados necessário para armazenar e construir seus nós. Como a estrutura possui nós maiores, a construção e a transferência desses dados podem resultar em uma quantidade maior de operações de escrita na memória.
+
+A diferença também pode ser observada na quantidade de memória alocada durante a execução da aplicação. Nesse caso, a \gls{bvh8} apresentou novamente o maior consumo, enquanto a \gls{bsah} apresentou um comportamento mais favorável em relação às demais estruturas avaliadas.
+
+\begin{figure}[htb]
+    \caption{Tamanho das alocações de memória realizadas pelo Vulkan}
+    \centering
+    {\parbox{16cm}
+        {
+            \includegraphics[width=1\textwidth]{images/vulkan_memory_allocation_size.png}
+            \label{fig:vulkan_memory_allocation_size}
+            \hspace{0.0cm}{Fonte: Elaborado pelo autor, utilizando Python matplotlib}
+        }
+    }
+\end{figure}
+
+Os resultados indicam, portanto, que existe um compromisso entre a organização da estrutura e o consumo de memória. A \gls{bvh8} apresentou vantagens em relação ao tempo de construção e, conforme observado anteriormente, também apresentou bom desempenho na duração dos quadros. Entretanto, essas vantagens são acompanhadas por um aumento significativo no espaço necessário para armazenar a estrutura e por uma maior atividade de escrita na memória.
+
+Por outro lado, a \gls{bsah} apresentou um comportamento mais favorável em relação ao consumo de memória, além de apresentar bons resultados de desempenho durante a renderização. Esse comportamento reforça que a avaliação de uma estrutura \gls{bvh} não deve considerar apenas o tempo de construção ou de travessia, mas também os recursos necessários para armazenar e manipular a estrutura durante sua utilização.
 
 \subsection{\gls{cpu}}
 
