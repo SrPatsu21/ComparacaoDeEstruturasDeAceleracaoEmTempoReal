@@ -75,17 +75,20 @@ Esse procedimento aumentaria significativamente a complexidade do tratamento dos
 
 
 
+\subsection{Duração do quadro}
 
-\subsection{Duracao do quadro}
+Observando as diferenças entre as estruturas \glspl{bvh} apresentadas no gráfico, é possível analisar como cada abordagem influenciou o tempo necessário para a geração dos quadros. Como a aplicação foi executada sem uma limitação fixa de \textit{frames}, a duração de cada quadro é determinada principalmente pelo tempo necessário para que a \gls{gpu} conclua as operações de renderização e esteja disponível para iniciar o próximo quadro.
 
-Observando a diferenca entre cada \gls{bvh} no grafico de colunas podemos analisar como elas influenciaram cada execucao. Como o Sistema estava sem nenhuma limitacao de frames, a duracao do frame esta limitada a capacidade da \gls{gpu} de gerar um novo frame.
+A partir dos resultados apresentados na Figura \ref{fig:gpu_frame_duration_present_delta}, observa-se uma vantagem da \gls{bsah} em relação às demais estruturas. Esse resultado indica que o maior custo associado à construção da estrutura pode ser compensado durante a etapa de renderização, quando a qualidade da hierarquia contribui para reduzir o custo da travessia da \gls{bvh}. Dessa forma, investir mais recursos da \gls{cpu} durante a construção da estrutura pode resultar em uma redução do tempo de execução na \gls{gpu}.
 
-Olhando a imagem podemos perceber uma vantagem da \gls{bsah}, isso mostrar que investir recurso de \gls{cpu} na qualidade da arvore vale a penas, precisamos manter em mante que esse investimento nao pode ultrapacar o valor da arvore, e no caso ela so vale se estiver pronta quando a \gls{gpu} precisar dela.
+Entretanto, esse comportamento depende da relação entre o custo adicional da construção e o ganho obtido durante a renderização. O investimento realizado durante a construção somente é vantajoso quando a redução no tempo de processamento da \gls{gpu} é suficiente para compensar esse custo adicional. Além disso, para aplicações em tempo real, a estrutura precisa estar disponível no momento em que a \gls{gpu} necessita utilizá-la. Caso o tempo necessário para sua construção seja muito elevado, o ganho obtido durante a renderização pode não compensar o atraso introduzido pela construção da estrutura.
 
-A \gls{bvh8} mostrou um desenpenho levemente melhor, seria interesantes testar outras distribuicoes como \gls{bvh4} ou \gls{bvh16}, ou aplicar uma heuristica para achar uma tamanho de arvore ideal para a situacao.
+A \gls{bvh8} também apresentou um desempenho ligeiramente superior ao das demais abordagens em relação à duração dos quadros. Esse comportamento indica que a utilização de uma estrutura com maior quantidade de filhos por nó pode apresentar vantagens durante a travessia, dependendo das características da cena e da distribuição das primitivas. A partir desse resultado, seria interessante avaliar outras configurações de largura da árvore, como \gls{bvh4} e \gls{bvh16}, permitindo verificar se existe uma configuração intermediária ou superior que apresente um melhor equilíbrio entre o custo de construção e o custo de travessia.
+
+Outra possibilidade seria utilizar uma heurística capaz de selecionar a quantidade de filhos por nó de acordo com as características da cena. Dessa forma, diferentes geometrias ou cenários poderiam utilizar estruturas com diferentes larguras, buscando adaptar a organização da árvore ao tipo de carga de trabalho.
 
 \begin{figure}[htb]
-    \caption{Grafico de barras sobre tempo medio de producao do quadro em \gls{gpu}}
+    \caption{Tempo médio de produção do quadro na \gls{gpu}}
     \centering
     {\parbox{16cm}
         {
@@ -96,10 +99,10 @@ A \gls{bvh8} mostrou um desenpenho levemente melhor, seria interesantes testar o
     }
 \end{figure}
 
-Em questao do frame de \gls{cpu}, a aplicacao n tem uma forma de gerar mais que 1 frame a frente da \gls{gpu} entao as operacoes da \gls{cpu} ficam paradas ate a \gls{gpu} terminar, por isso temos um grafico tao parecido.
+Em relação à duração do quadro na \gls{cpu}, a aplicação não permite que a \gls{cpu} avance mais de um quadro em relação à \gls{gpu}. Dessa forma, após iniciar as operações necessárias para um quadro, a \gls{cpu} pode permanecer aguardando a conclusão das operações correspondentes na \gls{gpu} antes de iniciar o processamento do próximo quadro. Essa característica da execução faz com que o comportamento observado na \gls{cpu} seja semelhante ao apresentado na \gls{gpu}.
 
 \begin{figure}[htb]
-    \caption{Grafico de barras sobre tempo medio de producao do quadro em \gls{cpu}}
+    \caption{Tempo médio de produção do quadro na \gls{cpu}}
     \centering
     {\parbox{16cm}
         {
@@ -110,9 +113,7 @@ Em questao do frame de \gls{cpu}, a aplicacao n tem uma forma de gerar mais que 
     }
 \end{figure}
 
-Ate fiz alguns testes anteriores e quando a cena estava com menos de 10 instancias, foi possivel chegar a duracao de frames menores de que 5 ms.
-
-
+Durante testes realizados anteriormente, também foi observado que a quantidade de instâncias presentes na cena possui influência significativa sobre a duração dos quadros. Em cenários com menos de 10 instâncias, foi possível obter tempos inferiores a 5\,ms por quadro. Esse resultado indica que, além da estrutura utilizada, a quantidade e a complexidade das instâncias presentes na cena possuem influência direta sobre o tempo necessário para a geração de cada quadro.
 
 \subsection{Ocupação \gls{sm} e \textit{warps}}
 
