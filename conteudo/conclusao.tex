@@ -19,7 +19,7 @@ Para iniciar a análise do consumo de memória, é necessário observar o tamanh
 \end{figure}
 
 \begin{figure}[htb]
-    \caption{Tamanho total das \gls{blas} de cada implementacao}
+    \caption{Tamanho total da \gls{tlas} de cada implementacao}
     \centering
     {\parbox{16cm}
         {
@@ -244,11 +244,31 @@ Aqui podemos ver que a carga de trabalho da \gls{gpu} estava praticamente igual,
 
 \subsection{Consumo de Energia e Temperatura}
 
-A temperatura ficou proxima de 60C, porem por nao ter um ambiente controlado, mesmo testando a mesma \gls{bvh} o valor medio mudava em quase 2 graus entao a precisao nao é boa o suficiente para ser considerada. Ainda podemos preditar alguns fatos como quanto menos recurso a \gls{gpu} utilizar para gerar o frame de forma mais rapida possivel, menor a temperatura atingida.
+A temperatura da \gls{gpu} permaneceu próxima de 60\,°C durante os experimentos. Entretanto, como os testes não foram realizados em um ambiente com temperatura e condições térmicas controladas, foram observadas variações mesmo quando a mesma estrutura \gls{bvh} era utilizada. Em alguns casos, a temperatura média apresentou uma diferença próxima de 2\,°C entre execuções da mesma estrutura. Dessa forma, a precisão obtida não é suficiente para utilizar a temperatura como um critério confiável para diferenciar as estruturas avaliadas.
 
-De certa forma é errado medir temperatura e consumo dessa forma, a aplicacao não da o devido bonus de conseguir terminar o frame antes. Entao o que estamos fazendo aqui é dizer, independente da quantidade produzida damos merito a quem gastou menos
+Ainda assim, é possível observar uma tendência esperada: quanto menor for a utilização dos recursos da \gls{gpu} para produzir um quadro, menor tende a ser a quantidade de calor gerada durante a execução. Entretanto, essa relação também depende de fatores externos à aplicação, como as condições térmicas do ambiente e o comportamento do sistema de refrigeração. Por esse motivo, os valores de temperatura são apresentados apenas como uma observação complementar dos experimentos, não sendo utilizados para estabelecer diferenças de desempenho entre as estruturas.
 
+A análise do consumo energético apresenta uma limitação semelhante, mas com uma diferença importante. A comparação da potência média não considera diretamente a quantidade de trabalho realizada durante o intervalo analisado. Dessa forma, uma estrutura que consome uma potência maior, mas consegue produzir os quadros mais rapidamente, pode ser mais eficiente energeticamente do que outra que consome menos potência, mas permanece executando por mais tempo.
 
+No presente experimento, a comparação da potência é realizada de forma independente da quantidade de quadros produzidos ou do tempo necessário para produzi-los. Em outras palavras, é atribuído maior desempenho nesse critério à estrutura que apresenta menor consumo médio, mesmo que essa estrutura possa necessitar de mais tempo para produzir o mesmo número de quadros. Portanto, essa métrica deve ser interpretada como uma comparação do consumo de potência durante a execução, e não como uma medida direta da eficiência energética da aplicação.
+
+\begin{figure}[htb]
+    \caption{Consumo médio de energia da \gls{gpu}}
+    \centering
+    {\parbox{16cm}
+        {
+            \includegraphics[width=1\textwidth]{images/power.png}
+            \label{fig:power}
+            \hspace{0.0cm}{Fonte: Elaborado pelo autor, utilizando Python matplotlib}
+        }
+    }
+\end{figure}
+
+Observando os resultados apresentados na Figura \ref{fig:power}, a \gls{bvh8} apresentou um consumo médio consideravelmente superior ao das demais abordagens. Esse comportamento está de acordo com os resultados observados anteriormente, principalmente em relação ao maior tamanho de suas estruturas e à maior utilização dos recursos de memória.
+
+Entre as demais estruturas, as diferenças de consumo foram menores, com uma variação inferior a 4\,W entre o maior e o menor valor observado. Como a metodologia utilizada não considera o tempo necessário para produzir os quadros durante a análise do consumo de potência, essa diferença não é suficiente para estabelecer uma conclusão significativa sobre qual dessas estruturas apresenta melhor eficiência energética.
+
+Dessa forma, os resultados de consumo de energia devem ser interpretados com cautela. A \gls{bvh8} apresentou uma diferença suficientemente evidente para indicar um maior consumo de potência durante os experimentos, enquanto as diferenças entre a \gls{bvh}, \gls{lbvh} e \gls{bsah} foram pequenas em relação às limitações do método de medição. Para uma análise mais precisa de eficiência energética, seria necessário considerar conjuntamente a potência consumida, o tempo de execução e a quantidade de quadros produzidos, permitindo avaliar o consumo de energia necessário para realizar uma quantidade equivalente de trabalho.
 
 \subsection{Aplicação da implementacao}
 
