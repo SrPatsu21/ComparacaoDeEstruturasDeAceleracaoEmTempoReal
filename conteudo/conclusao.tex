@@ -2,6 +2,8 @@
 
 Neste capítulo são apresentados e discutidos os resultados obtidos durante os experimentos realizados com as diferentes estruturas \glspl{bvh}. A análise considera as métricas coletadas durante a execução das aplicações, buscando identificar as diferenças de desempenho entre as abordagens avaliadas e relacioná-las às características dos algoritmos de construção e das estruturas geradas.
 
+\section{Apresentacao das metricas}
+
 \subsection{Consumo de Memoria}
 
 Para iniciar a análise do consumo de memória, é necessário observar o tamanho das estruturas \glspl{bvh} geradas durante os experimentos. Embora a \gls{bvh8} seja a única abordagem avaliada que utiliza um tipo de nó diferente, a quantidade de memória utilizada pelas estruturas também depende da quantidade de nós gerados durante a construção da árvore. Dessa forma, mesmo entre as estruturas que utilizam o mesmo tipo de nó, podem existir diferenças no tamanho total da estrutura de acordo com a organização das primitivas e com a quantidade de nós necessária para representar a hierarquia.
@@ -270,8 +272,16 @@ Entre as demais estruturas, as diferenças de consumo foram menores, com uma var
 
 Dessa forma, os resultados de consumo de energia devem ser interpretados com cautela. A \gls{bvh8} apresentou uma diferença suficientemente evidente para indicar um maior consumo de potência durante os experimentos, enquanto as diferenças entre a \gls{bvh}, \gls{lbvh} e \gls{bsah} foram pequenas em relação às limitações do método de medição. Para uma análise mais precisa de eficiência energética, seria necessário considerar conjuntamente a potência consumida, o tempo de execução e a quantidade de quadros produzidos, permitindo avaliar o consumo de energia necessário para realizar uma quantidade equivalente de trabalho.
 
-\subsection{Aplicação da implementacao}
+\section{Avaliação da aplicação desenvolvida}
 
-Apesar da aplicacao conseguir gerar quadros com uma veracidade fisica boa e manter media de 30 quadros por segundo. Olhando para outras aplicacoes que implementam sombras por meio de outras tecnicas, elas conseguem uma taxa de quadros mais estavel e maior. Apesar que a implementação desse trabalho tenho alguns testes a mais do que seria o basico de uma implementacao de sombra, ainda assim usar essa tecnica parece ser muito caro pelo retorno de um pouco mais de precisao.
+A aplicação desenvolvida foi capaz de realizar a renderização com uma representação física adequada das sombras e manter uma média próxima de 30 quadros por segundo nos cenários avaliados. Entretanto, quando comparada a outras técnicas utilizadas para geração de sombras em aplicações de grande relevância, principalmente em jogos eletrônicos lançados anteriormente a 2018, observa-se que outras abordagens já eram capazes de atingir taxas de quadros mais elevadas e estáveis, a custo de um pouco de precisão física.
 
-Ainda assim o ocodigo gerado pode ser adaptado para ser usado em \gls{cpu}
+É importante considerar que a implementação apresentada neste trabalho realiza algumas operações adicionais em relação a uma implementação básica de sombras. A utilização das estruturas \glspl{bvh}, a construção das hierarquias e a realização da travessia para determinar as interseções dos raios introduzem custos adicionais durante a execução. Dessa forma, apesar do metodo permitir uma representação mais precisa do comportamento das sombras, o custo computacional necessário pode ser elevado quando comparado a técnicas tradicionais utilizadas em aplicações em tempo real. No caso de aplicacoes que não utilizam os \textit{RT cores}.
+
+Os resultados obtidos também mostram que a qualidade da estrutura de aceleração possui influência direta sobre esse custo. As diferenças observadas entre as estruturas avaliadas demonstram que a escolha da \gls{bvh} pode alterar tanto o tempo necessário para sua construção quanto o desempenho durante a renderização. Portanto, a utilização de \textit{ray tracing} em tempo real não depende apenas da capacidade de realizar a interseção dos raios, mas também da escolha e organização da estrutura utilizada para acelerar esse processo.
+
+Apesar das limitações observadas na aplicação desenvolvida, o código produzido não se restringe ao cenário utilizado nos experimentos. As estruturas \glspl{bvh} implementadas podem ser adaptadas para outras aplicações que necessitem de consultas espaciais ou de interseções entre raios e geometria. Da mesma forma, parte das implementações pode ser utilizada em aplicações executadas na \gls{cpu}, desde que sejam realizadas as adaptações necessárias para o ambiente de execução.
+
+Além disso, a aplicação desenvolvida fornece uma base para a realização de novos experimentos com estruturas de aceleração. Mesmo que as \glspl{bvh} sejam utilizadas posteriormente para outras finalidades, a possibilidade de configurar diferentes estruturas e comparar seu comportamento permite utilizar a aplicação como ponto de partida para novas avaliações. Os dados obtidos durante este trabalho também fornecem uma referência inicial para comparar novas implementações e identificar como diferentes estratégias de construção podem influenciar o desempenho, o consumo de memória e a utilização dos recursos computacionais.
+
+\section{Conclusões}
