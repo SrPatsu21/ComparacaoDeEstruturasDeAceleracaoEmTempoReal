@@ -3,14 +3,15 @@
 Neste capitulo sera apresentado os resultados e as discucoes sobre as simulacoes das \gls{bvh}.
 
 
-\subsection{Tamnaho da esrtutura}
+\subsection{Consumo de Memoria}
 
+vamos comecar observando o tamanho das estruturas geradas
 
 \subsection{\gls{cpu}}
 
 \subsubsection{\gls{blas}}
 
-Comencando com as metricas de construcao das \gls{blas}. Diferente da \gls{tlas} que varia pouco o seu tamanho, aqui temos estruturas que representam de oito vertices ate mais de mil, por isso foi feito uma media e a escala vai estar menor que a \gls{tlas}.
+Comencando com as metricas de construcao das \gls{blas}. Diferente da \gls{tlas} que varia pouco o seu tamanho, aqui temos estruturas que representam de oito vertices ate mais de mil, por isso que a diferenca da media pode ser muito maior.
 
 Analisando a figura \ref{blas_build_cpu}, facilmente reparamos que \gls{bsah} levou mais de duas vezes o tempo das demais, com o objetivo de gerar uma arvore de melhor qualidade. E a \gls{bvh8} consegui ser 40\% mais rapida que as demais, o que deve ser justificado por gerar uma arvore mais rasa o que reduz a quantidade de repeticoes para construir a arvore.
 
@@ -66,7 +67,9 @@ O grafico de tempo de upload não sera apresentado,o motivo é que nem todo o te
 
 Observando a diferenca entre cada \gls{bvh} no grafico de colunas podemos analisar como elas influenciaram cada execucao. Como o Sistema estava sem nenhuma limitacao de frames, a duracao do frame esta limitada a capacidade da \gls{gpu} de gerar um novo frame.
 
-Ate fiz alguns testes anteriores e quando a cena estava com menos de 10 instancias, foi possivel chegar a duracao de frames menores de que 5 ms.
+Olhando a imagem podemos perceber uma vantagem da \gls{bsah}, isso mostrar que investir recurso de \gls{cpu} na qualidade da arvore vale a penas, precisamos manter em mante que esse investimento nao pode ultrapacar o valor da arvore, e no caso ela so vale se estiver pronta quando a \gls{gpu} precisar dela.
+
+A \gls{bvh8} mostrou um desenpenho levemente melhor, seria interesantes testar outras distribuicoes como \gls{bvh4} ou \gls{bvh16}, ou aplicar uma heuristica para achar uma tamanho de arvore ideal para a situacao.
 
 \begin{figure}[htb]
     \caption{Grafico de barras sobre tempo medio de producao do quadro em \gls{gpu}}
@@ -93,6 +96,82 @@ Em questao do frame de \gls{cpu}, a aplicacao n tem uma forma de gerar mais que 
         }
     }
 \end{figure}
+
+Ate fiz alguns testes anteriores e quando a cena estava com menos de 10 instancias, foi possivel chegar a duracao de frames menores de que 5 ms.
+
+
+
+\subsection{Ocupação \gls{sm} e \textit{warps}}
+
+
+
+\subsubsection{\textit{warps}}
+
+Uma forma de analisar o comportamento dos \glspl{sm} durante a execução é observar a quantidade de \textit{warps} de pixels. Pode ser analisado o número médio de \textit{warps} por ciclo. Essa informação permite relacionar a quantidade de \textit{warps} ativos com os ciclos de execução da \gls{gpu}. Tambem podemos olhar essa atividade como um percentual de \textit{throughput}, permitindo observar a utilização desse recurso em relação à capacidade considerada pela métrica \cite{nvidia_nsight_systems}.
+
+\begin{figure}[htb]
+    \caption{Quantidade média de \textit{warps} de pixels simultaneamente ativos por ciclo}
+    \centering
+    {\parbox{16cm}
+        {
+            \includegraphics[width=1\textwidth]{images/pixel_warps_in_flight_avg_warps_per_cycle.png}
+            \label{fig:pixel_warps_in_flight_avg_warps_per_cycle}
+            \hspace{0.0cm}{Fonte: Elaborado pelo autor, utilizando Python matplotlib}
+        }
+    }
+\end{figure}
+
+\begin{figure}[htb]
+    \caption{Quantidade média de \textit{warps} de pixels simultaneamente ativos por ciclo como percentual}
+    \centering
+    {\parbox{16cm}
+        {
+            \includegraphics[width=1\textwidth]{images/pixel_warps_in_flight_throughput_percent.png}
+            \label{fig:pixel_warps_in_flight_throughput_percent}
+            \hspace{0.0cm}{Fonte: Elaborado pelo autor, utilizando Python matplotlib}
+        }
+    }
+\end{figure}
+
+A \gls{bvh8} conseguiu apresentar um valor bem baixo de atividade, comparado com os demais. Porem a \gls{bvh8} ainda consegue manter o tempo de frame menor que a \gls{bvh} comum e que a \gls{lbvh}.
+
+
+
+\subsubsection{\glspl{sm}}
+
+Para entender melhor a ocupacao da \gls{gpu}, podemos olhar para o responsavel pelo agendamento das operacoes.
+
+\begin{figure}[htb]
+    \caption{Percentual de emissão de instruções média dos \glspl{sm} que está sendo utilizado durante a execução}
+    \centering
+    {\parbox{16cm}
+        {
+            \includegraphics[width=1\textwidth]{images/sm_issue_throughput_percent.png}
+            \label{fig:sm_issue_throughput_percent}
+            \hspace{0.0cm}{Fonte: Elaborado pelo autor, utilizando Python matplotlib}
+        }
+    }
+\end{figure}
+
+\begin{figure}[htb]
+    \caption{Grafico comluna sobre quanto os \glspl{sm} da \gls{gpu} estão efetivamente ocupados}
+    \centering
+    {\parbox{16cm}
+        {
+            \includegraphics[width=1\textwidth]{images/sms_active_throughput_percent.png}
+            \label{fig:sms_active_throughput_percent}
+            \hspace{0.0cm}{Fonte: Elaborado pelo autor, utilizando Python matplotlib}
+        }
+    }
+\end{figure}
+
+Aqui podemos ver que a carga de trabalho da \gls{gpu} estava praticamente igual, tendo o \gls{bvh8} como pior desenpenho.
+
+\subsection{Consumo de Energia e Temperatura}
+
+A temperatura ficou proxima de 60C, porem por nao ter um ambiente controlado, mesmo testando a mesma \gls{bvh} o valor medio mudava em quase 2 graus entao a precisao nao é boa o suficiente para ser considerada. Ainda podemos preditar alguns fatos como quanto menos recurso a \gls{gpu} utilizar para gerar o frame de forma mais rapida possivel, menor a temperatura atingida.
+
+De certa forma é errado medir temperatura e consumo dessa forma, a aplicacao não da o devido bonus de conseguir terminar o frame antes. Entao o que estamos fazendo aqui é dizer, independente da quantidade produzida damos merito a quem gastou menos
 
 
 
