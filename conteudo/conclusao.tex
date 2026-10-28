@@ -1,24 +1,28 @@
 \chapter{RESULTADOS E DISCUSSÃO}
 
-Neste capitulo sera apresentado os resultados e as discucoes sobre as simulacoes das \gls{bvh}.
-
+Neste capítulo são apresentados e discutidos os resultados obtidos durante os experimentos realizados com as diferentes estruturas \glspl{bvh}. A análise considera as métricas coletadas durante a execução das aplicações, buscando identificar as diferenças de desempenho entre as abordagens avaliadas e relacioná-las às características dos algoritmos de construção e das estruturas geradas.
 
 \subsection{Consumo de Memoria}
 
 vamos comecar observando o tamanho das estruturas geradas
 
+
+
+
 \subsection{\gls{cpu}}
 
 \subsubsection{\gls{blas}}
 
-Comencando com as metricas de construcao das \gls{blas}. Diferente da \gls{tlas} que varia pouco o seu tamanho, aqui temos estruturas que representam de oito vertices ate mais de mil, por isso que a diferenca da media pode ser muito maior.
+Inicialmente, são analisadas as métricas relacionadas ao tempo de construção das \glspl{blas}. Diferentemente da \gls{tlas}, cuja quantidade de instâncias permanece relativamente constante durante os experimentos, as \glspl{blas} podem representar geometrias com quantidades bastante diferentes de primitivas. Nesse caso, são consideradas estruturas que representam desde geometrias com poucos vértices até modelos com mais de mil vértices. Essa variação na complexidade das geometrias contribui para uma maior variação nos tempos de construção e, consequentemente, influencia o valor médio observado para cada abordagem.
 
-Analisando a figura \ref{blas_build_cpu}, facilmente reparamos que \gls{bsah} levou mais de duas vezes o tempo das demais, com o objetivo de gerar uma arvore de melhor qualidade. E a \gls{bvh8} consegui ser 40\% mais rapida que as demais, o que deve ser justificado por gerar uma arvore mais rasa o que reduz a quantidade de repeticoes para construir a arvore.
+A Figura \ref{fig:blas_build_cpu} apresenta os tempos de construção das \glspl{blas} para as diferentes estruturas avaliadas. Observa-se que a \gls{bsah} apresentou o maior tempo de construção, com um valor superior ao dobro do observado para as demais abordagens. Esse comportamento está relacionado à maior complexidade do processo de construção utilizado pela \gls{bsah}, que realiza uma análise das possíveis divisões para buscar uma organização mais adequada da hierarquia. Dessa forma, o maior tempo de construção representa o custo adicional associado à busca por uma estrutura potencialmente mais eficiente durante a travessia.
 
-A \gls{lbvh} e a \gls{bvh} binaria tiveram um desenpenho parecido, isso se deve ao processo de criar o codigo de Morton e o tempo necessario para criar as \textit{threads}.
+A \gls{bvh8}, por outro lado, apresentou o menor tempo de construção, sendo aproximadamente 40\% mais rápida que as demais abordagens avaliadas. Uma possível explicação para esse comportamento está na quantidade de filhos presentes em cada nó da estrutura. Como a \gls{bvh8} possui maior quantidade de filhos por nó, a árvore tende a apresentar menor profundidade em comparação com uma estrutura binária equivalente. Essa característica pode reduzir a quantidade de níveis que precisam ser processados durante a construção da hierarquia.
+
+A \gls{lbvh} e a \gls{bvh} binária apresentaram tempos de construção semelhantes. No caso da \gls{lbvh}, parte do custo está associada à geração dos códigos de Morton e à ordenação das primitivas antes da construção da hierarquia. Embora essa abordagem utilize operações paralelas durante diferentes etapas da construção, essas operações também possuem um custo associado à sua execução. Dessa forma, o ganho obtido pelo paralelismo não resultou em uma diferença significativa em relação à \gls{bvh} binária nos cenários avaliados.
 
 \begin{figure}[htb]
-    \caption{Grafico de barras sobre tempo de construcao das \gls{blas}}
+    \caption{Tempo de construção das \glspl{blas}}
     \centering
     {\parbox{16cm}
         {
@@ -31,10 +35,12 @@ A \gls{lbvh} e a \gls{bvh} binaria tiveram um desenpenho parecido, isso se deve 
 
 \subsubsection{\gls{tlas}}
 
-Na \gls{tlas} obtivemos um comportamento muito parecido, o que muda é a media do tempo, mas como durante toda a simulacao é a mesma quantidade de instancias, o valor é mais realista com o todo.
+Na construção das \glspl{tlas}, foi observado um comportamento semelhante entre as diferentes abordagens. A principal diferença está nos valores médios dos tempos obtidos para cada estrutura. Como a quantidade de instâncias utilizada durante os experimentos permanece constante, a comparação dos tempos de construção da \gls{tlas} apresenta uma variação menor em relação à observada na construção das \glspl{blas}.
+
+Essa característica torna a média dos tempos de construção da \gls{tlas} uma representação mais direta do comportamento da operação durante os experimentos, uma vez que a quantidade de elementos processados permanece aproximadamente constante entre as diferentes execuções. Dessa forma, as diferenças observadas entre as abordagens estão mais relacionadas ao próprio algoritmo utilizado para construir a estrutura do que à variação na quantidade de instâncias processadas.
 
 \begin{figure}[htb]
-    \caption{Grafico de barras sobre tempo de construcao das \gls{tlas}}
+    \caption{Tempo de construção das \glspl{tlas}}
     \centering
     {\parbox{16cm}
         {
@@ -47,21 +53,28 @@ Na \gls{tlas} obtivemos um comportamento muito parecido, o que muda é a media d
 
 \subsubsection{Tempo de upload}
 
-O grafico de tempo de upload não sera apresentado,o motivo é que nem todo o tempo da operacao representa um trabalho real. Por exemplo em um frame normal, a cpu termina o trabalho de construcao da \gls{tlas} e precisa esperar ate que a \gls{gpu} esteja pronta,ou seja o tempo de upload pode levar de 20ms ate aproximadamente 90ms dependendo da espera pela \textit{vkWaitForFences} e o resto do processo leva menos de 3ms.
+O gráfico referente ao tempo de \textit{upload} das estruturas não será utilizado na comparação direta entre as abordagens. Isso ocorre porque o tempo registrado nessa operação não representa exclusivamente o tempo necessário para transferir os dados da \gls{cpu} para a \gls{gpu}. Parte significativa do intervalo registrado está relacionada a operações de sincronização entre a \gls{cpu} e a \gls{gpu}.
+
+Em uma execução normal, por exemplo, a \gls{cpu} pode finalizar a construção da \gls{tlas} e posteriormente aguardar a conclusão de operações da \gls{gpu}. Nesse intervalo, a aplicação pode permanecer bloqueada em uma chamada \textit{vkWaitForFences}. Como consequência, o tempo registrado para a operação de \textit{upload} pode variar aproximadamente entre 20\,ms e 90\,ms, mesmo quando a parcela efetivamente relacionada ao processamento da estrutura permanece inferior a aproximadamente 3\,ms.
 
 \begin{figure}[htb]
-    \caption{\textit{Nsight Systems}, tempo de upload de \gls{tlas}, com 3ms selecionados}
+    \caption{\textit{Nsight Systems}: tempo registrado para o \textit{upload} da \gls{tlas}, com aproximadamente 3\,ms selecionados}
     \centering
     {\parbox{16cm}
         {
             \includegraphics[width=1\textwidth]{images/tempo_de_upload_tlas.png}
             \label{fig:tempo_de_upload_tlas}
-            \hspace{0.0cm}{Fonte: Elaborado pelo autor, utilizando textit{Nsight Systems}}
+            \hspace{0.0cm}{Fonte: Elaborado pelo autor, utilizando \textit{Nsight Systems}}
         }
     }
 \end{figure}
 
-é possivel filtrar essas esperas e subtrairas, porem existe mais \textit{vkWaitForFences} do que \textit{uploads} de \gls{bvh} devido a outros processos, entao seria necessario identificar exatamente quais comandos ocorrem juntos para podermos tirar o tempo real dessa operacao. O que devido a tempo e a grande complicacao nao foi possivel.
+É possível identificar e filtrar algumas dessas operações de espera para tentar obter uma estimativa mais próxima do tempo efetivamente utilizado pelo \textit{upload}. Entretanto, durante a execução da aplicação existem outras chamadas \textit{vkWaitForFences} que não estão diretamente relacionadas à transferência das estruturas \glspl{bvh}. Dessa forma, seria necessário identificar com precisão quais comandos de sincronização estão associados a cada operação de \textit{upload} e separar esses intervalos dos demais eventos presentes na execução.
+
+Esse procedimento aumentaria significativamente a complexidade do tratamento dos dados e, devido às limitações de tempo para a realização dos experimentos, não foi possível estabelecer uma separação suficientemente precisa para utilizar essa métrica na comparação. Por esse motivo, o tempo de \textit{upload} é apresentado apenas como uma observação sobre o comportamento da aplicação, não sendo utilizado como uma métrica principal para determinar o desempenho das diferentes estruturas.
+
+
+
 
 \subsection{Duracao do quadro}
 
