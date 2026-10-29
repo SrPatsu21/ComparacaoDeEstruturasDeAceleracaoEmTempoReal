@@ -1,15 +1,15 @@
 \chapter{RESULTADOS E DISCUSSÃO}
 
-Neste capítulo são apresentados e discutidos os resultados obtidos durante os experimentos realizados com as diferentes estruturas \glspl{bvh}. A análise considera as métricas coletadas durante a execução das aplicações, buscando identificar as diferenças de desempenho entre as abordagens avaliadas e relacioná-las às características dos algoritmos de construção e das estruturas geradas.
+Neste capítulo são apresentados e discutidos os resultados obtidos durante os experimentos realizados com as diferentes estruturas \glspl{bvh}. A análise considera as métricas coletadas durante a execução da aplicação, buscando identificar as diferenças de desempenho entre as abordagens avaliadas e relacioná-las às características dos algoritmos de construção e das estruturas geradas.
 
-\section{Apresentacao das metricas}
+\section{Apresentação das métricas}
 
-\subsection{Consumo de Memoria}
+\subsection{Consumo de memória}
 
 Para iniciar a análise do consumo de memória, é necessário observar o tamanho das estruturas \glspl{bvh} geradas durante os experimentos. Embora a \gls{bvh8} seja a única abordagem avaliada que utiliza um tipo de nó diferente, a quantidade de memória utilizada pelas estruturas também depende da quantidade de nós gerados durante a construção da árvore. Dessa forma, mesmo entre as estruturas que utilizam o mesmo tipo de nó, podem existir diferenças no tamanho total da estrutura de acordo com a organização das primitivas e com a quantidade de nós necessária para representar a hierarquia.
 
 \begin{figure}[htb]
-    \caption{Tamanho total das \gls{blas} de cada implementacao}
+    \caption{Tamanho total das \glspl{blas} de cada implementação}
     \centering
     {\parbox{16cm}
         {
@@ -21,7 +21,7 @@ Para iniciar a análise do consumo de memória, é necessário observar o tamanh
 \end{figure}
 
 \begin{figure}[htb]
-    \caption{Tamanho total da \gls{tlas} de cada implementacao}
+    \caption{Tamanho total da \gls{tlas} de cada implementação}
     \centering
     {\parbox{16cm}
         {
@@ -32,13 +32,13 @@ Para iniciar a análise do consumo de memória, é necessário observar o tamanh
     }
 \end{figure}
 
-Ao analisar os resultados apresentados, observa-se que a \gls{bvh8} apresenta estruturas consideravelmente maiores que as demais abordagens. Esse comportamento está diretamente relacionado ao tamanho do nó utilizado nessa estrutura. Enquanto as demais abordagens utilizam nós binários, a \gls{bvh8} possui espaço para armazenar uma quantidade maior de filhos em cada nó. Entretanto, nem todos os nós necessariamente utilizam todas essas posições, fazendo com que parte do espaço reservado permaneça sem utilização efetiva. Dessa forma, a maior capacidade de cada nó também resulta em um maior consumo de memória para representar a mesma hierarquia.
+Ao analisar os resultados apresentados, observa-se que a \gls{bvh8} apresenta estruturas consideravelmente maiores que as demais abordagens. Esse comportamento está diretamente relacionado ao tamanho do nó utilizado nessa estrutura. Enquanto as demais abordagens utilizam nós binários, a \gls{bvh8} possui espaço para armazenar uma quantidade maior de filhos em cada nó. Entretanto, nem todos os nós necessariamente utilizam todas essas posições, fazendo com que parte do espaço reservado possa permanecer sem utilização efetiva. Dessa forma, a maior capacidade de cada nó também resulta em um maior consumo de memória para representar a hierarquia.
 
 Também é possível observar diferenças entre as estruturas que utilizam nós binários. A quantidade de memória necessária não depende somente do tamanho individual de cada nó, mas também da quantidade de nós gerados durante a construção. Nesse caso, a forma como cada algoritmo organiza as primitivas pode resultar em árvores com diferentes quantidades de nós e, consequentemente, em diferentes tamanhos finais.
 
-A \gls{bsah} apresentou, em alguns casos, estruturas ligeiramente menores que as demais abordagens binárias. Esse comportamento indica que a estratégia utilizada durante a construção pode influenciar não apenas a qualidade da hierarquia para a travessia, mas também a quantidade de memória necessária para armazená-la. Apesar das diferenças serem menores quando comparadas ao impacto observado na \gls{bvh8}, elas demonstram que a organização da árvore também possui influência sobre o tamanho final da estrutura.
+A \gls{bsah} apresentou, em alguns casos, estruturas ligeiramente menores que as demais abordagens binárias. Esse comportamento indica que a estratégia utilizada durante a construção pode influenciar não apenas a qualidade da hierarquia para a travessia, mas também a quantidade de memória necessária para armazená-la. Embora as diferenças sejam menores quando comparadas ao impacto observado na \gls{bvh8}, elas demonstram que a organização da árvore também possui influência sobre o tamanho final da estrutura.
 
-Além do tamanho das estruturas, também foi analisado o comportamento da memória \gls{ram} durante a execução. A utilização da banda de leitura não apresentou diferenças relevantes que permitissem associar diretamente o comportamento observado às diferentes estruturas \glspl{bvh}. Por outro lado, a banda de escrita apresentou diferenças mais evidentes entre as abordagens, principalmente quando comparada a quantidade de memória necessária para armazenar as estruturas.
+Além do tamanho das estruturas, também foi analisado o comportamento da memória \gls{ram} durante a execução. A utilização da banda de leitura não apresentou diferenças relevantes que permitissem associar diretamente o comportamento observado às diferentes estruturas \glspl{bvh}. Por outro lado, a banda de escrita apresentou diferenças mais evidentes entre as abordagens, principalmente quando comparada à quantidade de memória necessária para armazenar as estruturas.
 
 \begin{figure}[htb]
     \caption{Uso da banda de escrita da \gls{ram}}
@@ -80,7 +80,7 @@ Inicialmente, são analisadas as métricas relacionadas ao tempo de construção
 
 A Figura \ref{fig:blas_build_cpu} apresenta os tempos de construção das \glspl{blas} para as diferentes estruturas avaliadas. Observa-se que a \gls{bsah} apresentou o maior tempo de construção, com um valor superior ao dobro do observado para as demais abordagens. Esse comportamento está relacionado à maior complexidade do processo de construção utilizado pela \gls{bsah}, que realiza uma análise das possíveis divisões para buscar uma organização mais adequada da hierarquia. Dessa forma, o maior tempo de construção representa o custo adicional associado à busca por uma estrutura potencialmente mais eficiente durante a travessia.
 
-A \gls{bvh8}, por outro lado, apresentou o menor tempo de construção, sendo aproximadamente 40\% mais rápida que as demais abordagens avaliadas. Uma possível explicação para esse comportamento está na quantidade de filhos presentes em cada nó da estrutura. Como a \gls{bvh8} possui maior quantidade de filhos por nó, a árvore tende a apresentar menor profundidade em comparação com uma estrutura binária equivalente. Essa característica pode reduzir a quantidade de níveis que precisam ser processados durante a construção da hierarquia.
+A \gls{bvh8}, por outro lado, apresentou o menor tempo de construção, sendo aproximadamente 40\% mais rápida que as demais abordagens avaliadas. Uma possível explicação para esse comportamento está na quantidade de filhos presentes em cada nó da estrutura. Como a \gls{bvh8} possui uma maior quantidade de filhos por nó, a árvore tende a apresentar menor profundidade em comparação com uma estrutura binária equivalente. Essa característica pode reduzir a quantidade de níveis que precisam ser processados durante a construção da hierarquia.
 
 A \gls{lbvh} e a \gls{bvh} binária apresentaram tempos de construção semelhantes. No caso da \gls{lbvh}, parte do custo está associada à geração dos códigos de Morton e à ordenação das primitivas antes da construção da hierarquia. Embora essa abordagem utilize operações paralelas durante diferentes etapas da construção, essas operações também possuem um custo associado à sua execução. Dessa forma, o ganho obtido pelo paralelismo não resultou em uma diferença significativa em relação à \gls{bvh} binária nos cenários avaliados.
 
@@ -114,11 +114,11 @@ Essa característica torna a média dos tempos de construção da \gls{tlas} uma
     }
 \end{figure}
 
-\subsubsection{Tempo de upload}
+\subsubsection{Tempo de \textit{upload}}
 
 O gráfico referente ao tempo de \textit{upload} das estruturas não será utilizado na comparação direta entre as abordagens. Isso ocorre porque o tempo registrado nessa operação não representa exclusivamente o tempo necessário para transferir os dados da \gls{cpu} para a \gls{gpu}. Parte significativa do intervalo registrado está relacionada a operações de sincronização entre a \gls{cpu} e a \gls{gpu}.
 
-Em uma execução normal, por exemplo, a \gls{cpu} pode finalizar a construção da \gls{tlas} e posteriormente aguardar a conclusão de operações da \gls{gpu}. Nesse intervalo, a aplicação pode permanecer bloqueada em uma chamada \textit{vkWaitForFences}. Como consequência, o tempo registrado para a operação de \textit{upload} pode variar aproximadamente entre 20\,ms e 90\,ms, mesmo quando a parcela efetivamente relacionada ao processamento da estrutura permanece inferior a aproximadamente 3\,ms.
+Em uma execução normal, por exemplo, a \gls{cpu} pode finalizar a construção da \gls{tlas} e, posteriormente, aguardar a conclusão de operações da \gls{gpu}. Nesse intervalo, a aplicação pode permanecer bloqueada em uma chamada \textit{vkWaitForFences}. Como consequência, o tempo registrado para a operação de \textit{upload} pode variar aproximadamente entre 20\,ms e 90\,ms, mesmo quando a parcela efetivamente relacionada ao processamento da estrutura permanece inferior a aproximadamente 3\,ms.
 
 \begin{figure}[htb]
     \caption{\textit{Nsight Systems}: tempo registrado para o \textit{upload} da \gls{tlas}, com aproximadamente 3\,ms selecionados}
@@ -135,8 +135,6 @@ Em uma execução normal, por exemplo, a \gls{cpu} pode finalizar a construção
 É possível identificar e filtrar algumas dessas operações de espera para tentar obter uma estimativa mais próxima do tempo efetivamente utilizado pelo \textit{upload}. Entretanto, durante a execução da aplicação existem outras chamadas \textit{vkWaitForFences} que não estão diretamente relacionadas à transferência das estruturas \glspl{bvh}. Dessa forma, seria necessário identificar com precisão quais comandos de sincronização estão associados a cada operação de \textit{upload} e separar esses intervalos dos demais eventos presentes na execução.
 
 Esse procedimento aumentaria significativamente a complexidade do tratamento dos dados e, devido às limitações de tempo para a realização dos experimentos, não foi possível estabelecer uma separação suficientemente precisa para utilizar essa métrica na comparação. Por esse motivo, o tempo de \textit{upload} é apresentado apenas como uma observação sobre o comportamento da aplicação, não sendo utilizado como uma métrica principal para determinar o desempenho das diferentes estruturas.
-
-
 
 \subsection{Duração do quadro}
 
@@ -178,14 +176,11 @@ Em relação à duração do quadro na \gls{cpu}, a aplicação não permite que
 
 Durante testes realizados anteriormente, também foi observado que a quantidade de instâncias presentes na cena possui influência significativa sobre a duração dos quadros. Em cenários com menos de 10 instâncias, foi possível obter tempos inferiores a 5\,ms por quadro. Esse resultado indica que, além da estrutura utilizada, a quantidade e a complexidade das instâncias presentes na cena possuem influência direta sobre o tempo necessário para a geração de cada quadro.
 
+\subsection{Ocupação dos \glspl{sm} e dos \textit{warps}}
 
+\subsubsection{\textit{Warps}}
 
-
-\subsection{Ocupação \gls{sm} e \textit{warps}}
-
-\subsubsection{\textit{warps}}
-
-Uma forma de analisar o comportamento dos \glspl{sm} durante a execução é observar a quantidade de \textit{warps} de pixels. Pode ser analisado o número médio de \textit{warps} por ciclo. Essa informação permite relacionar a quantidade de \textit{warps} ativos com os ciclos de execução da \gls{gpu}. Tambem podemos olhar essa atividade como um percentual de \textit{throughput}, permitindo observar a utilização desse recurso em relação à capacidade considerada pela métrica \cite{nvidia_nsight_systems}.
+Uma forma de analisar o comportamento dos \glspl{sm} durante a execução é observar a quantidade de \textit{warps} de pixels. Nesse contexto, pode ser analisado o número médio de \textit{warps} por ciclo. Essa informação permite relacionar a quantidade de \textit{warps} ativos aos ciclos de execução da \gls{gpu}. Também é possível analisar essa atividade como um percentual de \textit{throughput}, permitindo observar a utilização desse recurso em relação à capacidade considerada pela métrica \cite{nvidia_nsight_systems}.
 
 \begin{figure}[htb]
     \caption{Quantidade média de \textit{warps} de pixels simultaneamente ativos por ciclo}
@@ -211,16 +206,14 @@ Uma forma de analisar o comportamento dos \glspl{sm} durante a execução é obs
     }
 \end{figure}
 
-A \gls{bvh8} conseguiu apresentar um valor bem baixo de atividade, comparado com os demais. Porem a \gls{bvh8} ainda consegue manter o tempo de frame menor que a \gls{bvh} comum e que a \gls{lbvh}.
-
-
+A \gls{bvh8} apresentou um nível de atividade consideravelmente menor quando comparada às demais abordagens. Entretanto, apesar dessa menor atividade dos \textit{warps}, a \gls{bvh8} ainda apresentou uma duração de quadro inferior à observada para a \gls{bvh} binária tradicional e para a \gls{lbvh}. Esse resultado indica que uma menor quantidade de \textit{warps} ativos, isoladamente, não implica necessariamente um pior desempenho. Outros fatores relacionados à organização da estrutura e ao trabalho realizado durante a travessia também podem influenciar o tempo total de execução.
 
 \subsubsection{\glspl{sm}}
 
-Para entender melhor a ocupacao da \gls{gpu}, podemos olhar para o responsavel pelo agendamento das operacoes.
+Para compreender melhor a ocupação da \gls{gpu}, também podem ser analisadas métricas relacionadas ao agendamento e à emissão de operações pelos \glspl{sm}.
 
 \begin{figure}[htb]
-    \caption{Percentual de emissão de instruções média dos \glspl{sm} que está sendo utilizado durante a execução}
+    \caption{Percentual médio de emissão de instruções dos \glspl{sm} utilizado durante a execução}
     \centering
     {\parbox{16cm}
         {
@@ -232,7 +225,7 @@ Para entender melhor a ocupacao da \gls{gpu}, podemos olhar para o responsavel p
 \end{figure}
 
 \begin{figure}[htb]
-    \caption{Grafico comluna sobre quanto os \glspl{sm} da \gls{gpu} estão efetivamente ocupados}
+    \caption{Percentual de ocupação efetiva dos \glspl{sm} da \gls{gpu}}
     \centering
     {\parbox{16cm}
         {
@@ -243,9 +236,9 @@ Para entender melhor a ocupacao da \gls{gpu}, podemos olhar para o responsavel p
     }
 \end{figure}
 
-Aqui podemos ver que a carga de trabalho da \gls{gpu} estava praticamente igual, tendo o \gls{bvh8} como pior desenpenho.
+Os resultados apresentados indicam que a carga de trabalho dos \glspl{sm} permaneceu relativamente semelhante entre as diferentes abordagens. A \gls{bvh8} apresentou o comportamento menos favorável entre as estruturas avaliadas, com uma utilização ligeiramente inferior dos recursos analisados. Entretanto, essa diferença deve ser interpretada em conjunto com as demais métricas de desempenho, uma vez que a utilização isolada dos \glspl{sm} não determina o tempo total necessário para a produção de um quadro.
 
-\subsection{Consumo de Energia e Temperatura}
+\subsection{Consumo de energia e temperatura}
 
 A temperatura da \gls{gpu} permaneceu próxima de 60\,°C durante os experimentos. Entretanto, como os testes não foram realizados em um ambiente com temperatura e condições térmicas controladas, foram observadas variações mesmo quando a mesma estrutura \gls{bvh} era utilizada. Em alguns casos, a temperatura média apresentou uma diferença próxima de 2\,°C entre execuções da mesma estrutura. Dessa forma, a precisão obtida não é suficiente para utilizar a temperatura como um critério confiável para diferenciar as estruturas avaliadas.
 
@@ -256,7 +249,7 @@ A análise do consumo energético apresenta uma limitação semelhante, mas com 
 No presente experimento, a comparação da potência é realizada de forma independente da quantidade de quadros produzidos ou do tempo necessário para produzi-los. Em outras palavras, é atribuído maior desempenho nesse critério à estrutura que apresenta menor consumo médio, mesmo que essa estrutura possa necessitar de mais tempo para produzir o mesmo número de quadros. Portanto, essa métrica deve ser interpretada como uma comparação do consumo de potência durante a execução, e não como uma medida direta da eficiência energética da aplicação.
 
 \begin{figure}[htb]
-    \caption{Consumo médio de energia da \gls{gpu}}
+    \caption{Consumo médio de potência da \gls{gpu}}
     \centering
     {\parbox{16cm}
         {
@@ -271,13 +264,13 @@ Observando os resultados apresentados na Figura \ref{fig:power_img}, a \gls{bvh8
 
 Entre as demais estruturas, as diferenças de consumo foram menores, com uma variação inferior a 4\,W entre o maior e o menor valor observado. Como a metodologia utilizada não considera o tempo necessário para produzir os quadros durante a análise do consumo de potência, essa diferença não é suficiente para estabelecer uma conclusão significativa sobre qual dessas estruturas apresenta melhor eficiência energética.
 
-Dessa forma, os resultados de consumo de energia devem ser interpretados com cautela. A \gls{bvh8} apresentou uma diferença suficientemente evidente para indicar um maior consumo de potência durante os experimentos, enquanto as diferenças entre a \gls{bvh}, \gls{lbvh} e \gls{bsah} foram pequenas em relação às limitações do método de medição. Para uma análise mais precisa de eficiência energética, seria necessário considerar conjuntamente a potência consumida, o tempo de execução e a quantidade de quadros produzidos, permitindo avaliar o consumo de energia necessário para realizar uma quantidade equivalente de trabalho.
+Dessa forma, os resultados de consumo de energia devem ser interpretados com cautela. A \gls{bvh8} apresentou uma diferença suficientemente evidente para indicar um maior consumo de potência durante os experimentos, enquanto as diferenças entre a \gls{bvh}, \gls{lbvh} e \gls{bsah} foram pequenas em relação às limitações do método de medição. Para uma análise mais precisa da eficiência energética, seria necessário considerar conjuntamente a potência consumida, o tempo de execução e a quantidade de quadros produzidos, permitindo avaliar o consumo de energia necessário para realizar uma quantidade equivalente de trabalho.
 
 \subsection{\textit{Shaders} e ocupação dos \textit{warps}}
 
 Deixando as métricas obtidas pelo \textit{Nsight Systems} de lado, é possível analisar informações mais detalhadas sobre a execução dos \textit{shaders} por meio dos dados coletados pelo \textit{Nsight Graphics}. A ferramenta disponibiliza uma quantidade elevada de métricas e, em muitos casos, algumas delas apresentam informações semelhantes ou complementares. Por esse motivo, foram selecionadas apenas as métricas consideradas mais relevantes para a análise deste trabalho. Os valores apresentados nesta seção correspondem ao quadro analisado no instante de 20 segundos de execução.
 
-Inicialmente, pode-se observar a distribuição das operações realizadas durante a execução de um \textit{frame}. Na linha correspondente aos \textit{pipelines}, são apresentados quatro \textit{pipelines} diferentes. Os dois primeiros são responsáveis pela geração dos dois \textit{G-buffers} utilizados pela aplicação. O terceiro \textit{pipeline} corresponde à etapa em que são realizados os testes de interseção utilizando as estruturas \glspl{bvh}. Essa etapa representa a maior parte do processamento do quadro, ocupando mais de 90\% do tempo apresentado na visualização. O quarto é apenas um algoritmo rápido que faz alguns ajustes na imagem.
+Inicialmente, pode-se observar a distribuição das operações realizadas durante a execução de um \textit{frame}. Na linha correspondente aos \textit{pipelines}, são apresentados quatro \textit{pipelines} diferentes. Os dois primeiros são responsáveis pela geração dos dois \textit{G-buffers} utilizados pela aplicação. O terceiro \textit{pipeline} corresponde à etapa em que são realizados os testes de interseção utilizando as estruturas \glspl{bvh}. Essa etapa representa a maior parte do processamento do quadro, ocupando mais de 90\% do tempo apresentado na visualização. O quarto \textit{pipeline} corresponde a um algoritmo de processamento rápido responsável por realizar alguns ajustes na imagem.
 
 É importante destacar que o tempo apresentado nessa visualização não corresponde diretamente ao tempo real de execução utilizado nos demais experimentos. O \textit{Nsight Graphics} utiliza uma representação própria para a visualização temporal das operações durante a análise do \textit{frame}. Dessa forma, a figura é utilizada principalmente para observar a distribuição relativa das operações e identificar quais etapas concentram a maior parte da execução.
 
@@ -295,9 +288,9 @@ Inicialmente, pode-se observar a distribuição das operações realizadas duran
 
 A Tabela \ref{tab:comparacaoAlgoritmos} apresenta algumas das métricas relacionadas à execução dos \textit{shaders}, à atividade dos \textit{threads} e à ocupação dos \textit{warps}. Essas métricas permitem observar não apenas o tempo de execução, mas também como os \textit{threads} que executam os \textit{shaders} permanecem ativos durante o processamento.
 
-A métrica \textit{Active Threads (Th/Warp)} representa a quantidade média de \textit{threads} ativos em cada \textit{warp}. Como um \textit{warp} é composto por 32 \textit{threads}, valores próximos de 32 indicam que uma grande parte dos \textit{threads} está ativa durante a execução. Na tabela, os valores variam entre 29,6 e 30,6 \textit{threads} por \textit{warp}, indicando uma alta quantidade de \textit{threads} ativos para todas as estruturas avaliadas.
+A métrica \textit{Active Threads (Th/Warp)} representa a quantidade média de \textit{threads} ativos em cada \textit{warp}. Como um \textit{warp} é composto por 32 \textit{threads}, valores próximos de 32 indicam que uma grande parte dos \textit{threads} está ativa durante a execução. Na tabela, os valores variam entre 29,6 e 30,6 \textit{threads} por \textit{warp}, indicando uma alta proporção de \textit{threads} ativos para todas as estruturas avaliadas.
 
-A métrica \textit{Active Threads (Coherence)} apresenta essa atividade na forma de um percentual de coerência. Nesse caso, valores maiores indicam que uma parcela maior dos \textit{threads} do \textit{warp} permanece ativa simultaneamente. A \gls{bsah} apresentou o maior valor, com 95,5\%, enquanto a \gls{lbvh} apresentou o menor, com 92,4\%. Esta métrica tem relação inversa com a \textit{warp divergence}.
+A métrica \textit{Active Threads (Coherence)} apresenta essa atividade na forma de um percentual de coerência. Nesse caso, valores maiores indicam que uma parcela maior dos \textit{threads} do \textit{warp} permanece ativa simultaneamente. A \gls{bsah} apresentou o maior valor, com 95,5\%, enquanto a \gls{lbvh} apresentou o menor, com 92,4\%. Essa métrica possui relação com a \textit{warp divergence}, uma vez que uma maior divergência pode resultar em uma menor quantidade de \textit{threads} ativos simultaneamente.
 
 As métricas \textit{Predicated-On (Th/Warp)} e \textit{Predicated-On (Coherence)} estão relacionadas aos \textit{threads} que permanecem habilitados pela predicação durante a execução. A primeira apresenta a quantidade média de \textit{threads} que estão com a predicação habilitada em cada \textit{warp}, enquanto a segunda apresenta essa informação como um percentual. Essas métricas permitem observar quanto do trabalho dos \textit{warps} permanece efetivamente habilitado após a aplicação das condições de predicação.
 
@@ -305,9 +298,9 @@ Os valores apresentados mostram um comportamento semelhante ao observado nas mé
 
 A métrica \textit{Unallocated Warps (Avg Warps)} representa a quantidade média de \textit{warps} que poderiam estar residentes nos \glspl{sm}, mas que permanecem não alocados durante a execução. A métrica \textit{Unallocated Warps (Occupancy)} apresenta essa mesma informação como um percentual em relação à capacidade de ocupação considerada pela \gls{gpu}. A NVIDIA disponibiliza essa métrica como parte das informações de ocupação dos \glspl{sm}, juntamente com métricas como \textit{SM Active}, \textit{SM Issue} e \textit{Total SM Occupancy} \cite{nvidia_nsight_systems}.
 
-Um valor elevado de \textit{Unallocated Warps} indica que existe capacidade de execução nos \glspl{sm} que não está sendo ocupada por \textit{warps} residentes naquele momento. Entretanto, essa informação não significa, isoladamente, que exista um problema específico de memória ou que a aplicação esteja deixando de utilizar corretamente a memória compartilhada. A quantidade de \textit{warps} que pode permanecer residente depende de diferentes recursos da \gls{gpu}, incluindo recursos utilizados pelo \textit{shader}, como registradores e memória compartilhada, além da quantidade de trabalho disponível para execução. Portanto, essa métrica deve ser utilizada como um indicador de capacidade de ocupação não utilizada.
+Um valor elevado de \textit{Unallocated Warps} indica que existe capacidade de execução nos \glspl{sm} que não está sendo ocupada por \textit{warps} residentes naquele momento. Entretanto, essa informação não significa, isoladamente, que exista um problema específico de memória ou que a aplicação esteja deixando de utilizar corretamente a memória compartilhada. A quantidade de \textit{warps} que pode permanecer residente depende de diferentes recursos da \gls{gpu}, incluindo recursos utilizados pelo \textit{shader}, como registradores e memória compartilhada, além da quantidade de trabalho disponível para execução. Portanto, essa métrica deve ser utilizada como um indicador da capacidade de ocupação não utilizada.
 
-Os resultados apresentam valores relativamente próximos entre as abordagens. A \gls{bvh8} apresentou a maior quantidade média de \textit{warps} não alocados, com 23,4 \textit{warps}, correspondendo a 48,7\% de ocupação, enquanto a \gls{lbvh} apresentou os menores valores, com 22,4 \textit{warps} e 46,8\%. Isso indica que, no \textit{frame} analisado, a \gls{bvh8} deixou uma quantidade ligeiramente maior de capacidade de ocupação dos \glspl{sm} sem alocação.
+Os resultados apresentam valores relativamente próximos entre as abordagens. A \gls{bvh8} apresentou a maior quantidade média de \textit{warps} não alocados, com 23,4 \textit{warps}, correspondendo a 48,7\% de ocupação, enquanto a \gls{lbvh} apresentou os menores valores, com 22,4 \textit{warps} e 46,8\%. Isso indica que, no \textit{frame} analisado, a \gls{bvh8} deixou uma quantidade ligeiramente maior da capacidade de ocupação dos \glspl{sm} sem alocação.
 
 Por fim, as métricas \textit{Pixel Shader (Avg Warps)} e \textit{Pixel Shader (Occupancy)} estão relacionadas especificamente aos \textit{warps} utilizados na execução dos \textit{pixel shaders}. A primeira representa a quantidade média de \textit{warps} de pixels em execução, enquanto a segunda apresenta essa utilização como um percentual de ocupação.
 
@@ -315,7 +308,7 @@ Nesse caso, a \gls{bvh8} apresenta um comportamento diferente das demais estrutu
 
 \begin{table}[ht]
 \centering
-\caption{Comparação de desempenho e ocupação de GPU entre as abordagens}
+\caption{Comparação de desempenho e ocupação da \gls{gpu} entre as abordagens}
 \label{tab:comparacaoAlgoritmos}
 \begin{tabularx}{\textwidth}{@{} X c c c c @{}}
 \toprule
@@ -333,19 +326,17 @@ Pixel Shader (Occupancy) & 27.8\% & 27.1\% & 18.0\% & 28.2\% \\ \bottomrule
 \centering \footnotesize Fonte: Elaborado pelo autor
 \end{table}
 
-
-
 \section{Conclusões}
 
-Este trabalho apresentou uma comparação entre diferentes estratégias de construção e organização de estruturas \glspl{bvh} para utilização em uma aplicação de \textit{ray tracing} em tempo real. Foram avaliadas as estruturas \gls{bvh}, \gls{lbvh}, \gls{bsah} e \gls{bvh8}, considerando métricas relacionadas ao tempo de construção, duração dos quadros, utilização dos recursos da \gls{gpu}, consumo de memória e consumo de energia.
+Este trabalho apresentou uma comparação entre diferentes estratégias de construção e organização de estruturas \glspl{bvh} para utilização em uma aplicação de \textit{ray tracing} em tempo real. Foram avaliadas as estruturas \gls{bvh}, \gls{lbvh}, \gls{bsah} e \gls{bvh8}, considerando métricas relacionadas ao tempo de construção, à duração dos quadros, à utilização dos recursos da \gls{gpu}, ao consumo de memória e ao consumo de energia.
 
 \subsection{Desempenho das estruturas}
 
-Dentre as estruturas avaliadas, a \gls{bsah} apresentou o melhor desempenho durante a renderização. A redução de aproximadamente 10\,ms na duração dos quadros representa uma diferença significativa, principalmente considerando que, para atingir uma taxa de 60 de quadros por segundo, cada quadro precisa ser produzido em aproximadamente 16,6\,ms. Dessa forma, o maior custo de construção da \gls{bsah} foi compensado pela melhoria obtida durante a travessia da estrutura e pela consequente redução do tempo necessário para produzir os quadros.
+Dentre as estruturas avaliadas, a \gls{bsah} apresentou o melhor desempenho durante a renderização. A redução de aproximadamente 10\,ms na duração dos quadros representa uma diferença significativa, principalmente considerando que, para atingir uma taxa de 60 quadros por segundo, cada quadro precisa ser produzido em aproximadamente 16,6\,ms. Dessa forma, o maior custo de construção da \gls{bsah} foi compensado pela melhoria obtida durante a travessia da estrutura e pela consequente redução do tempo necessário para produzir os quadros.
 
-No cenário avaliado, a aplicação possui tempo suficiente entre as etapas de construção e utilização da estrutura para que o custo adicional da \gls{bsah} não represente uma limitação significativa. Dessa forma, a utilização de uma estratégia de construção mais custosa mostrou-se vantajosa quando o objetivo principal é reduzir o tempo. Esse resultado reforça a importância de considerar conjuntamente o custo de construção e o custo de travessia ao avaliar uma estrutura \gls{bvh}.
+No cenário avaliado, a aplicação possui tempo suficiente entre as etapas de construção e utilização da estrutura para que o custo adicional da \gls{bsah} não represente uma limitação significativa. Dessa forma, a utilização de uma estratégia de construção mais custosa mostrou-se vantajosa quando o objetivo principal é reduzir o tempo de renderização. Esse resultado reforça a importância de considerar conjuntamente o custo de construção e o custo de travessia ao avaliar uma estrutura \gls{bvh}.
 
-Como o tempo de construção apresentou menor impacto na aplicação quando comparado ao tempo de renderização, a vantagem esperada de uma abordagem com construção mais rápida não foi suficiente para compensar seu desempenho durante a geração dos quadros. Nesse contexto, a \gls{lbvh} não apresentou uma vantagem significativa em relação às demais estruturas avaliadas. Embora a utilização de códigos de Morton e das operações paralelas permita construir a hierarquia utilizando uma abordagem adequada ao paralelismo, o resultado obtido neste trabalho não demonstrou um ganho suficiente durante a renderização para justificar seu custo de implementação em relação às outras abordagens avaliadas.
+Como o tempo de construção apresentou menor impacto na aplicação quando comparado ao tempo de renderização, a vantagem esperada de uma abordagem com construção mais rápida não foi suficiente para compensar seu desempenho durante a geração dos quadros. Nesse contexto, a \gls{lbvh} não apresentou uma vantagem significativa em relação às demais estruturas avaliadas. Embora a utilização de códigos de Morton e de operações paralelas permita construir a hierarquia utilizando uma abordagem adequada ao paralelismo, o resultado obtido neste trabalho não demonstrou um ganho suficiente durante a renderização para justificar seu custo de implementação em relação às outras abordagens avaliadas.
 
 A \gls{bvh8} também apresentou um resultado relevante. Apesar de utilizar nós com espaço para uma quantidade maior de filhos, a estrutura apresentou uma duração de quadros ligeiramente menor que a \gls{bvh} binária tradicional. Esse resultado indica que o aumento da largura da árvore pode apresentar benefícios durante a travessia, mesmo acompanhado por um aumento significativo no consumo de memória.
 
@@ -375,7 +366,7 @@ A aplicação desenvolvida foi capaz de realizar a renderização com uma repres
 
 Os resultados obtidos também mostram que a qualidade da estrutura de aceleração possui influência sobre esse custo. As diferenças observadas entre as estruturas avaliadas demonstram que a escolha da \gls{bvh} pode alterar tanto o tempo necessário para sua construção quanto o desempenho durante a renderização. Portanto, a utilização de \textit{ray tracing} em tempo real não depende apenas da capacidade de realizar as interseções entre os raios e a geometria, mas também da escolha e da organização da estrutura utilizada para acelerar esse processo.
 
-Apesar das limitações observadas na aplicação desenvolvida, o código produzido não se restringe ao cenário utilizado nos experimentos. As estruturas \glspl{bvh} implementadas podem ser adaptadas para outras aplicações que necessitem de consultas espaciais ou de interseções entre raios e geometria. Também é possível realizar a poda da estrutura, removendo determinados nós ou primitivas para reduzir a quantidade de elementos que precisam ser percorridos. Essa abordagem reduz a precisão da estrutura, pois algumas interseções podem deixar de ser consideradas, mas pode proporcionar uma redução significativa no custo da travessia. Dessa forma, uma \gls{bvh} podada pode ser utilizada em aplicações de tempo real que priorizem desempenho em relação à precisão, como testes de colisão executados na \gls{cpu}, quando não é necessário obter uma detecção completamente precisa em todos os casos. Da mesma forma, parte das implementações pode ser utilizada em aplicações executadas na \gls{cpu}, desde que sejam realizadas as adaptações necessárias para o ambiente de execução.
+Apesar das limitações observadas na aplicação desenvolvida, o código produzido não se restringe ao cenário utilizado nos experimentos. As estruturas \glspl{bvh} implementadas podem ser adaptadas para outras aplicações que necessitem de consultas espaciais ou de interseções entre raios e geometria. Também é possível realizar a poda da estrutura, removendo determinados nós ou primitivas para reduzir a quantidade de elementos que precisam ser percorridos. Essa abordagem reduz a precisão da estrutura, pois algumas interseções podem deixar de ser consideradas, mas pode proporcionar uma redução significativa no custo da travessia. Dessa forma, uma \gls{bvh} podada pode ser utilizada em aplicações de tempo real que priorizem o desempenho em relação à precisão, como testes de colisão executados na \gls{cpu}, quando não é necessário obter uma detecção completamente precisa em todos os casos. Da mesma forma, parte das implementações pode ser utilizada em aplicações executadas na \gls{cpu}, desde que sejam realizadas as adaptações necessárias para o ambiente de execução.
 
 Além disso, a aplicação desenvolvida fornece uma base para a realização de novos experimentos com estruturas de aceleração. A possibilidade de configurar diferentes estruturas e comparar seu comportamento permite utilizar a aplicação como ponto de partida para novas avaliações. Os dados obtidos durante este trabalho também fornecem uma referência inicial para comparar novas implementações e identificar como diferentes estratégias de construção podem influenciar o desempenho, o consumo de memória e a utilização dos recursos computacionais.
 
