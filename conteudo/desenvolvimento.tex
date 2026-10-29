@@ -10,7 +10,7 @@ Antes de apresentar a aplicação e os resultados obtidos, é necessário esclar
 
 A aplicação foi construída a partir de uma aplicação já existente, chamada atualmente de \textit{Apotheosis}. De forma resumida, o \textit{Apotheosis} é um motor gráfico desenvolvido para um jogo \textit{open source}, de autoria do autor deste trabalho. Esse motor gráfico foi escolhido por utilizar \textit{Vulkan}, possibilitando maior controle sobre as etapas de renderização e sobre os recursos disponibilizados pelo \textit{hardware}, além de possuir código aberto, ser facilmente compilável por meio de uma \textit{Open Container Initiative Image Format} e já ser conhecido pelo autor deste trabalho \cite{apotheosis}.
 
-O \textit{Apotheosis} já possuía grande parte dos componentes utilizados neste trabalho. O código era baseado principalmente no tutorial de \textit{Vulkan} \cite{vulkan_tutorial} e na documentação do GLFW \cite{glfw_docs}. A partir das alterações realizadas para suportar as diferentes estruturas \glspl{bvh} e do aprimoramento das interfaces da aplicação, o código passou a possuir algumas diferenças em relação à versão original.
+O \textit{Apotheosis} já possuía grande parte dos componentes utilizados neste trabalho. O código era baseado principalmente no tutorial de \textit{Vulkan} \cite{vulkan_tutorial} e na documentação do \textit{GLFW} \cite{glfw_docs}. A partir das alterações realizadas para suportar as diferentes estruturas \glspl{bvh} e do aprimoramento das interfaces da aplicação, o código passou a possuir algumas diferenças em relação à versão original.
 
 Uma das principais mudanças foi a redução da compatibilidade com dispositivos que não possuem suporte a alguns recursos utilizados pela aplicação, como \textit{Indexing} e \textit{Buffer Device Address}. Além disso, para a coleta de algumas métricas, também é necessário o suporte a \textit{Host Query Reset}. Dessa forma, a aplicação passou a exigir um conjunto maior de recursos do dispositivo utilizado nos experimentos.
 
@@ -24,7 +24,7 @@ Apesar de a aplicação utilizar \textit{Vulkan}, as estruturas de aceleração 
 
 Essa abstração é adequada para aplicações que utilizam o sistema de \textit{ray tracing} fornecido pelo \textit{Vulkan}, porém não atende diretamente ao objetivo de comparar diferentes formas de construção e organização de \glspl{bvh}. Para este trabalho, é necessário possuir controle sobre a estrutura de dados utilizada, permitindo implementar e testar diferentes abordagens, como \gls{bvh}, \gls{lbvh}, \gls{bsah} e \gls{bvh8}.
 
-Outro fator considerado foi a necessidade de utilizar recursos específicos da API para realizar a travessia das estruturas fornecidas pelo \textit{Vulkan}. Dessa forma, a utilização dessas estruturas também restringiria a execução da aplicação aos dispositivos que possuem suporte aos recursos necessários para essa abordagem. Neste trabalho, optou-se por manter a utilização do \textit{Vulkan} para as demais etapas da renderização, mas implementar as estruturas \glspl{bvh} utilizadas nos experimentos de forma própria.
+Outro fator considerado foi a necessidade de utilizar recursos específicos da \gls{api} para realizar a travessia das estruturas fornecidas pelo \textit{Vulkan}. Dessa forma, a utilização dessas estruturas também restringiria a execução da aplicação aos dispositivos que possuem suporte aos recursos necessários para essa abordagem. Neste trabalho, optou-se por manter a utilização do \textit{Vulkan} para as demais etapas da renderização, mas implementar as estruturas \glspl{bvh} utilizadas nos experimentos de forma própria.
 
 Por não serem utilizadas as estruturas de aceleração fornecidas diretamente pelo \textit{Vulkan}, é necessário implementar nos \textit{shaders} o algoritmo responsável pela travessia da \gls{bvh}. Esse algoritmo precisa conhecer a organização dos nós da estrutura, a forma como os dados são armazenados e como acessar os diferentes elementos durante a execução. Essa decisão permite que a mesma aplicação utilize diferentes estruturas e que o processo de travessia seja controlado pelo próprio código desenvolvido para os experimentos.
 
@@ -74,9 +74,6 @@ cmake .. -DCMAKE_CXX_FLAGS="-DUSE_BLAS_BVH8 -DUSE_TLAS_BVH8" \
 \end{verbatim}
 
 Além de definir essas opções para o código C++, as mesmas definições são fornecidas aos \textit{shaders} por meio do parâmetro \textit{SHADER\_DEFINITIONS}. Isso é necessário porque a construção da estrutura e sua travessia precisam utilizar a mesma organização de dados. Dessa forma, quando uma estrutura é selecionada para a \gls{blas} ou para a \gls{tlas}, a implementação responsável pela travessia nos \textit{shaders} também pode ser configurada para utilizar a estrutura correspondente.
-
-
-
 
 \section{Aplicação Desenvolvida}
 
@@ -139,14 +136,11 @@ Durante a etapa de iluminação, as propriedades da luz são combinadas com as i
 
 No caso das sombras, a posição da luz também é utilizada para determinar a direção do raio que deve ser testado. O raio é então percorrido pela estrutura \gls{bvh} para verificar se existe alguma geometria entre o ponto iluminado e a fonte de luz. Caso uma interseção seja encontrada, o ponto é considerado em sombra e a contribuição direta da luz pode ser descartada.
 
-
-
-
 \subsection{Criação das \glspl{bvh}}
 
 Na aplicação desenvolvida, a \gls{bvh} é construída por \textit{mesh}, e não individualmente para cada \textit{submesh}. Dessa forma, a estrutura de aceleração pode ser associada à instância correspondente. Quando uma nova \textit{mesh} é adicionada e ainda não possui os recursos necessários registrados, a construção da \gls{blas} pode aproveitar o momento em que os dados das primitivas estão disponíveis na \gls{cpu}.
 
-Para permitir a utilização de diferentes implementações de \gls{bvh}, foi necessário definir uma representação comum para os dados utilizados durante a construção. Entre os parâmetros necessários estão os \textit{vertices}, os índices que definem os triângulos e as informações das \textit{submeshes}. Embora a \gls{bvh} seja construída por \textit{mesh}, as informações das \textit{submeshes} ainda precisam ser consideradas para preservar a associação entre as primitivas e seus respectivos materiais. Isso é importante quando um objeto possui mais de um material ou quando algum deles apresenta: transparência, utiliza \textit{blend} ou \textit{mask}.
+Para permitir a utilização de diferentes implementações de \gls{bvh}, foi necessário definir uma representação comum para os dados utilizados durante a construção. Entre os parâmetros necessários estão os \textit{vertices}, os índices que definem os triângulos e as informações das \textit{submeshes}. Embora a \gls{bvh} seja construída por \textit{mesh}, as informações das \textit{submeshes} ainda precisam ser consideradas para preservar a associação entre as primitivas e seus respectivos materiais. Isso é importante quando um objeto possui mais de um material ou quando algum deles apresenta transparência, utiliza \textit{blend} ou \textit{mask}.
 
 Inicialmente, é criada uma estrutura denominada \textit{PrimitiveRef}, que representa uma primitiva durante o processo de construção da \gls{bvh}. Essa estrutura funciona como uma representação intermediária, permitindo organizar as primitivas antes da criação dos nós da árvore. A partir dessas referências, os algoritmos de construção podem organizar as primitivas e gerar a hierarquia correspondente.
 
@@ -195,14 +189,13 @@ Por fim, os nós e as instâncias são transferidos para dois \textit{buffers} d
 
 O uso de campos de preenchimento, denominados \textit{padding}, em algumas estruturas está relacionado aos requisitos de alinhamento de memória para o acesso aos dados pelos \textit{shaders}. O \textit{Vulkan} define regras de alinhamento para os dados armazenados em \textit{buffers}, que devem ser consideradas na organização das estruturas compartilhadas entre a aplicação e os \textit{shaders} \cite{vulkan_guide_shader_memory_layout}. Além disso, quando é utilizado \textit{Buffer Device Address}, os endereços de memória e os dados acessados precisam respeitar os requisitos de alinhamento aplicáveis \cite{vulkan_guide_bda_alignment}.
 
+\subsection{Criação da \gls{tlas}}
 
-\subsection{Criacao da \gls{tlas}}
+A \gls{tlas} possui um processo de criação semelhante ao da \gls{blas} em alguns aspectos. Primeiramente, são criadas as referências para a \gls{blas} de cada instância que será renderizada. Da mesma forma que na criação da \gls{blas}, também é utilizada a estrutura \textit{PrimitiveRef}. Entretanto, nesse caso, o campo \textit{materialOffset} não é utilizado, pois essa informação é necessária apenas para as instâncias da \gls{blas}.
 
-A \gls{tlas} possue um processo de criacao parecido com a \gls{blas} em certos pontos. Primeiramente precisamos criar as referencias para a \gls{blas} de cada instancia que foi renderizada, da mesma forma que na criacao da \gls{blas} aqui tambem usamos \textit{PrimitiveRef}, porem nao usamos a variavel \textit{materialOffset}, que no caso fica serve apenas para as instancias da \gls{blas}.
+Utilizando as \textit{PrimitiveRef}, o processo de construção dos nós segue o mesmo princípio utilizado na \gls{blas}. Após a criação dos nós, as \textit{PrimitiveRef} são convertidas em instâncias da \gls{tlas}. Por fim, a \gls{tlas} é transferida para a \gls{gpu} da mesma forma que a \gls{blas}, porém utilizando um \textit{buffer} separado.
 
-Usnado as \textit{PrimitiveRef} o processo de construcao dos nos segue identico ao da \gls{blas}. Apos a criacao dos nos as \textit{PrimitiveRef} sao transformadas em instancias. Por fim a \gls{tlas} é carregada na \gls{gpu} da mesma forma que a \gls{blas}, porem em um outro buffer.
-
-\begin{lstlisting}[caption={\textit{Struct} da instancia da \gls{tlas}}, label={cod:tlas_instance}]
+\begin{lstlisting}[caption={\textit{Struct} da instância da \gls{tlas}}, label={cod:tlas_instance}]
 struct TLASInstance {
     glm::mat4 inverseTransform; // 4*4*32 512
 
@@ -217,39 +210,39 @@ struct TLASInstance {
 \end{lstlisting}
 \fonte{Elaborado pelo autor (2026).}
 
-\section{Construcão e travessia da \glspl{bvh}}
+A estrutura apresentada armazena a transformação inversa da instância, os endereços dos vértices e dos índices da geometria, além das informações necessárias para localizar a \gls{blas} correspondente e os nós associados à instância. O campo \textit{blasIndex} identifica a estrutura utilizada pela instância, enquanto \textit{nodeOffset} e \textit{nodeCount} permitem localizar os nós correspondentes. O campo \textit{instanceOffset} é utilizado para identificar o deslocamento da instância dentro dos dados associados à estrutura.
 
-Esta sesao sera dedicada a mostrar como o no das arvores \gls{bvh} sao construidos.
+\section{Construção e travessia das \glspl{bvh}}
+
+Esta seção apresenta o processo utilizado para construir e percorrer os nós das árvores \gls{bvh} implementadas neste trabalho. Inicialmente, é apresentada a implementação da \gls{bvh} binária, utilizada como referência para compreender as demais estratégias. Em seguida, são descritas as alterações realizadas nas abordagens \gls{lbvh}, \gls{bsah} e \gls{bvh8}.
 
 \subsection{\gls{bvh}}
 
-Exceto para a \gls{bvh8}, todas as demais arvores usam o mesmo no  \ref{cod:blas_node} e a mesma forma de travessia. O que muda é principalmente a construcao entao precisamos explicar como funciona a construcao do que seria a implementacao mais simples para podermos entender as mudancas nas demais.
+Exceto pela \gls{bvh8}, todas as demais árvores utilizam o mesmo tipo de nó apresentado no Código \ref{cod:blas_node} e seguem essencialmente a mesma forma de travessia. As principais diferenças entre essas estruturas estão relacionadas ao processo de construção. Por esse motivo, inicialmente é apresentada a implementação mais simples, permitindo compreender a organização utilizada e as alterações realizadas nas demais estratégias.
 
-\subsubsection{construcao}
+\subsubsection{Construção}
 
-Dentro de \textit{BLASInstanceBuilder::build} ou \textit{TLASInstanceBuilder::build} (vale resaltar que no nivel de construcao dos nos a implementacao esta generalizada e permite que a funcao seja a mesma). Chamamos a função \textit{BuilderType::build}, que dentro dessa implementacao é uma classe \textit{template} do C++, que permite usar qualquer outra classe no lugar delas desde que tenhas a funcao usada no caso \textit{build} com os mesmos parametros e isso definido em tempo de compilacao.
+Dentro das funções \textit{BLASInstanceBuilder::build} ou \textit{TLASInstanceBuilder::build}, é chamada a função \textit{BuilderType::build}. No nível responsável pela construção dos nós, a implementação é generalizada, permitindo que a mesma lógica seja utilizada tanto para a \gls{blas} quanto para a \gls{tlas}. O tipo \textit{BuilderType} é definido como um \textit{template} de C++, permitindo utilizar diferentes classes de construção desde que forneçam uma função \textit{build} compatível com os parâmetros esperados. Essa verificação ocorre durante a compilação.
 
-No caso da \gls{bvh}, a função \textit{build} constrói a árvore de cima para baixo (\textit{top-down}), ou seja, partindo da raiz contendo todas as primitivas e subdividindo o espaço sucessivamente até alcançar as folhas.
+No caso da \gls{bvh}, a função \textit{build} constrói a árvore de cima para baixo (\textit{top-down}), ou seja, partindo da raiz, que contém todas as primitivas, e subdividindo o espaço sucessivamente até alcançar as folhas.
 
-O algoritmo inicia considerando todo o conjunto de primitivas como um único bloco. Para evitar chamadas recursivas, ele utiliza uma pilha para controlar o processo de divisão de forma iterativa. A cada etapa, retira-se um intervalo da pilha e cria-se um nó. Caso esse nó possua um pai, ele é vinculado ao slot correspondente do nó superior e a sua caixa delimitadora (\gls{aabb}) é calculada.
+O algoritmo inicia considerando todo o conjunto de primitivas como um único bloco. Para evitar chamadas recursivas, ele utiliza uma pilha para controlar o processo de divisão de forma iterativa. A cada etapa, retira-se um intervalo da pilha e cria-se um nó. Caso esse nó possua um pai, ele é vinculado ao \textit{slot} correspondente do nó superior e sua caixa delimitadora (\gls{aabb}) é calculada.
 
-Quando o nó contém mais de duas primitivas, ele atua como um nó interno: o algoritmo analisa a posição dos centroides das geometrias para escolher o melhor eixo de corte, reordena as primitivas dividindo-as ao meio com o \textit{std::nth\_element} e empilha as duas metades resultantes (esquerda e direita) para serem processadas em seguida. Esse processo de divisão continua até que um grupo passe a ter apenas uma ou duas primitivas. Nessa condição de parada, o nó é finalizado como uma folha (\textit{leaf = 1}) e passa a armazenar diretamente os índices dessas primitivas, encerrando a ramificação daquele ramo.
+Quando o nó contém mais de duas primitivas, ele atua como um nó interno: o algoritmo analisa a posição dos centroides das geometrias para escolher o melhor eixo de corte, reordena as primitivas dividindo-as ao meio com o \textit{std::nth\_element} e empilha as duas metades resultantes, esquerda e direita, para serem processadas em seguida. Esse processo de divisão continua até que um grupo passe a ter apenas uma ou duas primitivas. Nessa condição de parada, o nó é finalizado como uma folha (\textit{leaf = 1}) e passa a armazenar diretamente os índices dessas primitivas, encerrando a ramificação daquele ramo.
 
-\subsubsection{travessia}
+\subsubsection{Travessia}
 
-A travessia ocorre no \textit{shaders}. Da mesma forma que os structs foram criados no C++ tambem é necessario crialos no \textit{shaders}. Dentro do shaders foram criadas algumas funcoes auxiliares para a travessia, como por exemplo \textit{intersectTriangle} para intersecao nos triangulos e \textit{intersectAABB} para intersecao nos \gls{aabb}.
+A travessia ocorre nos \textit{shaders}. Da mesma forma que as estruturas foram criadas no C++, também é necessário criar suas representações correspondentes nos \textit{shaders}. Foram implementadas algumas funções auxiliares para realizar a travessia, como \textit{intersectTriangle}, utilizada para verificar interseções com os triângulos, e \textit{intersectAABB}, utilizada para verificar interseções com as \glspl{aabb}.
 
-Atualmente a travessia pode buscar por mais de um raio de forma iterativa utilizando uma pilha local na memória do \textit{shader}. O fluxo de execução inicia na raiz da árvore, testando a intersecção do raio com a caixa delimitadora do nó atual por meio da função \textit{intersectAABB}. Caso o raio não atinja o \gls{aabb}, o ramo inteiro é descartado.
+Atualmente, a travessia pode processar mais de um raio de forma iterativa utilizando uma pilha local na memória do \textit{shader}. O fluxo de execução inicia na raiz da árvore, testando a interseção do raio com a caixa delimitadora do nó atual por meio da função \textit{intersectAABB}. Caso o raio não atinja a \gls{aabb}, o ramo inteiro é descartado.
 
-Se houver intersecção e o nó for interno, os filhos esquerdo e direito são avaliados e empilhados, priorizando visitar o mais próximo primeiro para encontrar colisões mais cedo. No entanto, essa implementação possui uma limitação: em determinados cenários, o código não consegue realizar a parada antecipada (\textit{early exit}) de forma completa, o que pode obrigar a travessia a explorar nós que poderiam ser descartados.
+Se houver interseção e o nó for interno, os filhos esquerdo e direito são avaliados e empilhados, priorizando a visita ao filho mais próximo para aumentar a possibilidade de encontrar uma interseção mais próxima antecipadamente. No entanto, essa implementação possui uma limitação: em determinados cenários, o código não consegue realizar a parada antecipada (\textit{early exit}) de forma completa, o que pode obrigar a travessia a explorar nós que poderiam ser descartados.
 
-Por outro lado, caso o nó seja uma folha, o raio é testado diretamente contra as primitivas armazenadas utilizando a função \textit{intersectTriangle}, atualizando o ponto de colisão mais próximo caso haja sucesso. Vale destacar também que, por ser implementado inteiramente via código customizado no \textit{shader}, este algoritmo não consegue aproveitar as estruturas de aceleração de \textit{hardware} nativas disponibilizadas pelo driver da \gls{gpu} (como \textit{RT cores}).
-
-
+Por outro lado, caso o nó seja uma folha, o raio é testado diretamente contra as primitivas armazenadas utilizando a função \textit{intersectTriangle}, atualizando o ponto de colisão mais próximo caso haja sucesso. Vale destacar também que, por ser implementado inteiramente por código próprio no \textit{shader}, esse algoritmo não consegue aproveitar as estruturas de aceleração de \textit{hardware} nativas disponibilizadas pelo \textit{driver} da \gls{gpu}, como os \textit{RT cores}.
 
 \subsection{\gls{lbvh}}
 
-A \gls{lbvh} utiliza uma abordagem diferente, em vez de realizar a divisão diretamente a partir de uma ordenação espacial ou de uma divisão geométrica, a \gls{lbvh} utiliza códigos de Morton para representar a posição espacial das primitivas em uma ordem linear. Essa ordenação é utilizada posteriormente para determinar como os nós da árvore serão divididos.
+A \gls{lbvh} utiliza uma abordagem diferente. Em vez de realizar a divisão diretamente a partir de uma ordenação espacial ou de uma divisão geométrica, a \gls{lbvh} utiliza códigos de Morton para representar a posição espacial das primitivas em uma ordem linear. Essa ordenação é utilizada posteriormente para determinar como os nós da árvore serão divididos.
 
 O processo de construção começa com o cálculo dos limites dos centroides das primitivas. A partir desses limites, o centroide de cada primitiva é normalizado para o intervalo entre zero e um em cada eixo. Essa normalização permite representar as posições independentemente da escala da geometria utilizada.
 
@@ -265,24 +258,19 @@ A construção dos nós é realizada de forma paralela por níveis da árvore. P
 
 Dessa forma, a construção implementada utiliza os códigos de Morton principalmente para definir uma ordenação espacial das primitivas e determinar as divisões da hierarquia. Após essa etapa, as \glspl{aabb} são calculadas para os intervalos correspondentes e os nós são organizados em uma estrutura binária. A utilização de operações paralelas durante a geração dos códigos, ordenação e construção dos níveis permite explorar o paralelismo disponível durante a construção da \gls{lbvh}.
 
-
-
 \subsection{\gls{bsah}}
 
-Enquanto a BVH tradicional divide as primitivas simplesmente ao meio usando a mediana, a construção baseada em \gls{sah} (\textit{Surface Area Heuristic}) busca otimizar o custo de intersecção do raio, escolhendo o ponto de corte que minimiza a probabilidade de o raio atingir os nós filhos. Para evitar o alto custo computacional de avaliar todas as posições possíveis de corte, esta implementação utiliza uma abordagem compartimentada (\textit{Binned SAH}).
+Enquanto a \gls{bvh} tradicional divide as primitivas simplesmente ao meio usando a mediana, a construção baseada em \gls{sah} (\textit{Surface Area Heuristic}) busca otimizar o custo de interseção do raio, escolhendo o ponto de corte que minimiza a probabilidade de o raio atingir os nós filhos. Para evitar o alto custo computacional de avaliar todas as posições possíveis de corte, esta implementação utiliza uma abordagem compartimentada (\textit{Binned SAH}).
 
-O processo inicia para cada intervalo gerado iterativamente por pilha, avaliando os eixos espaciais disponíveis. Em vez de ordenar todas as primitivas individualmente para cada teste, o algoritmo distribui as geometrias em um número fixo de compartimentos (\textit{bins}, por padrão 16) com base nas coordenadas de seus centroides. Para cada compartimento, são acumuladas as caixas delimitadoras (\gls{aabb}) e a contagem de elementos.
+O processo inicia para cada intervalo gerado iterativamente por uma pilha, avaliando os eixos espaciais disponíveis. Em vez de ordenar todas as primitivas individualmente para cada teste, o algoritmo distribui as geometrias em um número fixo de compartimentos (\textit{bins}, por padrão 16) com base nas coordenadas de seus centroides. Para cada compartimento, são acumuladas as caixas delimitadoras (\gls{aabb}) e a contagem de elementos.
 
 Em seguida, o algoritmo calcula prefixos e sufixos cumulativos dos custos de superfície utilizando a heurística de área, avaliando rapidamente o custo combinado de dividir o conjunto em cada ponto de fronteira entre os compartimentos. O ponto de corte que apresenta o menor custo global é selecionado.
 
-Com o eixo e o ponto de divisão definidos, a função \textit{std::partition} reagrupa as primitivas em duas metades com base no compartimento correspondente. Caso ocorra algum desbalanceamento extremo que impeça a partição por compartimentos, o algoritmo recorre a um método de divisão alternativa por mediana (\textit{std::nth\_element}). Por fim, os sub-intervalos esquerdo e direito são empilhados, calculando-se os \gls{aabb} finais para cada filho criado.
-
-
-
+Com o eixo e o ponto de divisão definidos, a função \textit{std::partition} reagrupa as primitivas em duas metades com base no compartimento correspondente. Caso ocorra algum desbalanceamento extremo que impeça a partição por compartimentos, o algoritmo recorre a um método de divisão alternativo por mediana (\textit{std::nth\_element}). Por fim, os subintervalos esquerdo e direito são empilhados, calculando-se as \glspl{aabb} finais para cada filho criado.
 
 \subsection{\gls{bvh8}}
 
-A estrutura do nó muda em relação à BVH binária tradicional; o nó em si fica maior, mas a ideia principal de hierarquia espacial se mantém.
+A estrutura do nó muda em relação à \gls{bvh} binária tradicional; o nó em si fica maior, mas a ideia principal de hierarquia espacial se mantém.
 
 \begin{lstlisting}[caption={\textit{Struct} do nó da \gls{bvh8}}, label={cod:bvh8_node}]
 struct BVH8Node {
@@ -299,44 +287,35 @@ uint32_t pad1; //4
 \end{lstlisting}
 \fonte{Elaborado pelo autor (2026).}
 
-No que diz respeito à construção (\textit{BVH8Builder}), a principal diferença em relação à BVH binária é o fator de ramificação. Enquanto a árvore binária divide o intervalo de primitivas estritamente em duas metades, a \gls{bvh8} particiona o conjunto em até oito partes a cada nível. O algoritmo utiliza uma função recursiva que ordena as primitivas ao longo do eixo de maior dispersão e as distribui uniformemente entre os filhos disponíveis, calculando o \gls{aabb} correspondente para cada um deles. Além disso, as folhas da \gls{bvh8} suportam armazenar até oito primitivas diretamente (\textit{MAX\_LEAF\_PRIMS = 8}), reduzindo a profundidade total da árvore.
+No que diz respeito à construção (\textit{BVH8Builder}), a principal diferença em relação à \gls{bvh} binária é o fator de ramificação. Enquanto a árvore binária divide o intervalo de primitivas estritamente em duas metades, a \gls{bvh8} particiona o conjunto em até oito partes a cada nível. O algoritmo utiliza uma função recursiva que ordena as primitivas ao longo do eixo de maior dispersão e as distribui uniformemente entre os filhos disponíveis, calculando a \gls{aabb} correspondente para cada um deles. Além disso, as folhas da \gls{bvh8} suportam armazenar até oito primitivas diretamente (\textit{MAX\_LEAF\_PRIMS = 8}), reduzindo a profundidade total da árvore.
 
-No caso específico da travessia, a \gls{bvh8} aproveita essa alta capacidade de ramificação: em vez de testar dois filhos, o algoritmo avalia múltiplos \gls{aabb} em paralelo (aproveitando instruções vetoriais ou o paralelismo da \gls{gpu}). Como resultado, a árvore fica muito mais rasa, reduzindo drasticamente o número de saltos na memória durante o rastreio de raios.
-
-
-
+No caso específico da travessia, a \gls{bvh8} aproveita essa alta capacidade de ramificação: em vez de testar dois filhos, o algoritmo avalia múltiplas \glspl{aabb}, podendo aproveitar o paralelismo disponível na \gls{gpu}. Como resultado, a árvore fica muito mais rasa, reduzindo a quantidade de níveis que precisam ser percorridos durante o rastreamento dos raios e, consequentemente, a quantidade de acessos aos nós da estrutura.
 
 \section{Configuração dos Experimentos}
 
-Nesta seção, serão explicados como ocorreram os testes e o planejamento desses experimentos.
-
-
+Nesta seção são apresentados os procedimentos utilizados para a execução dos testes e o planejamento dos experimentos.
 
 \subsection{Configuração de Hardware e Software}
 
-Os testes foram executados em um ambiente pessoal operando sob o sistema operacional \textit{Arch Linux}, utilizando o \textit{kernel} \textit{Linux} 7.1.11-arch1-1 e o sistema de arquivos \textit{Btrfs} na partição raiz (\textit{/}). O ambiente gráfico utilizado foi o gerenciador de janelas \textit{KDE Plasma} 6.7.4 rodando sobre o protocolo \textit{Wayland}.
+Os testes foram executados em um ambiente pessoal operando sob o sistema operacional \textit{Arch Linux}, utilizando o \textit{kernel} \textit{Linux} 7.1.11-arch1-1 e o sistema de arquivos \textit{Btrfs} na partição raiz (\textit{/}). O ambiente gráfico utilizado foi o gerenciador de janelas \textit{KDE Plasma} 6.7.4, rodando sobre o protocolo \textit{Wayland}.
 
-Em termos de \textit{hardware}, a máquina é equipada com um processador \textit{Intel Core i5-10600K} (6 núcleos, 12 \textit{threads} operando a uma frequência máxima de 4.10 GHz), acompanhado de 16 GiB de memória \gls{ram}. O processamento gráfico e as execuções de computação paralela via \gls{api} \textit{Vulkan} ficaram a cargo de uma placa de vídeo dedicada \textit{NVIDIA GeForce RTX 5060} com 8 GiB de memória \gls{vram}, controlada pelo \textit{driver} proprietário da \textit{NVIDIA} na versão 610.57.04 e suporte à instância \textit{Vulkan} 1.4.357.
-
-
+Em termos de \textit{hardware}, a máquina é equipada com um processador \textit{Intel Core i5-10600K} (6 núcleos, 12 \textit{threads} operando a uma frequência máxima de 4,10 GHz), acompanhado de 16 GiB de memória \gls{ram}. O processamento gráfico e as execuções de computação paralela via \gls{api} \textit{Vulkan} ficaram a cargo de uma placa de vídeo dedicada \textit{NVIDIA GeForce RTX 5060}, com 8 GiB de memória \gls{vram}, controlada pelo \textit{driver} proprietário da \textit{NVIDIA} na versão 610.57.04 e com suporte à instância \textit{Vulkan} 1.4.357.
 
 \subsection{Preparação para os Experimentos}
 
-O primeiro ponto, e mais simples, é que o \textit{Nsight Systems} não monitora diretamente o uso de memória \gls{ram} do processo. Para obter essa informação, a forma mais prática seria rodar um \textit{script} em paralelo durante a execução do teste. Contudo, uma métrica ainda mais útil é o consumo específico de memória das estruturas \gls{bvh}; por isso, em um teste isolado, a aplicação foi configurada para retornar no terminal o tamanho exato ocupado pelas estruturas \gls{blas} e \gls{tlas}.
+O primeiro ponto, e mais simples, é que o \textit{Nsight Systems} não monitora diretamente o uso de memória \gls{ram} do processo. Para obter essa informação, a forma mais prática seria executar um \textit{script} em paralelo durante a execução do teste. Contudo, uma métrica ainda mais útil é o consumo específico de memória das estruturas \gls{bvh}; por isso, em um teste isolado, a aplicação foi configurada para retornar no terminal o tamanho exato ocupado pelas estruturas \gls{blas} e \gls{tlas}.
 
 O \textit{Nsight Systems} consegue capturar a grande maioria dos eventos de forma nativa, mas alguns eventos específicos exigem marcações manuais. Para isso, podem ser utilizados marcadores tanto na \gls{cpu} quanto na \gls{gpu} por meio do \gls{nvtx}. Tratando-se de uma \gls{api} para anotação de código que oferece diversas funcionalidades, foi empregado especificamente o recurso \textit{nvtx3::scoped\_range} \cite{nvidia_nvtx}. Esse componente funciona como um marcador que armazena um título descritivo e finaliza automaticamente a marcação de tempo assim que o bloco de código sai de escopo.
 
-Esse marcador foi utilizado para isolar e medir precisamente o tempo de construção e de upload das \glspl{bvh}.
+Esse marcador foi utilizado para isolar e medir precisamente o tempo de construção e de transferência das \glspl{bvh} para a \gls{gpu}.
 
 \subsection{Cenas Utilizadas}
 
-A cena é a mesma para todos os experimentos. Ela foi construída de forma rápida, o que significa que não se trata de um cenário realista ou representativo de uma aplicação de produção real. A cena consiste em uma junção de várias instâncias dispostas de forma um tanto desordenada, utilizando alguns modelos 3D que não são de autoria própria (a licença de uso estará disponível junto com o código-fonte). Esse modelos vieram de dos usuarios (Eveston - Elite Big Speakerman - Hugo) e (bean(alwayshasbean)) do site \textit{sketchfab}, um site para publicação de modelos 3D.
+A cena é a mesma para todos os experimentos. Ela foi construída de forma rápida, o que significa que não se trata de um cenário realista ou representativo de uma aplicação de produção. A cena consiste em uma junção de várias instâncias dispostas de forma um tanto desordenada, utilizando alguns modelos 3D que não são de autoria própria. A licença de uso estará disponível junto ao código-fonte. Esse modelos vieram de dos usuarios (Eveston - Elite Big Speakerman - Hugo) e (bean(alwayshasbean)), da plataforma \textit{Sketchfab}, utilizada para publicação e compartilhamento de modelos 3D.
 
-Além das múltiplas instâncias, o sistema também conta com animação. A animação compreende o movimento, rotação e alteração de escala do modelo completo. A câmera também se movimenta, rotacionando e se afastando do centro da cena em um trajeto circular.
+Além das múltiplas instâncias, o sistema também conta com animação. A animação compreende o movimento, a rotação e a alteração de escala do modelo completo. A câmera também se movimenta, rotacionando e se afastando do centro da cena em um trajeto circular.
 
 Todas essas alterações garantem que a \gls{tlas} sofra modificações constantes, ainda que sutis, a cada \textit{frame}. Além disso, a movimentação da câmera modifica os dados enviados ao \textit{buffer} e assegura que novas regiões da \gls{tlas} sejam continuamente exploradas.
-
-
 
 \subsection{Parâmetros de Execução}
 
@@ -344,34 +323,28 @@ Antes de iniciar os experimentos, realizou-se um levantamento minucioso para ide
 
 As métricas foram divididas e estruturadas considerando as capacidades do \textit{NVIDIA Nsight Systems} e do \textit{NVIDIA Nsight Graphics}. Métricas de tempo de construção das estruturas de aceleração (\gls{blas} e \gls{tlas}), tempo de quadro na \gls{gpu} (\textit{GPU Frame Time}), utilização dos multiprocessadores de transmissão (\gls{sm}), execuções de \textit{shaders} e transferência de dados via \textit{PCIe} foram extraídas primariamente com o auxílio do \textit{Nsight Graphics}. Em contrapartida, informações de uso de memória \gls{ram} do sistema, consumo energético monitorado via \gls{nvml}, temperatura da \gls{gpu}, trocas de contexto (\textit{context switches}) e atividades nas filas do \textit{Vulkan} foram coletadas por meio do \textit{Nsight Systems}.
 
-%TODO rever isso aqui
 Duas métricas merecem destaque metodológico devido ao seu tratamento específico:
 \begin{enumerate}
-\item \textbf{\textit{Ray Tracing Throughput}:} Como a travessia da \gls{bvh} é realizada diretamente via código customizado em \textit{shaders} (e não pelos núcleos de \textit{ray tracing} dedicados do \textit{hardware}), o rendimento foi calculado derivando o tempo de travessia em relação ao número total de raios processados por quadro (por exemplo, avaliando resoluções fixas em \textit{Mrays/s}).
-\item \textbf{\textit{Warp Divergence}:} Métricas associadas estritamente à divergência de caminhos condicionais dentro de um mesmo \textit{warp} permaneceram pendentes de validação por contadores diretos, evitando o uso de métricas genéricas de ocupação de \gls{sm} como falsos equivalentes.
+\item \textbf{\textit{Ray Tracing Throughput}:} Como a travessia da \gls{bvh} é realizada diretamente via código próprio em \textit{shaders} (e não pelos núcleos de \textit{ray tracing} dedicados do \textit{hardware}), o rendimento foi calculado relacionando o tempo de travessia ao número total de raios processados por quadro, por exemplo, avaliando resoluções fixas em \textit{Mrays/s}.
+\item \textbf{\textit{Warp Divergence}:} Métricas associadas estritamente à divergência de caminhos condicionais dentro de um mesmo \textit{warp} permaneceram pendentes de validação por contadores diretos, evitando o uso de métricas genéricas de ocupação de \gls{sm} como equivalentes.
 \end{enumerate}
 
-Para garantir a justiça na comparação de desempenho entre as diferentes estruturas avaliadas (\gls{bvh} binária, \gls{bvh8}, \gls{lbvh}, \gls{bsah}.), todas as execuções foram submetidas estritamente às mesmas condições de contorno: a mesma cena animada, idêntico número de instâncias geométricas, mesma resolução de tela, mesma disposição de câmera e a mesma carga de trabalho computacional (\textit{workload}).
-
-
-
+Para garantir a justiça na comparação de desempenho entre as diferentes estruturas avaliadas (\gls{bvh} binária, \gls{bvh8}, \gls{lbvh} e \gls{bsah}), todas as execuções foram submetidas estritamente às mesmas condições de contorno: a mesma cena animada, idêntico número de instâncias geométricas, mesma resolução de tela, mesma disposição de câmera e a mesma carga de trabalho computacional (\textit{workload}).
 
 \section{Coleta e Tratamento dos Dados}
 
-Nesta seção, descreve-se a metodologia adotada para a extração, monitoramento e processamento das métricas de desempenho das diferentes estruturas de aceleração avaliadas.
-
-
+Nesta seção, descreve-se a metodologia adotada para a extração, o monitoramento e o processamento das métricas de desempenho das diferentes estruturas de aceleração avaliadas.
 
 \subsection{Execução dos Experimentos}
 
-A execução dos testes foi estruturada em duas etapas complementares de perfilamento (\textit{profiling}) para contemplar tanto o comportamento dinâmico e temporal da aplicação quanto os detalhes de renderização gráfica:
+A execução dos testes foi estruturada em duas etapas complementares de perfilamento (\textit{profiling}) para contemplar tanto o comportamento dinâmico e temporal da aplicação quanto os detalhes da renderização gráfica:
 
 \begin{enumerate}
     \item \textbf{Coletas de Longa Duração (\textit{Nsight Systems}):} Os testes voltados a capturar o consumo de recursos globais do sistema, uso de memória \gls{ram} (\textit{Peak RAM Usage}), temperatura, energia e atividades de filas do \textit{Vulkan} foram executados com uma janela de duração de 30 segundos contínuos para cada tipo de \gls{bvh}. Isso permitiu estabilizar as médias e registrar o comportamento da aplicação sob a animação contínua da cena e da câmera.
     \item \textbf{Coletas de Quadros Detalhados (\textit{Nsight Graphics}):} Para a análise minuciosa do \textit{pipeline} gráfico, dos tempos de construção das estruturas de aceleração (\textit{BLAS/TLAS Build Time}) e da execução dos \textit{shaders}, as capturas foram realizadas em momentos específicos. O \textit{profiling} detalhado coletou amostras exatas nos primeiros 2 quadros iniciais e em instantes distribuídos nos segundos 10 e 20 de execução.
 \end{enumerate}
 
-Dessa forma, o isolamento dos dados de sistema através do \textit{Nsight Systems} aliado à precisão temporal do \textit{Nsight Graphics} permitiu mapear com alta fidelidade o impacto de cada variação estrutural de \gls{bvh} sobre a \gls{gpu} e a \gls{cpu}.
+Dessa forma, o isolamento dos dados de sistema por meio do \textit{Nsight Systems}, aliado à precisão temporal do \textit{Nsight Graphics}, permitiu mapear com alta fidelidade o impacto de cada variação estrutural de \gls{bvh} sobre a \gls{gpu} e a \gls{cpu}.
 
 \subsection{Coleta das Métricas}
 
@@ -401,4 +374,4 @@ Os dois \textit{scripts} são executados para os arquivos de todas as \glspl{bvh
 
 Para isso, foi desenvolvido um terceiro \textit{script Python}, responsável por reunir os arquivos de análise das diferentes \glspl{bvh} e gerar imagens com os gráficos correspondentes. Esses gráficos auxiliam na identificação de diferenças entre as estruturas e facilitam a análise dos resultados obtidos durante os experimentos.
 
-Ambos os \textit{scripts} foram desenvolvidos com o auxílio de inteligência artificial generativa. Desse modo, embora a consistência de todas as métricas apresentadas tenha sido verificada, os \textit{scripts} geram dados adicionais que não foram utilizados neste trabalho, sendo necessária a validação manual desses valores ao menos uma vez, para futuros trabalhos.
+Ambos os \textit{scripts} foram desenvolvidos com o auxílio de inteligência artificial generativa. Desse modo, embora a consistência de todas as métricas apresentadas tenha sido verificada, os \textit{scripts} geram dados adicionais que não foram utilizados neste trabalho, sendo necessária a validação manual desses valores ao menos uma vez para trabalhos futuros.
