@@ -335,30 +335,24 @@ Pixel Shader (Occupancy) & 27.8\% & 27.1\% & 18.0\% & 28.2\% \\ \bottomrule
 
 
 
-\section{Avaliação da aplicação desenvolvida}
-
-A aplicação desenvolvida foi capaz de realizar a renderização com uma representação física adequada das sombras e manter uma média próxima de 30 quadros por segundo nos cenários avaliados. Entretanto, quando comparada a outras técnicas utilizadas para geração de sombras em aplicações de grande relevância, principalmente em jogos eletrônicos lançados anteriormente a 2018, observa-se que outras abordagens já eram capazes de atingir taxas de quadros mais elevadas e estáveis, a custo de um pouco de precisão física.
-
-É importante considerar que a implementação apresentada neste trabalho realiza algumas operações adicionais em relação a uma implementação básica de sombras. A utilização das estruturas \glspl{bvh}, a construção das hierarquias e a realização da travessia para determinar as interseções dos raios introduzem custos adicionais durante a execução. Dessa forma, apesar do metodo permitir uma representação mais precisa do comportamento das sombras, o custo computacional necessário pode ser elevado quando comparado a técnicas tradicionais utilizadas em aplicações em tempo real. No caso de aplicacoes que não utilizam os \textit{RT cores}.
-
-Os resultados obtidos também mostram que a qualidade da estrutura de aceleração possui influência direta sobre esse custo. As diferenças observadas entre as estruturas avaliadas demonstram que a escolha da \gls{bvh} pode alterar tanto o tempo necessário para sua construção quanto o desempenho durante a renderização. Portanto, a utilização de \textit{ray tracing} em tempo real não depende apenas da capacidade de realizar a interseção dos raios, mas também da escolha e organização da estrutura utilizada para acelerar esse processo.
-
-Apesar das limitações observadas na aplicação desenvolvida, o código produzido não se restringe ao cenário utilizado nos experimentos. As estruturas \glspl{bvh} implementadas podem ser adaptadas para outras aplicações que necessitem de consultas espaciais ou de interseções entre raios e geometria. Da mesma forma, parte das implementações pode ser utilizada em aplicações executadas na \gls{cpu}, desde que sejam realizadas as adaptações necessárias para o ambiente de execução.
-
-Além disso, a aplicação desenvolvida fornece uma base para a realização de novos experimentos com estruturas de aceleração. Mesmo que as \glspl{bvh} sejam utilizadas posteriormente para outras finalidades, a possibilidade de configurar diferentes estruturas e comparar seu comportamento permite utilizar a aplicação como ponto de partida para novas avaliações. Os dados obtidos durante este trabalho também fornecem uma referência inicial para comparar novas implementações e identificar como diferentes estratégias de construção podem influenciar o desempenho, o consumo de memória e a utilização dos recursos computacionais.
-
 \section{Conclusões}
 
-Dentre todas as estruturas a \gls{bsah} foi a que teve o melhor desenpenho. Uma melhor construcao realmente fez grande diferença, como no caso a aplicacao ainda teria muito mais que o dobro do tempo para produzir a estrutura de aceleracao, o tempo de construcao não é tao relevante para essa aplicacao.
+Este trabalho apresentou uma comparação entre diferentes estratégias de construção e organização de estruturas \glspl{bvh} para utilização em uma aplicação de \textit{ray tracing} em tempo real. Foram avaliadas as estruturas \gls{bvh}, \gls{lbvh}, \gls{bsah} e \gls{bvh8}, considerando métricas relacionadas ao tempo de construção, duração dos quadros, utilização dos recursos da \gls{gpu}, consumo de memória e consumo de energia.
 
-O fato do tempo de construcao não é tao relevante para a aplicacao ja descarta a \gls{lbvh} que nao conseguiu entregar um desenpenho melhor que as demais.
+\subsection{Desempenho das estruturas}
 
-A \gls{bvh8} apresentou um desenpenho interessante apesar de 8 nos filhos agora depois dos testes aparentar ser um numero muito grande, a estrutura consegui entregar uma geracao de frames maior que a \gls{bvh} padrão.
+Dentre as estruturas avaliadas, a \gls{bsah} apresentou o melhor desempenho durante a renderização. A redução de aproximadamente 10\,ms na duração dos quadros representa uma diferença significativa, principalmente considerando que, para atingir uma taxa de 60 \gls{fps}, cada quadro precisa ser produzido em aproximadamente 16,6\,ms. Dessa forma, o maior custo de construção da \gls{bsah} foi compensado pela melhoria obtida durante a travessia da estrutura e pela consequente redução do tempo necessário para produzir os quadros.
 
-A \gls{bvh8} mostrou tambem uma construcao mais rapida alem de tudo. Isso mostra que estruturas maiores podem ser montadas mais rapido, e isso pode ser uma forma de balancear um algoritmo de construcao mais pesado.
+No cenário avaliado, a aplicação possui tempo suficiente entre as etapas de construção e utilização da estrutura para que o custo adicional da \gls{bsah} não represente uma limitação significativa. Dessa forma, a utilização de uma estratégia de construção mais custosa mostrou-se vantajosa quando o objetivo principal é reduzir o tempo. Esse resultado reforça a importância de considerar conjuntamente o custo de construção e o custo de travessia ao avaliar uma estrutura \gls{bvh}.
+
+Como o tempo de construção apresentou menor impacto na aplicação quando comparado ao tempo de renderização, a vantagem esperada de uma abordagem com construção mais rápida não foi suficiente para compensar seu desempenho durante a geração dos quadros. Nesse contexto, a \gls{lbvh} não apresentou uma vantagem significativa em relação às demais estruturas avaliadas. Embora a utilização de códigos de Morton e das operações paralelas permita construir a hierarquia utilizando uma abordagem adequada ao paralelismo, o resultado obtido neste trabalho não demonstrou um ganho suficiente durante a renderização para justificar seu custo de implementação em relação às outras abordagens avaliadas.
+
+A \gls{bvh8} também apresentou um resultado relevante. Apesar de utilizar nós com espaço para uma quantidade maior de filhos, a estrutura apresentou uma duração de quadros ligeiramente menor que a \gls{bvh} binária tradicional. Esse resultado indica que o aumento da largura da árvore pode apresentar benefícios durante a travessia, mesmo acompanhado por um aumento significativo no consumo de memória.
+
+Além disso, a \gls{bvh8} apresentou um tempo de construção inferior ao das demais estruturas avaliadas. Esse resultado demonstra que uma estrutura com nós maiores não necessariamente apresenta um custo de construção maior. A redução da profundidade da hierarquia pode contribuir para diminuir a quantidade de níveis processados durante a construção, embora esse comportamento dependa da implementação e das características da cena.
 
 \begin{figure}[htb]
-    \caption{Comparação das principais metricas contra a \gls{bvh} padrão}
+    \caption{Comparação das principais métricas em relação à \gls{bvh} padrão}
     \centering
     {\parbox{16cm}
         {
@@ -369,5 +363,22 @@ A \gls{bvh8} mostrou tambem uma construcao mais rapida alem de tudo. Isso mostra
     }
 \end{figure}
 
-A \gls{lbvh} não tem tanta utilizada, é um metodo muito complexo de ser implementado e que no fiz nao agregou muito na arvore, alem do mais existe outras formas de implementar uma \gls{bvh} multi-thread.
+De maneira geral, os resultados mostram que não existe uma única característica capaz de determinar a melhor estrutura para todos os cenários. A \gls{bsah} apresentou o melhor resultado em desempenho de renderização, enquanto a \gls{bvh8} apresentou uma combinação interessante entre tempo de construção e tempo de renderização, porém com maior consumo de memória. A \gls{lbvh}, por sua vez, apresentou uma construção baseada em operações paralelas e ordenação espacial, mas não obteve vantagem suficiente no cenário avaliado.
 
+Os resultados da \gls{lbvh} também indicam que a utilização de uma construção paralela não garante, por si só, uma melhoria no desempenho final da aplicação. O custo associado à geração dos códigos de Morton, à ordenação das primitivas e às demais etapas da construção precisa ser considerado em conjunto com o benefício obtido pela estrutura durante a travessia. Outras estratégias de construção paralela de \glspl{bvh} poderiam apresentar resultados diferentes e constituem uma possibilidade para trabalhos futuros.
+
+\subsection{Avaliação da aplicação desenvolvida}
+
+A aplicação desenvolvida foi capaz de realizar a renderização com uma representação física adequada das sombras e manter uma média próxima de 30 quadros por segundo nos cenários avaliados. Entretanto, quando comparada a outras técnicas utilizadas para geração de sombras em aplicações de grande relevância, principalmente em jogos eletrônicos lançados anteriormente a 2018, observa-se que outras abordagens já eram capazes de atingir taxas de quadros mais elevadas e estáveis, embora com diferentes níveis de aproximação em relação ao comportamento físico da iluminação.
+
+É importante considerar que a implementação apresentada neste trabalho realiza algumas operações adicionais em relação a uma implementação básica de sombras. A utilização das estruturas \glspl{bvh}, a construção das hierarquias e a realização da travessia para determinar as interseções dos raios introduzem custos adicionais durante a execução. Dessa forma, apesar de o método permitir uma representação mais próxima do comportamento físico das sombras, o custo computacional necessário pode ser elevado quando comparado a técnicas tradicionais utilizadas em aplicações em tempo real, principalmente em sistemas que não possuem unidades de hardware dedicadas ao processamento de \textit{ray tracing}.
+
+Os resultados obtidos também mostram que a qualidade da estrutura de aceleração possui influência sobre esse custo. As diferenças observadas entre as estruturas avaliadas demonstram que a escolha da \gls{bvh} pode alterar tanto o tempo necessário para sua construção quanto o desempenho durante a renderização. Portanto, a utilização de \textit{ray tracing} em tempo real não depende apenas da capacidade de realizar as interseções entre os raios e a geometria, mas também da escolha e da organização da estrutura utilizada para acelerar esse processo.
+
+Apesar das limitações observadas na aplicação desenvolvida, o código produzido não se restringe ao cenário utilizado nos experimentos. As estruturas \glspl{bvh} implementadas podem ser adaptadas para outras aplicações que necessitem de consultas espaciais ou de interseções entre raios e geometria. Da mesma forma, parte das implementações pode ser utilizada em aplicações executadas na \gls{cpu}, desde que sejam realizadas as adaptações necessárias para o ambiente de execução.
+
+Além disso, a aplicação desenvolvida fornece uma base para a realização de novos experimentos com estruturas de aceleração. A possibilidade de configurar diferentes estruturas e comparar seu comportamento permite utilizar a aplicação como ponto de partida para novas avaliações. Os dados obtidos durante este trabalho também fornecem uma referência inicial para comparar novas implementações e identificar como diferentes estratégias de construção podem influenciar o desempenho, o consumo de memória e a utilização dos recursos computacionais.
+
+Como trabalhos futuros, podem ser avaliadas outras larguras de \glspl{bvh}, como \gls{bvh4} e \gls{bvh16}, além de estratégias capazes de selecionar a largura da árvore de acordo com as características da cena. Também podem ser investigadas outras técnicas de construção paralela, diferentes heurísticas de divisão e métodos capazes de adaptar a estrutura ao comportamento da aplicação. Essas extensões permitiriam verificar se os resultados observados neste trabalho permanecem consistentes em diferentes cenários e se é possível obter um equilíbrio mais adequado entre custo de construção, custo de travessia e consumo de memória.
+
+Também podem ser investigadas abordagens híbridas, combinando características de diferentes estruturas de aceleração ou utilizando estratégias distintas de construção e travessia de acordo com as características da cena. A utilização de diferentes métodos de travessia também pode ser avaliada, principalmente considerando os resultados observados nas métricas de ocupação dos \textit{warps}. Nesse sentido, uma possível linha de investigação seria buscar formas de aumentar a quantidade de \textit{warps} residentes e efetivamente utilizados pelos \glspl{sm}, verificando se uma melhor ocupação dos recursos da \gls{gpu} pode resultar em uma redução adicional no tempo de geração dos quadros.
