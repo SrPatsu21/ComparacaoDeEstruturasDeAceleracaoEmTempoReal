@@ -114,5 +114,15 @@
   captionpos=t                           % ABNT: Legenda/Título SEMPRE no topo
 }
 
-% Nomeia as listagens como "Código" (ou altere para "Quadro" se preferir)
+% Numeração sequencial dos códigos em todo o trabalho
+\makeatletter
+\AtBeginDocument{%
+  \@ifundefined{c@lstlisting}{}{%
+    \@removefromreset{lstlisting}{chapter}%
+    \renewcommand{\thelstlisting}{\arabic{lstlisting}}%
+  }%
+}
+\makeatother
+
+% Nomeia as listagens como "Código"
 \renewcommand{\lstlistingname}{Código}
