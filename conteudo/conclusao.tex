@@ -178,9 +178,10 @@ Em relação à duração do quadro na \gls{cpu}, a aplicação não permite que
 
 Durante testes realizados anteriormente, também foi observado que a quantidade de instâncias presentes na cena possui influência significativa sobre a duração dos quadros. Em cenários com menos de 10 instâncias, foi possível obter tempos inferiores a 5\,ms por quadro. Esse resultado indica que, além da estrutura utilizada, a quantidade e a complexidade das instâncias presentes na cena possuem influência direta sobre o tempo necessário para a geração de cada quadro.
 
+
+
+
 \subsection{Ocupação \gls{sm} e \textit{warps}}
-
-
 
 \subsubsection{\textit{warps}}
 
@@ -260,17 +261,79 @@ No presente experimento, a comparação da potência é realizada de forma indep
     {\parbox{16cm}
         {
             \includegraphics[width=1\textwidth]{images/power.png}
-            \label{fig:power}
+            \label{fig:power_img}
             \hspace{0.0cm}{Fonte: Elaborado pelo autor, utilizando Python matplotlib}
         }
     }
 \end{figure}
 
-Observando os resultados apresentados na Figura \ref{fig:power}, a \gls{bvh8} apresentou um consumo médio consideravelmente superior ao das demais abordagens. Esse comportamento está de acordo com os resultados observados anteriormente, principalmente em relação ao maior tamanho de suas estruturas e à maior utilização dos recursos de memória.
+Observando os resultados apresentados na Figura \ref{fig:power_img}, a \gls{bvh8} apresentou um consumo médio consideravelmente superior ao das demais abordagens. Esse comportamento está de acordo com os resultados observados anteriormente, principalmente em relação ao maior tamanho de suas estruturas e à maior utilização dos recursos de memória.
 
 Entre as demais estruturas, as diferenças de consumo foram menores, com uma variação inferior a 4\,W entre o maior e o menor valor observado. Como a metodologia utilizada não considera o tempo necessário para produzir os quadros durante a análise do consumo de potência, essa diferença não é suficiente para estabelecer uma conclusão significativa sobre qual dessas estruturas apresenta melhor eficiência energética.
 
 Dessa forma, os resultados de consumo de energia devem ser interpretados com cautela. A \gls{bvh8} apresentou uma diferença suficientemente evidente para indicar um maior consumo de potência durante os experimentos, enquanto as diferenças entre a \gls{bvh}, \gls{lbvh} e \gls{bsah} foram pequenas em relação às limitações do método de medição. Para uma análise mais precisa de eficiência energética, seria necessário considerar conjuntamente a potência consumida, o tempo de execução e a quantidade de quadros produzidos, permitindo avaliar o consumo de energia necessário para realizar uma quantidade equivalente de trabalho.
+
+\subsection{\textit{Shaders} e ocupação dos \textit{warps}}
+
+Deixando as métricas obtidas pelo \textit{Nsight Systems} de lado, é possível analisar informações mais detalhadas sobre a execução dos \textit{shaders} por meio dos dados coletados pelo \textit{Nsight Graphics}. A ferramenta disponibiliza uma quantidade elevada de métricas e, em muitos casos, algumas delas apresentam informações semelhantes ou complementares. Por esse motivo, foram selecionadas apenas as métricas consideradas mais relevantes para a análise deste trabalho. Os valores apresentados nesta seção correspondem ao quadro analisado no instante de 20 segundos de execução.
+
+Inicialmente, pode-se observar a distribuição das operações realizadas durante a execução de um \textit{frame}. Na linha correspondente aos \textit{pipelines}, são apresentados quatro \textit{pipelines} diferentes. Os dois primeiros são responsáveis pela geração dos dois \textit{G-buffers} utilizados pela aplicação. O terceiro \textit{pipeline} corresponde à etapa em que são realizados os testes de interseção utilizando as estruturas \glspl{bvh}. Essa etapa representa a maior parte do processamento do quadro, ocupando mais de 90\% do tempo apresentado na visualização. O quarto é apenas um algoritmo rápido que faz alguns ajustes na imagem.
+
+É importante destacar que o tempo apresentado nessa visualização não corresponde diretamente ao tempo real de execução utilizado nos demais experimentos. O \textit{Nsight Graphics} utiliza uma representação própria para a visualização temporal das operações durante a análise do \textit{frame}. Dessa forma, a figura é utilizada principalmente para observar a distribuição relativa das operações e identificar quais etapas concentram a maior parte da execução.
+
+\begin{figure}[htb]
+    \caption{Linhas representando operações durante o \textit{frame}}
+    \centering
+    {\parbox{16cm}
+        {
+            \includegraphics[width=1\textwidth]{images/distribuicao_tempo_pipeline.png}
+            \label{fig:distribuicao_tempo_pipeline}
+            \hspace{0.0cm}{Fonte: Elaborado pelo autor, utilizando \textit{Nsight Graphics}}
+        }
+    }
+\end{figure}
+
+A Tabela \ref{tab:comparacaoAlgoritmos} apresenta algumas das métricas relacionadas à execução dos \textit{shaders}, à atividade dos \textit{threads} e à ocupação dos \textit{warps}. Essas métricas permitem observar não apenas o tempo de execução, mas também como os \textit{threads} que executam os \textit{shaders} permanecem ativos durante o processamento.
+
+A métrica \textit{Active Threads (Th/Warp)} representa a quantidade média de \textit{threads} ativos em cada \textit{warp}. Como um \textit{warp} é composto por 32 \textit{threads}, valores próximos de 32 indicam que uma grande parte dos \textit{threads} está ativa durante a execução. Na tabela, os valores variam entre 29,6 e 30,6 \textit{threads} por \textit{warp}, indicando uma alta quantidade de \textit{threads} ativos para todas as estruturas avaliadas.
+
+A métrica \textit{Active Threads (Coherence)} apresenta essa atividade na forma de um percentual de coerência. Nesse caso, valores maiores indicam que uma parcela maior dos \textit{threads} do \textit{warp} permanece ativa simultaneamente. A \gls{bsah} apresentou o maior valor, com 95,5\%, enquanto a \gls{lbvh} apresentou o menor, com 92,4\%. Esta métrica tem relação inversa com a \textit{warp divergence}.
+
+As métricas \textit{Predicated-On (Th/Warp)} e \textit{Predicated-On (Coherence)} estão relacionadas aos \textit{threads} que permanecem habilitados pela predicação durante a execução. A primeira apresenta a quantidade média de \textit{threads} que estão com a predicação habilitada em cada \textit{warp}, enquanto a segunda apresenta essa informação como um percentual. Essas métricas permitem observar quanto do trabalho dos \textit{warps} permanece efetivamente habilitado após a aplicação das condições de predicação.
+
+Os valores apresentados mostram um comportamento semelhante ao observado nas métricas de \textit{threads} ativos. A \gls{bsah} apresenta novamente o maior valor, com 28,6 \textit{threads} por \textit{warp} e 89,3\% de coerência, enquanto a \gls{bvh8} apresenta 27,6 \textit{threads} por \textit{warp} e 86,1\%. Essa diferença indica uma maior quantidade de \textit{threads} habilitados pela predicação no cenário da \gls{bsah}.
+
+A métrica \textit{Unallocated Warps (Avg Warps)} representa a quantidade média de \textit{warps} que poderiam estar residentes nos \glspl{sm}, mas que permanecem não alocados durante a execução. A métrica \textit{Unallocated Warps (Occupancy)} apresenta essa mesma informação como um percentual em relação à capacidade de ocupação considerada pela \gls{gpu}. A NVIDIA disponibiliza essa métrica como parte das informações de ocupação dos \glspl{sm}, juntamente com métricas como \textit{SM Active}, \textit{SM Issue} e \textit{Total SM Occupancy} \cite{nvidia_nsight_systems}.
+
+Um valor elevado de \textit{Unallocated Warps} indica que existe capacidade de execução nos \glspl{sm} que não está sendo ocupada por \textit{warps} residentes naquele momento. Entretanto, essa informação não significa, isoladamente, que exista um problema específico de memória ou que a aplicação esteja deixando de utilizar corretamente a memória compartilhada. A quantidade de \textit{warps} que pode permanecer residente depende de diferentes recursos da \gls{gpu}, incluindo recursos utilizados pelo \textit{shader}, como registradores e memória compartilhada, além da quantidade de trabalho disponível para execução. Portanto, essa métrica deve ser utilizada como um indicador de capacidade de ocupação não utilizada.
+
+Os resultados apresentam valores relativamente próximos entre as abordagens. A \gls{bvh8} apresentou a maior quantidade média de \textit{warps} não alocados, com 23,4 \textit{warps}, correspondendo a 48,7\% de ocupação, enquanto a \gls{lbvh} apresentou os menores valores, com 22,4 \textit{warps} e 46,8\%. Isso indica que, no \textit{frame} analisado, a \gls{bvh8} deixou uma quantidade ligeiramente maior de capacidade de ocupação dos \glspl{sm} sem alocação.
+
+Por fim, as métricas \textit{Pixel Shader (Avg Warps)} e \textit{Pixel Shader (Occupancy)} estão relacionadas especificamente aos \textit{warps} utilizados na execução dos \textit{pixel shaders}. A primeira representa a quantidade média de \textit{warps} de pixels em execução, enquanto a segunda apresenta essa utilização como um percentual de ocupação.
+
+Nesse caso, a \gls{bvh8} apresenta um comportamento diferente das demais estruturas. Enquanto a \gls{bvh}, a \gls{lbvh} e a \gls{bsah} apresentam valores próximos, entre 13,0 e 13,5 \textit{warps} em média, a \gls{bvh8} apresenta apenas 8,7 \textit{warps}. Consequentemente, sua ocupação de \textit{pixel shaders} também é menor, correspondendo a 18,0\%, enquanto as demais estruturas apresentam valores próximos de 27\% a 28\%.
+
+\begin{table}[ht]
+\centering
+\caption{Comparação de desempenho e ocupação de GPU entre as abordagens}
+\label{tab:comparacaoAlgoritmos}
+\begin{tabularx}{\textwidth}{@{} X c c c c @{}}
+\toprule
+\textbf{Métrica} & \textbf{default} & \textbf{lbvh} & \textbf{bvh8} & \textbf{bsah} \\
+Frame & 441 & 440 & 455 & 526 \\
+Active Threads (Th/Warp) & 29.7 & 29.6 & 29.9 & 30.6 \\
+Active Threads (Coherence) & 92.9\% & 92.4\% & 93.5\% & 95.5\% \\
+Predicated-On (Th/Warp) & 27.8 & 27.7 & 27.6 & 28.6 \\
+Predicated-On (Coherence) & 86.9\% & 86.4\% & 86.1\% & 89.3\% \\
+Unallocated Warps (Avg Warps) & 22.7 & 22.4 & 23.4 & 23.0 \\
+Unallocated Warps (Occupancy) & 47.3\% & 46.8\% & 48.7\% & 47.8\% \\
+Pixel Shader (Avg Warps) & 13.4 & 13.0 & 8.7 & 13.5 \\
+Pixel Shader (Occupancy) & 27.8\% & 27.1\% & 18.0\% & 28.2\% \\ \bottomrule
+\end{tabularx}
+\centering \footnotesize Fonte: Elaborado pelo autor
+\end{table}
+
+
 
 \section{Avaliação da aplicação desenvolvida}
 
