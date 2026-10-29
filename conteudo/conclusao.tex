@@ -348,3 +348,26 @@ Apesar das limitações observadas na aplicação desenvolvida, o código produz
 Além disso, a aplicação desenvolvida fornece uma base para a realização de novos experimentos com estruturas de aceleração. Mesmo que as \glspl{bvh} sejam utilizadas posteriormente para outras finalidades, a possibilidade de configurar diferentes estruturas e comparar seu comportamento permite utilizar a aplicação como ponto de partida para novas avaliações. Os dados obtidos durante este trabalho também fornecem uma referência inicial para comparar novas implementações e identificar como diferentes estratégias de construção podem influenciar o desempenho, o consumo de memória e a utilização dos recursos computacionais.
 
 \section{Conclusões}
+
+Dentre todas as estruturas a \gls{bsah} foi a que teve o melhor desenpenho. Uma melhor construcao realmente fez grande diferença, como no caso a aplicacao ainda teria muito mais que o dobro do tempo para produzir a estrutura de aceleracao, o tempo de construcao não é tao relevante para essa aplicacao.
+
+O fato do tempo de construcao não é tao relevante para a aplicacao ja descarta a \gls{lbvh} que nao conseguiu entregar um desenpenho melhor que as demais.
+
+A \gls{bvh8} apresentou um desenpenho interessante apesar de 8 nos filhos agora depois dos testes aparentar ser um numero muito grande, a estrutura consegui entregar uma geracao de frames maior que a \gls{bvh} padrão.
+
+A \gls{bvh8} mostrou tambem uma construcao mais rapida alem de tudo. Isso mostra que estruturas maiores podem ser montadas mais rapido, e isso pode ser uma forma de balancear um algoritmo de construcao mais pesado.
+
+\begin{figure}[htb]
+    \caption{Comparação das principais metricas contra a \gls{bvh} padrão}
+    \centering
+    {\parbox{16cm}
+        {
+            \includegraphics[width=1\textwidth]{images/metricas_combinadas.png}
+            \label{fig:metricas_combinadas}
+            \hspace{0.0cm}{Fonte: Elaborado pelo autor, utilizando Python matplotlib}
+        }
+    }
+\end{figure}
+
+A \gls{lbvh} não tem tanta utilizada, é um metodo muito complexo de ser implementado e que no fiz nao agregou muito na arvore, alem do mais existe outras formas de implementar uma \gls{bvh} multi-thread.
+
