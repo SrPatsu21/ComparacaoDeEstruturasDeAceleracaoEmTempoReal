@@ -1,21 +1,19 @@
 % resumo em português
 \begin{resumo}
 \noindent
- 
-Neste trabalho
- \vspace{0.2cm}   
-Palavras-chave: palavra 1. palavra 2. palavra 3
- 
+A evolução da computação gráfica em tempo real tem impulsionado a busca por técnicas de renderização altamente realistas, como o \textit{ray tracing}. No entanto, o elevado custo computacional associado a essa abordagem exige o uso eficiente de estruturas de aceleração geométrica, sendo as \glspl{bvh} amplamente empregadas para otimizar os testes de interseção entre raios e primitivas. Diante disso, este trabalho teve como objetivo analisar e comparar diferentes abordagens de construção e representação de \glspl{bvh} --- especificamente a \gls{bvh} binária padrão, a \gls{lbvh}, a \gls{bsah} e a \gls{bvh8} ---, avaliando seus impactos no desempenho de renderização em tempo real. Para isso, foi desenvolvida uma aplicação gráfica utilizando a \gls{api} Vulkan que permite a configuração, execução e coleta sistemática de métricas de \textit{hardware}, consumo de memória e duração de quadros. Os resultados experimentais indicam que abordagens baseadas em heurísticas de área, como a \gls{bsah}, proporcionam melhor desempenho durante a travessia e reduzem o tempo de renderização por quadro, embora apresentem maior custo computacional durante a fase de construção. Por outro lado, estruturas largas como a \gls{bvh8} demonstram vantagens no tempo de construção, mas elevam o consumo de recursos de memória. O estudo evidencia, portanto, que a escolha da estrutura de aceleração envolve um \textit{trade-off} direto entre o custo de pré-processamento e a eficiência de travessia, fornecendo uma base sólida para futuras investigações em renderização de alto desempenho.
+
+\vspace{0.2cm}   
+\noindent\textbf{Palavras-chave:} \textit{Ray tracing}. Estruturas de aceleração. \textit{Bounding Volume Hierarchies}. Vulkan. Computação gráfica em tempo real.
 \end{resumo}
  
 % resumo em inglês
-\begin{resumo}[Abstract]	
+\begin{resumo}[Abstract]    
 \begin{otherlanguage*}{english}
 \noindent 
- 
-This is the abstract of this work.
- 
+The evolution of real-time computer graphics has driven the search for highly realistic rendering techniques, such as ray tracing. However, the high computational cost associated with this approach requires the efficient use of geometric acceleration structures, with Bounding Volume Hierarchies (BVHs) being widely used to optimize intersection tests between rays and primitives. Therefore, this work aimed to analyze and compare different approaches for constructing and representing BVHs --- specifically standard binary BVH, LBVH, BSAH, and BVH8 --- evaluating their impacts on real-time rendering performance. For this purpose, a graphical application was developed using the Vulkan API, enabling the configuration, execution, and systematic collection of hardware metrics, memory consumption, and frame durations. The experimental results indicate that area heuristic-based approaches, such as BSAH, provide better traversal performance and reduce frame rendering time, despite having a higher computational cost during the construction phase. On the other hand, wide structures such as BVH8 demonstrate advantages in construction time, but increase memory resource consumption. The study demonstrates that selecting an acceleration structure involves a direct trade-off between preprocessing cost and traversal efficiency, providing a solid foundation for future investigations in high-performance rendering.
+
 \vspace{0.2cm}
-Key-words: Word 1. Word 2. Word 3
+\noindent\textbf{Key-words:} Ray tracing. Acceleration structures. Bounding Volume Hierarchies. Vulkan. Real-time computer graphics.
 \end{otherlanguage*}
 \end{resumo}
