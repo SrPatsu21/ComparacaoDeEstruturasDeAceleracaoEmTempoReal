@@ -272,7 +272,7 @@ A partir das informações armazenadas nos G-buffers, o \textit{pipeline} calcul
 
 O \textit{ray tracing} vem se tornando cada vez mais importante para aplicações em tempo real. No entanto, exige alto poder computacional e depende de estruturas de dados pré-processadas para alcançar um desempenho em tempo real. Dentre os métodos para melhorar a eficiência do \textit{ray tracing}, as estruturas de dados hierárquicas são extremamente importantes e populares \cite{stich2009spatial}.
 
-Representações hierárquicas de objetos tridimensionais são eficientes tanto em tempo quanto em uso de memória. Essas representações tipicamente consistem em árvores cujos ramos representam volumes delimitadores \cite{rubin19803}. A ideia por trás de uma \gls{bvh} é subdividir as primitivas de uma cena em conjuntos possivelmente sobrepostos. Para cada um desses conjuntos, um \gls{bv} (volume delimitador) é calculado e estes são organizados em uma estrutura de árvore. Os limites de cada nó nesta árvore são escolhidos de forma que ele delimite exatamente todos os nós na subárvore correspondente e cada nó folha delimite exatamente as primitivas contidas \cite{bauszat2010minimal}.
+Representações hierárquicas de objetos tridimensionais são eficientes tanto em tempo quanto em uso de memória. Essas representações tipicamente consistem em árvores cujos ramos representam volumes delimitadores \cite{rubin19803}. A ideia por trás de uma \gls{bvh} é subdividir as primitivas de uma cena em conjuntos possivelmente sobrepostos. Para cada um desses conjuntos, um \gls{bv} (volume delimitador) é calculado e estes são organizados em uma estrutura de árvore. Os limites de cada nó nesta árvore são escolhidos de forma que ele delimite exatamente todos os nós na subárvore correspondente e cada nó folha delimite exatamente as primitivas contidas \cite{pantaleoni2010hlbvh}.
 
 \begin{figure}[htb]
 	\caption{Exemplo de \gls{bvh}}
@@ -300,11 +300,11 @@ Para encontrar a interseção mais próxima, a travessia de um raio inicia-se no
     }
 \end{figure}
 
-Originalmente, \gls{bvh} utilizava pelo menos seis \textit{bounding slabs} (planos limitantes) para formar um casco fechado ao redor de um objeto. Cada slab corresponde à região compreendida entre dois planos paralelos, que restringem o espaço em uma determinada direção; a interseção desses \textit{slabs} define o \gls{bv} \cite{bauszat2010minimal}.
+Originalmente, \gls{bvh} utilizava pelo menos seis \textit{bounding slabs} (planos limitantes) para formar um casco fechado ao redor de um objeto. Cada slab corresponde à região compreendida entre dois planos paralelos, que restringem o espaço em uma determinada direção; a interseção desses \textit{slabs} define o \gls{bv} \cite{pantaleoni2010hlbvh}.
 
-Se esses \textit{slabs} são perpendiculares aos eixos do sistema de coordenadas do mundo, o volume delimitador resultante é denominado \gls{aabb}. Em \glspl{bvh} convencionais, os limites de um \gls{aabb} são representados por seis valores de ponto flutuante, correspondentes às coordenadas mínimas e máximas ao longo de cada eixo cartesiano, chamados de \textit{bounding box} \cite{bauszat2010minimal}.
+Se esses \textit{slabs} são perpendiculares aos eixos do sistema de coordenadas do mundo, o volume delimitador resultante é denominado \gls{aabb}. Em \glspl{bvh} convencionais, os limites de um \gls{aabb} são representados por seis valores de ponto flutuante, correspondentes às coordenadas mínimas e máximas ao longo de cada eixo cartesiano, chamados de \textit{bounding box} \cite{pantaleoni2010hlbvh}.
 
-Comparadas a outras abordagens, as \glspl{bvh} têm geralmente os menores requisitos de memória e um \textit{memory footprint} (uso de memória) pré-computável \cite{bauszat2010minimal}. Técnicas híbridas têm sido investigadas minuciosamente nos últimos anos, buscando combinar os benefícios das árvores \glspl{bvh}. Alguns modelos serão apresentados.
+Comparadas a outras abordagens, as \glspl{bvh} têm geralmente os menores requisitos de memória e um \textit{memory footprint} (uso de memória) pré-computável \cite{pantaleoni2010hlbvh}. Técnicas híbridas têm sido investigadas minuciosamente nos últimos anos, buscando combinar os benefícios das árvores \glspl{bvh}. Alguns modelos serão apresentados.
 
 
 
@@ -333,7 +333,7 @@ O código de Morton é gerado a partir das coordenadas espaciais das primitivas.
 % Compressed BVH
 Uma maneira de reduzir a sobrecarga de memória é comprimir a estrutura de dados de aceleração. A compressão funciona particularmente bem para \glspl{bvh}, reduzindo \textit{memory footprint} e o uso de banda. Porém, essa compressão adiciona um custo de descompressão durante a travessia, o que deve resultar em uma diminuição de desempenho. Em cenas grandes, quando a memória dedicada da \gls{gpu} não é suficiente, essa perda de desempenho é compensada pela possibilidade de manter toda a \gls{bvh} na memória principal e por um melhor uso do \textit{cache} \cite{benthin2018compressed}.
 
-Existem várias versões de compressão: \gls{cbvh} comprime a árvore por completo; \gls{clbvh} comprime apenas as folhas da árvore, tendo uma travessia mais rápida; \gls{mvh} usa a \textit{bounding box} do pai para construir os filhos, conseguindo trabalhar com apenas 2 bytes, guardando nos filhos e folhas em uma pilha de dados \cite{bauszat2010minimal} \cite{benthin2018compressed}.
+Existem várias versões de compressão: \gls{cbvh} comprime a árvore por completo; \gls{clbvh} comprime apenas as folhas da árvore, tendo uma travessia mais rápida; \gls{mvh} usa a \textit{bounding box} do pai para construir os filhos, conseguindo trabalhar com apenas 2 bytes, guardando nos filhos e folhas em uma pilha de dados \cite{pantaleoni2010hlbvh} \cite{benthin2018compressed}.
 
 
 \subsubsection{BVH larga}
