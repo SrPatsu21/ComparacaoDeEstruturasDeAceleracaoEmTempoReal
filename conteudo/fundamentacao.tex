@@ -70,7 +70,7 @@ O conjunto dessas métricas permite complementar a análise de desempenho das es
 
 
 
-\section{Algoritmos e Estruturas de Dados}
+\section{Conceitos e Técnicas de Computação Gráfica}
 
 \subsection{Primitivas}
 
@@ -78,7 +78,7 @@ Em um sistema de modelagem hierárquica, objetos complexos são construídos a p
 
 No \textit{ray tracing}, as primitivas podem ser: polígonos, objetos geométricos como a esfera ou objetos mais complexos como \textit{patches} paramétricos \cite{wyvill1995practical}. Na rasterização, é possível usar figuras mais complexas, porém o Vulkan usa apenas pontos, linhas e triângulos, pois são as mais otimizadas. Em especial, os triângulos são amplamente utilizados uma vez que permitem a aproximação de superfícies arbitrárias e complexas \cite{vulkan_docs}.
 
-Uma otimização importante de ser citada é o \textit{Index Buffer}. \cite{vulkan_docs_index_buffer} Em uma malha 3D, é comum que diferentes triângulos compartilhem os mesmos vértices. Sem um \textit{Index Buffer}, cada triângulo precisaria armazenar novamente os vértices que utiliza, gerando dados duplicados e aumentando desnecessariamente o consumo de memória. O \textit{Index Buffer} resolve esse problema armazenando índices que apontam para os vértices já existentes no \textit{vertex buffer}, permitindo que um mesmo vértice seja reutilizado por vários triângulos.
+Uma otimização importante de ser citada é o \textit{Index Buffer} \cite{vulkan_docs_index_buffer}. Em uma malha 3D, é comum que diferentes triângulos compartilhem os mesmos vértices. Sem um \textit{Index Buffer}, cada triângulo precisaria armazenar novamente os vértices que utiliza, gerando dados duplicados e aumentando desnecessariamente o consumo de memória. O \textit{Index Buffer} resolve esse problema armazenando índices que apontam para os vértices já existentes no \textit{vertex buffer}, permitindo que um mesmo vértice seja reutilizado por vários triângulos.
 
 \begin{figure}[htb]
 	\caption{Exemplo de \textit{Index Buffer}}
@@ -268,7 +268,7 @@ A partir das informações armazenadas nos G-buffers, o \textit{pipeline} calcul
 
 
 
-\subsection{Estruturas de aceleração}
+\section{Estruturas de aceleração}
 
 O \textit{ray tracing} vem se tornando cada vez mais importante para aplicações em tempo real. No entanto, exige alto poder computacional e depende de estruturas de dados pré-processadas para alcançar um desempenho em tempo real. Dentre os métodos para melhorar a eficiência do \textit{ray tracing}, as estruturas de dados hierárquicas são extremamente importantes e populares \cite{stich2009spatial}.
 
@@ -308,7 +308,7 @@ Comparadas a outras abordagens, as \glspl{bvh} têm geralmente os menores requis
 
 
 
-\subsubsection{Linear BVH (LBVH)}
+\subsection{Linear BVH (LBVH)}
 
 % Linear BVH (LBVH)
 O primeiro método paralelo de construção de \gls{lbvh} foi introduzido por Lauterbach. O método inicia atribuindo um código de Morton ao centroide de cada primitiva geométrica. Em seguida, as primitivas são ordenadas de acordo com esses códigos e a hierarquia é construída dividindo os nós nos pontos em que ocorre a maior diferença de bits entre dois códigos de Morton consecutivos. O código de Morton é calculado mapeando as coordenadas espaciais para um cubo unitário tridimensional e intercalando os bits binários de cada coordenada \cite{apetrei2014fast}.
@@ -328,7 +328,7 @@ O código de Morton é gerado a partir das coordenadas espaciais das primitivas.
 \end{figure}
 
 
-\subsubsection{BVH comprimida}
+\subsection{BVH comprimida}
 
 % Compressed BVH
 Uma maneira de reduzir a sobrecarga de memória é comprimir a estrutura de dados de aceleração. A compressão funciona particularmente bem para \glspl{bvh}, reduzindo \textit{memory footprint} e o uso de banda. Porém, essa compressão adiciona um custo de descompressão durante a travessia, o que deve resultar em uma diminuição de desempenho. Em cenas grandes, quando a memória dedicada da \gls{gpu} não é suficiente, essa perda de desempenho é compensada pela possibilidade de manter toda a \gls{bvh} na memória principal e por um melhor uso do \textit{cache} \cite{benthin2018compressed}.
@@ -336,7 +336,7 @@ Uma maneira de reduzir a sobrecarga de memória é comprimir a estrutura de dado
 Existem várias versões de compressão: \gls{cbvh} comprime a árvore por completo; \gls{clbvh} comprime apenas as folhas da árvore, tendo uma travessia mais rápida; \gls{mvh} usa a \textit{bounding box} do pai para construir os filhos, conseguindo trabalhar com apenas 2 bytes, guardando nos filhos e folhas em uma pilha de dados \cite{pantaleoni2010hlbvh} \cite{benthin2018compressed}.
 
 
-\subsubsection{BVH larga}
+\subsection{BVH larga}
 
 % Wide BVH (BVH4, BVH8)
 % Multi-BVH(QBVH)
@@ -345,7 +345,7 @@ Além do consumo de memória, o tempo de travessia também se torna um problema 
 Por esse motivo, as estruturas \gls{wbvh} comprimidas são uma escolha interessante para a travessia, com nós internos comprimidos resultando em taxas de acerto de \textit{cache} aprimoradas e maior taxa de transferência de raios \cite{vaidyanathan2019wide} \cite{tsakok2009faster}.
 
 
-\subsubsection{Binned Surface Area Heuristic BVH (BSAH)}
+\subsection{Binned Surface Area Heuristic BVH (BSAH)}
 
 % top-down Surface Area Heuristic BVH(SAH-BVH)
 Nenhuma dessas técnicas anteriores melhora a qualidade da árvore. \gls{sah} \gls{bvh} é um algoritmo aplicado na separação dos objetos geométricos, que considera a densidade da geometria no espaço 3D, elimina eficientemente regiões vazias e reduz interações. Infelizmente, construir uma árvore de alta qualidade é custoso. Esse custo computacional torna a técnica inviável para cenas dinâmicas e animadas, onde são reconstruídas a cada quadro.
@@ -353,12 +353,12 @@ Nenhuma dessas técnicas anteriores melhora a qualidade da árvore. \gls{sah} \g
 O \gls{bsah} é uma aproximação do \gls{sah} que reduz o custo de construção. Em vez de avaliar todos os planos de divisão entre primitivas, o espaço do nó é dividido em um número fixo de regiões chamadas \textit{bins}. As primitivas são distribuídas entre essas regiões e o algoritmo avalia planos de corte entre os \textit{bins}, calculando o custo \gls{sah} de cada divisão com base na quantidade de primitivas e na área das \glspl{aabb} resultantes. O plano com menor custo é selecionado e o processo é aplicado recursivamente até completar a árvore. Existem híbridos como \gls{hlbvh} que têm a construção mais rápida, mas perdem mais qualidade \cite{garanzha2011grid} ou \gls{sbvh} com menor custo de travessia, mas maior uso de memória.
 
 
-\subsubsection{Hierarchical LBVH (HLBVH)}
+\subsection{Hierarchical LBVH (HLBVH)}
 
 % Hierarchical LBVH (HLBVH)
 A \gls{hlbvh} foi proposta por Pantaleoni como uma extensão da \gls{lbvh} tradicional, buscando melhorar a eficiência da construção paralela da hierarquia, mas que reduz substancialmente tanto a quantidade de cálculos quanto o tráfego de memória necessários para construir a \gls{bvh}. O algoritmo introduz três modificações principais. Primeiramente, uma reformulação na etapa de ordenação baseada na Morton \textit{curve-based}, exigida pelo procedimento original, na qual foi empregada uma decomposição hierárquica em grade para explorar a coerência espacial presente na malha de entrada. Em segundo lugar, um novo procedimento de emissão de hierarquia de nós que aprimora a técnica de Lauterbach. Terceiro, um novo algoritmo híbrido que usa a \gls{sah} para construir os níveis \gls{bvh} superiores e usa particionamento rápido baseado na curva de Morton dentro das subárvores do conjunto \cite{pantaleoni2010hlbvh}.
 
-\subsubsection{BVH com Divisões Espaciais (SBVH)}
+\subsection{BVH com Divisões Espaciais (SBVH)}
 
 % BVH com Divisões Espaciais (SBVH)
 Há ainda uma outra forma de gerar uma árvore com qualidade \gls{sbvh} que usa \gls{bsah} para dividir o espaço. O grande diferencial ocorre no plano de divisão, caso a primitiva esteja atravessando o plano escolhido, a primitiva é dividida em duas \gls{aabb}, uma para cada lado do plano. As \gls{aabb} geradas dessa divisão são menores, consequentemente isso gera um custo menor, porém gerar mais \glspl{aabb} aumenta o consumo de memória \cite{stibora2016building}.
@@ -375,7 +375,7 @@ Há ainda uma outra forma de gerar uma árvore com qualidade \gls{sbvh} que usa 
     }
 \end{figure}
 
-\subsubsection{Estruturas de Aceleração no Vulkan}
+\subsection{Estruturas de Aceleração no Vulkan}
 
 No \textit{Vulkan}, as estruturas de aceleração são divididas em dois níveis: \gls{blas} e \gls{tlas}. A \gls{blas} armazena a geometria utilizada para representar uma \textit{mesh}, sendo formada principalmente pelas primitivas geométricas, como triângulos. Dessa forma, diferentes \textit{meshes} ou partes de uma \textit{mesh} podem possuir suas próprias estruturas \gls{blas} \cite{vulkan_tutorial_acceleration_structures}.
 

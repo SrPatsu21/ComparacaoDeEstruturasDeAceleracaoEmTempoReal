@@ -32,7 +32,9 @@ Essa abordagem também permite separar a estrutura utilizada para armazenar e pe
 
 \subsection{Organização da Renderização}
 
-O processo de renderização foi dividido em três etapas principais. A primeira etapa consiste na criação de um \textit{G-buffer} utilizando a técnica de rasterização. Diferentemente de uma utilização convencional da rasterização, nessa etapa são armazenadas informações que serão utilizadas posteriormente durante o processamento dos raios. Entre essas informações estão \textit{position}, \textit{normal}, \textit{albedo}, \textit{material} e \textit{depth}.
+O processo de renderização foi organizado em três etapas devido à dependência entre os dados produzidos em cada uma delas. A primeira etapa realiza a rasterização da cena e produz os \textit{buffers} que contêm as informações necessárias para o processamento dos efeitos. A segunda etapa utiliza esses dados para realizar os cálculos que dependem da geometria da cena, incluindo o cálculo das sombras por meio das estruturas \glspl{bvh}. Por fim, a terceira etapa reúne os resultados produzidos pelas etapas anteriores e realiza a composição da imagem final. Dessa forma, a divisão adotada representa o fluxo de dados necessário para a renderização.
+
+A primeira etapa consiste na criação de um \textit{G-buffer} utilizando a técnica de rasterização. Diferentemente de uma utilização convencional da rasterização, nessa etapa são armazenadas informações que serão utilizadas posteriormente durante o processamento dos raios. Entre essas informações estão \textit{position}, \textit{normal}, \textit{albedo}, \textit{material} e \textit{depth}.
 
 O \textit{G-buffer} funciona como uma representação das informações da cena visíveis pela câmera. Dessa forma, a etapa posterior não precisa realizar novamente a busca da geometria correspondente a cada pixel para obter essas informações. A posição, a normal e os demais dados necessários já foram obtidos durante a rasterização e podem ser utilizados pelos \textit{shaders} responsáveis pelo processamento dos efeitos.
 
@@ -331,28 +333,28 @@ Duas métricas merecem destaque metodológico devido ao seu tratamento específi
 
 Para garantir a justiça na comparação de desempenho entre as diferentes estruturas avaliadas (\gls{bvh} binária, \gls{bvh8}, \gls{lbvh} e \gls{bsah}), todas as execuções foram submetidas estritamente às mesmas condições de contorno: a mesma cena animada, idêntico número de instâncias geométricas, mesma resolução de tela, mesma disposição de câmera e a mesma carga de trabalho computacional (\textit{workload}).
 
-\section{Coleta e Tratamento dos Dados}
+\chapter{Coleta e Tratamento dos Dados}
 
 Nesta seção, descreve-se a metodologia adotada para a extração, o monitoramento e o processamento das métricas de desempenho das diferentes estruturas de aceleração avaliadas.
 
-\subsection{Execução dos Experimentos}
+\section{Execução dos Experimentos}
 
 A execução dos testes foi estruturada em duas etapas complementares de perfilamento (\textit{profiling}) para contemplar tanto o comportamento dinâmico e temporal da aplicação quanto os detalhes da renderização gráfica:
 
 \begin{enumerate}
     \item \textbf{Coletas de Longa Duração (\textit{Nsight Systems}):} Os testes voltados a capturar o consumo de recursos globais do sistema, uso de memória \gls{ram} (\textit{Peak RAM Usage}), temperatura, energia e atividades de filas do \textit{Vulkan} foram executados com uma janela de duração de 30 segundos contínuos para cada tipo de \gls{bvh}. Isso permitiu estabilizar as médias e registrar o comportamento da aplicação sob a animação contínua da cena e da câmera.
-    \item \textbf{Coletas de Quadros Detalhados (\textit{Nsight Graphics}):} Para a análise minuciosa do \textit{pipeline} gráfico, dos tempos de construção das estruturas de aceleração (\textit{BLAS/TLAS Build Time}) e da execução dos \textit{shaders}, as capturas foram realizadas em momentos específicos. O \textit{profiling} detalhado coletou amostras exatas nos primeiros 2 quadros iniciais e em instantes distribuídos nos segundos 10 e 20 de execução.
+    \item \textbf{Coletas de Quadros Detalhados (\textit{Nsight Graphics}):} Para a análise minuciosa do \textit{pipeline} gráfico, dos tempos de construção das estruturas de aceleração (\textit{BLAS/TLAS Build Time}) e da execução dos \textit{shaders}, as capturas foram realizadas em momentos específicos. O \textit{profiling} detalhado coletou amostras exatas no segundo quadro e em instantes distribuídos nos segundos 10 e 20 de execução.
 \end{enumerate}
 
 Dessa forma, o isolamento dos dados de sistema por meio do \textit{Nsight Systems}, aliado à precisão temporal do \textit{Nsight Graphics}, permitiu mapear com alta fidelidade o impacto de cada variação estrutural de \gls{bvh} sobre a \gls{gpu} e a \gls{cpu}.
 
-\subsection{Coleta das Métricas}
+\section{Coleta das Métricas}
 
 As execuções dos testes para cada tipo de \gls{bvh} foram realizadas em uma mesma sessão experimental, garantindo consistência ambiental. Os artefatos gerados foram organizados em pastas nomeadas de acordo com a respectiva estrutura de aceleração, cujos códigos e arquivos estarão disponíveis no repositório oficial do projeto. Cada diretório contém o executável correspondente, os \textit{shaders} associados e os modelos 3D necessários para a replicação integral dos testes.
 
 Para cada configuração, foram coletados arquivos de registro e relatórios de perfilamento (\textit{profiling}). Especificamente, encontram-se três arquivos com a extensão \textit{.ngfx-capture}, referentes às capturas detalhadas do \textit{Nsight Graphics}, e um arquivo \textit{.nsys-rep}, gerado pelo \textit{Nsight Systems} para a análise global do sistema. Além disso, conforme mencionado anteriormente, o arquivo \textit{bvh\_size\_log.log} armazena os dados textuais referentes ao tamanho em memória de cada estrutura (\gls{blas} e \gls{tlas}).
 
-\subsection{Tratamento dos Dados}
+\section{Tratamento dos Dados}
 
 O \textit{Nsight Systems} permite coletar uma grande quantidade de métricas durante a execução da aplicação. Entretanto, a ferramenta é voltada principalmente para a análise da execução ao longo do tempo e para a identificação de problemas de desempenho. Embora forneça os dados necessários para a análise, a apresentação e o tratamento estatístico dessas informações não são suficientes para a análise geral realizada neste trabalho. Dessa forma, foi necessário desenvolver uma etapa adicional para extrair, organizar e analisar os dados obtidos durante os experimentos.
 
