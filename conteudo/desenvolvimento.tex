@@ -325,12 +325,6 @@ Antes de iniciar os experimentos, realizou-se um levantamento minucioso para ide
 
 As métricas foram divididas e estruturadas considerando as capacidades do \textit{NVIDIA Nsight Systems} e do \textit{NVIDIA Nsight Graphics}. Métricas de tempo de construção das estruturas de aceleração (\gls{blas} e \gls{tlas}), tempo de quadro na \gls{gpu} (\textit{GPU Frame Time}), utilização dos multiprocessadores de transmissão (\gls{sm}), execuções de \textit{shaders} e transferência de dados via \textit{PCIe} foram extraídas primariamente com o auxílio do \textit{Nsight Graphics}. Em contrapartida, informações de uso de memória \gls{ram} do sistema, consumo energético monitorado via \gls{nvml}, temperatura da \gls{gpu}, trocas de contexto (\textit{context switches}) e atividades nas filas do \textit{Vulkan} foram coletadas por meio do \textit{Nsight Systems}.
 
-Duas métricas merecem destaque metodológico devido ao seu tratamento específico:
-\begin{enumerate}
-\item \textbf{\textit{Ray Tracing Throughput}:} Como a travessia da \gls{bvh} é realizada diretamente via código próprio em \textit{shaders} (e não pelos núcleos de \textit{ray tracing} dedicados do \textit{hardware}), o rendimento foi calculado relacionando o tempo de travessia ao número total de raios processados por quadro, por exemplo, avaliando resoluções fixas em \textit{Mrays/s}.
-\item \textbf{\textit{Warp Divergence}:} Métricas associadas estritamente à divergência de caminhos condicionais dentro de um mesmo \textit{warp} permaneceram pendentes de validação por contadores diretos, evitando o uso de métricas genéricas de ocupação de \gls{sm} como equivalentes.
-\end{enumerate}
-
 Para garantir a justiça na comparação de desempenho entre as diferentes estruturas avaliadas (\gls{bvh} binária, \gls{bvh8}, \gls{lbvh} e \gls{bsah}), todas as execuções foram submetidas estritamente às mesmas condições de contorno: a mesma cena animada, idêntico número de instâncias geométricas, mesma resolução de tela, mesma disposição de câmera e a mesma carga de trabalho computacional (\textit{workload}).
 
 \chapter{Coleta e Tratamento dos Dados}
