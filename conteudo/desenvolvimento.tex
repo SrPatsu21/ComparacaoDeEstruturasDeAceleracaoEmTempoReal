@@ -1,6 +1,6 @@
 \chapter{DESENVOLVIMENTO}
 
-Neste capítulo é apresentada a implementação da aplicação desenvolvida para a realização dos experimentos. São descritas as principais decisões de desenvolvimento, a organização da aplicação, as estruturas \gls{bvh} utilizadas e os métodos empregados para a coleta dos dados. Antes da apresentação da aplicação, são apresentadas algumas decisões tomadas durante o desenvolvimento, principalmente em relação à utilização das estruturas de aceleração e à forma de execução da renderização. Todo o codigo desenvolvido como tambem parte relevante dos testes pode ser encontrada no repositório do projeto \cite{realtime_BVH_comparison}.
+Neste capítulo é apresentada a implementação da aplicação desenvolvida para a realização dos experimentos. São descritas as principais decisões de desenvolvimento, a organização da aplicação, as estruturas \gls{bvh} utilizadas e os métodos empregados para a coleta dos dados. Antes da apresentação da aplicação, são apresentadas algumas decisões tomadas durante o desenvolvimento, principalmente em relação à utilização das estruturas de aceleração e à forma de execução da renderização. Ao fim do capítulo descreve-se a metodologia adotada para a extração e o processamento das métricas. Todo o código desenvolvido, como também parte relevante dos testes, pode ser encontrado no repositório do projeto \cite{realtime_BVH_comparison}.
 
 \section{Decisões de Desenvolvimento}
 
@@ -313,7 +313,7 @@ Esse marcador foi utilizado para isolar e medir precisamente o tempo de constru�
 
 \subsection{Cenas Utilizadas}
 
-A cena é a mesma para todos os experimentos. Ela foi construída de forma rápida, o que significa que não se trata de um cenário realista ou representativo de uma aplicação de produção. A cena consiste em uma junção de várias instâncias dispostas de forma um tanto desordenada, utilizando alguns modelos 3D que não são de autoria própria. A licença de uso estará disponível junto ao código-fonte. Esse modelos vieram de dos usuarios (Eveston - Elite Big Speakerman - Hugo) e (bean(alwayshasbean)), da plataforma \textit{Sketchfab}, utilizada para publicação e compartilhamento de modelos 3D.
+A cena é a mesma para todos os experimentos. Ela foi construída de forma rápida, o que significa que não se trata de um cenário realista ou representativo de uma aplicação de produção. A cena consiste em uma junção de várias instâncias dispostas de forma um tanto desordenada, utilizando alguns modelos 3D que não são de autoria própria. A licença de uso estará disponível junto ao código-fonte. Esse modelos vieram dos usuários (Eveston - Elite Big Speakerman - Hugo) e (bean(alwayshasbean)), da plataforma \textit{Sketchfab}, utilizada para publicação e compartilhamento de modelos 3D.
 
 Além das múltiplas instâncias, o sistema também conta com animação. A animação compreende o movimento, a rotação e a alteração de escala do modelo completo. A câmera também se movimenta, rotacionando e se afastando do centro da cena em um trajeto circular.
 
@@ -327,11 +327,11 @@ As métricas foram divididas e estruturadas considerando as capacidades do \text
 
 Para garantir a justiça na comparação de desempenho entre as diferentes estruturas avaliadas (\gls{bvh} binária, \gls{bvh8}, \gls{lbvh} e \gls{bsah}), todas as execuções foram submetidas estritamente às mesmas condições de contorno: a mesma cena animada, idêntico número de instâncias geométricas, mesma resolução de tela, mesma disposição de câmera e a mesma carga de trabalho computacional (\textit{workload}).
 
-\chapter{Coleta e Tratamento dos Dados}
+\section{Coleta e Tratamento dos Dados}
 
 Nesta seção, descreve-se a metodologia adotada para a extração, o monitoramento e o processamento das métricas de desempenho das diferentes estruturas de aceleração avaliadas.
 
-\section{Execução dos Experimentos}
+\subsection{Execução dos Experimentos}
 
 A execução dos testes foi estruturada em duas etapas complementares de perfilamento (\textit{profiling}) para contemplar tanto o comportamento dinâmico e temporal da aplicação quanto os detalhes da renderização gráfica:
 
@@ -342,13 +342,13 @@ A execução dos testes foi estruturada em duas etapas complementares de perfila
 
 Dessa forma, o isolamento dos dados de sistema por meio do \textit{Nsight Systems}, aliado à precisão temporal do \textit{Nsight Graphics}, permitiu mapear com alta fidelidade o impacto de cada variação estrutural de \gls{bvh} sobre a \gls{gpu} e a \gls{cpu}.
 
-\section{Coleta das Métricas}
+\subsection{Coleta das Métricas}
 
 As execuções dos testes para cada tipo de \gls{bvh} foram realizadas em uma mesma sessão experimental, garantindo consistência ambiental. Os artefatos gerados foram organizados em pastas nomeadas de acordo com a respectiva estrutura de aceleração, cujos códigos e arquivos estarão disponíveis no repositório oficial do projeto. Cada diretório contém o executável correspondente, os \textit{shaders} associados e os modelos 3D necessários para a replicação integral dos testes.
 
 Para cada configuração, foram coletados arquivos de registro e relatórios de perfilamento (\textit{profiling}). Especificamente, encontram-se três arquivos com a extensão \textit{.ngfx-capture}, referentes às capturas detalhadas do \textit{Nsight Graphics}, e um arquivo \textit{.nsys-rep}, gerado pelo \textit{Nsight Systems} para a análise global do sistema. Além disso, conforme mencionado anteriormente, o arquivo \textit{bvh\_size\_log.log} armazena os dados textuais referentes ao tamanho em memória de cada estrutura (\gls{blas} e \gls{tlas}).
 
-\section{Tratamento dos Dados}
+\subsection{Tratamento dos Dados}
 
 O \textit{Nsight Systems} permite coletar uma grande quantidade de métricas durante a execução da aplicação. Entretanto, a ferramenta é voltada principalmente para a análise da execução ao longo do tempo e para a identificação de problemas de desempenho. Embora forneça os dados necessários para a análise, a apresentação e o tratamento estatístico dessas informações não são suficientes para a análise geral realizada neste trabalho. Dessa forma, foi necessário desenvolver uma etapa adicional para extrair, organizar e analisar os dados obtidos durante os experimentos.
 
