@@ -7,13 +7,11 @@
 
 
 
-\subsection{\textit{Hardware} dedicado \glspl{gpu}}
+\subsection{\textit{Hardware} dedicado}
 
 No início, a aparência dos gráficos baseados em \gls{gpu} era um tanto monótona e padronizada devido à falta de programabilidade, mas agora a maioria dos estágios do \textit{pipeline} gráfico é programável. Infelizmente, observou-se que o aumento na programabilidade atingiu um limite, e mais liberdade exigiria a capacidade de alterar a própria estrutura do \textit{pipeline}. Isso, por sua vez, está firmemente enraizado no \textit{hardware} gráfico específico da \gls{gpu} e não é facilmente modificado \cite{laine2011high}.
 
 Uma grande parte do trabalho no \textit{pipeline} gráfico, principalmente a execução de \textit{shaders} de \textit{vertex} (vértice) e \textit{fragment} (fragmento), mas também outros estágios programáveis, é realizada pelos núcleos de \textit{shader} programáveis. Entre esses processos destacam-se \textit{marshaling} (organização de dados) e \textit{scheduling} (agendamento de operações) de dados. Esses processos incluem gerenciamento de filas FIFO, controle de \textit{buffer} de quadro na memória da \gls{gpu}, busca de dados de entrada do \textit{shader} na memória local antes da execução do \textit{shader}, acionamento de execuções de \textit{shader}, execução de operações de rasterização. Além dessas tarefas, os núcleos também realizam cálculos mais triviais, como a construção de equações de borda e plano, rasterização e \textit{clipping} \cite{laine2011high}.
-
-%TODO adicionar raster e RT core
 
 \subsection{CUDA}
 
