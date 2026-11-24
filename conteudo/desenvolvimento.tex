@@ -4,23 +4,23 @@ Neste capítulo é apresentada a implementação da aplicação desenvolvida par
 
 \section{Decisões de Desenvolvimento}
 
-Antes de apresentar a aplicação e os resultados obtidos, é necessário esclarecer algumas decisões tomadas durante o desenvolvimento. Essas decisões foram importantes para definir como as diferentes estruturas \gls{bvh} seriam utilizadas e comparadas, além de estabelecer uma forma de execução que permitisse controlar as principais etapas do processo de renderização.
+Antes de apresentar a aplicação, é necessário esclarecer algumas decisões tomadas durante o desenvolvimento. Essas decisões foram importantes para definir como as diferentes estruturas \gls{bvh} seriam utilizadas e comparadas, além de estabelecer uma forma de execução que permitisse controlar as principais etapas do processo de renderização.
 
 \subsection{Estrutura da Aplicação}
 
-A aplicação foi construída a partir de uma aplicação já existente, chamada atualmente de \textit{Apotheosis}. De forma resumida, o \textit{Apotheosis} é um motor gráfico desenvolvido para um jogo \textit{open source}, de autoria do autor deste trabalho. Esse motor gráfico foi escolhido por utilizar \textit{Vulkan}, possibilitando maior controle sobre as etapas de renderização e sobre os recursos disponibilizados pelo \textit{hardware}, além de possuir código aberto, ser facilmente compilável por meio de uma \textit{Open Container Initiative Image Format} e já ser conhecido pelo autor deste trabalho \cite{apotheosis}.
+A aplicação foi construída a partir de uma base já existente, chamada atualmente de \textit{Apotheosis}. De forma resumida, o \textit{Apotheosis} é um motor gráfico desenvolvido para um jogo \textit{open source}, de autoria do próprio autor deste trabalho. Essa base foi incorporada ao desenvolvimento por utilizar \textit{Vulkan}, possibilitando maior controle sobre as etapas de renderização e sobre os recursos disponibilizados pelo \textit{hardware}, além de possuir código aberto, ser facilmente compilável por meio de uma \textit{Open Container Initiative Image Format} e já ser conhecida pelo autor deste trabalho \cite{apotheosis}.
 
-O \textit{Apotheosis} já possuía grande parte dos componentes utilizados neste trabalho. O código era baseado principalmente no tutorial de \textit{Vulkan} \cite{vulkan_tutorial} e na documentação do \textit{GLFW} \cite{glfw_docs}. A partir das alterações realizadas para suportar as diferentes estruturas \glspl{bvh} e do aprimoramento das interfaces da aplicação, o código passou a possuir algumas diferenças em relação à versão original.
+O \textit{Apotheosis} já possuía grande parte dos componentes utilizados neste trabalho. O código era baseado principalmente no tutorial de \textit{Vulkan} \cite{vulkan_tutorial} e na documentação do \textit{GLFW} \cite{glfw_docs}. A partir das alterações realizadas para suportar as diferentes estruturas \glspl{bvh} e do aprimoramento das interfaces da aplicação, a implementação passou a apresentar diferenças em relação à versão inicial.
 
-Uma das principais mudanças foi a redução da compatibilidade com dispositivos que não possuem suporte a alguns recursos utilizados pela aplicação, como \textit{Indexing} e \textit{Buffer Device Address}. Além disso, para a coleta de algumas métricas, também é necessário o suporte a \textit{Host Query Reset}. Dessa forma, a aplicação passou a exigir um conjunto maior de recursos do dispositivo utilizado nos experimentos.
+Uma das principais mudanças foi a redução da compatibilidade com dispositivos que não possuem suporte a alguns recursos utilizados pela aplicação, como \textit{Indexing} e \textit{Buffer Device Address}. Além disso, para a coleta de algumas métricas, também é necessário o suporte a \textit{Host Query Reset}. Dessa forma, a aplicação passou a exigir um conjunto maior de recursos do dispositivo utilizado nos experimentos, como o suporte a \gls{gpu} adequada e às funcionalidades empregadas durante a execução.
 
-Apesar dessas alterações, a estrutura geral do \textit{Apotheosis} foi mantida. Entre os elementos reaproveitados estão principalmente a organização do projeto, as bibliotecas utilizadas e os arquivos relacionados à compilação. Foram realizadas pequenas adições e alterações nesses componentes para permitir a implementação das estruturas \gls{bvh}, a configuração dos experimentos e a coleta dos dados.
+Apesar dessas alterações, a estrutura geral do \textit{Apotheosis} foi mantida como parte integrante da solução desenvolvida. Entre os elementos reaproveitados estão principalmente a organização do projeto, as bibliotecas utilizadas e os arquivos relacionados à compilação. Foram realizadas pequenas adições e alterações nesses componentes para permitir a implementação das estruturas \gls{bvh}, a configuração dos experimentos e a coleta dos dados.
 
-A utilização de uma aplicação já existente também permitiu concentrar o desenvolvimento nas partes relacionadas à comparação das estruturas de aceleração, evitando a necessidade de desenvolver novamente componentes que não fazem parte do objetivo principal deste trabalho.
+A incorporação dessa base já existente também permitiu concentrar o desenvolvimento nas partes relacionadas à comparação das estruturas de aceleração, evitando a necessidade de desenvolver novamente componentes que não fazem parte do objetivo principal deste trabalho.
 
 \subsection{Estruturas de Aceleração}
 
-Apesar de a aplicação utilizar \textit{Vulkan}, as estruturas de aceleração disponibilizadas pela \gls{api} apresentam algumas limitações para os objetivos deste trabalho. Como apresentado anteriormente, as estruturas \gls{blas} e \gls{tlas} utilizadas pelo \textit{Vulkan} possuem sua implementação interna abstraída da aplicação. Dessa forma, não é possível definir diretamente como a estrutura da árvore será organizada ou implementar diferentes estratégias de construção utilizando a estrutura fornecida pela \gls{api} \cite{vulkan_tutorial_acceleration_structures}.
+Apesar de a aplicação utilizar \textit{Vulkan}, as estruturas de aceleração disponibilizadas pela \gls{api} apresentam algumas limitações para os objetivos deste trabalho. Como apresentado anteriormente em~\autoref{subsec:aceleracao_vulkan}, as estruturas \gls{blas} e \gls{tlas} utilizadas pelo \textit{Vulkan} possuem sua implementação interna abstraída da aplicação. Dessa forma, não é possível definir diretamente como a estrutura da árvore será organizada ou implementar diferentes estratégias de construção utilizando a estrutura fornecida pela \gls{api} \cite{vulkan_tutorial_acceleration_structures}.
 
 Essa abstração é adequada para aplicações que utilizam o sistema de \textit{ray tracing} fornecido pelo \textit{Vulkan}, porém não atende diretamente ao objetivo de comparar diferentes formas de construção e organização de \glspl{bvh}. Para este trabalho, é necessário possuir controle sobre a estrutura de dados utilizada, permitindo implementar e testar diferentes abordagens, como \gls{bvh}, \gls{lbvh}, \gls{bsah} e \gls{bvh8}.
 
@@ -47,15 +47,10 @@ Como a travessia da \gls{bvh} é realizada por meio de uma implementação próp
 A terceira etapa é responsável por combinar as imagens geradas nas etapas anteriores e produzir a imagem final apresentada ao sistema. Nessa etapa, os diferentes \textit{buffers} são combinados e podem ser aplicados algoritmos de correção de luminosidade, filtros e outros processos necessários para transformar os resultados intermediários em uma imagem final adequada para apresentação.
 
 \begin{figure}[htb]
-	\caption{Organização das etapas da aplicação}
-    \centering
-    {\parbox{16cm}
-        {
-            \includegraphics[width=1\textwidth]{images/OrganizacaoDosPipelines.png}
-            \label{fig:organizacao_dos_pipelines}
-            \hspace{0.0cm}{Fonte: Elaborado pelo autor, utilizando draw.io}
-        }
-    }
+    \caption{Organização das etapas da aplicação}
+    \label{fig:organizacao_dos_pipelines}
+    \includegraphics[width=0.50\textwidth]{images/OrganizacaoDosPipelines.png} \\
+    \footnotesize Fonte: Elaborado pelo autor, utilizando \textit{draw.io}.
 \end{figure}
 
 Neste trabalho, a segunda etapa implementa apenas o cálculo de sombras (\textit{shadows}). Outros efeitos podem ser implementados posteriormente sem a necessidade de alterar as demais etapas da renderização, sendo necessário apenas incluí-los no processo de geração da imagem final, realizado na terceira etapa, também denominada \textit{Composite}. Dessa forma, a organização adotada permite adicionar diferentes efeitos que utilizem as estruturas \glspl{bvh} sem modificar a etapa responsável pela geração do \textit{G-buffer}.
@@ -95,7 +90,7 @@ Para criar um \textit{batch}, são necessárias as informações presentes na \t
 
 O \textit{ResourceManager} também participa do processo de criação das \textit{meshes}. Como as informações necessárias para a construção da \gls{blas} já estão disponíveis nesse processo, a estrutura de aceleração pode ser construída utilizando os mesmos dados da geometria, evitando a necessidade de realizar uma nova busca pelos recursos correspondentes.
 
-\begin{figure}[htb]
+A Figura \ref{fig:funcionamento_das_batches} apresenta um diagrama das estruturas e relações citadas nesta subseção.\begin{figure}[htb]
     \caption{Funcionamento dos \textit{batches}}
     \centering
     {\parbox{16cm}
@@ -126,7 +121,9 @@ struct LightData {
     float _pad1;
 };
 \end{lstlisting}
-\fonte{Elaborado pelo autor (2026).}
+{\normalsize
+Fonte: Elaborado pelo autor (2026).
+}
 
 A estrutura apresentada no Código \ref{cod:light_data} armazena a posição da luz, sua intensidade e sua cor. Também são armazenados o raio, o tipo da luz e o alcance utilizado durante os cálculos de iluminação. Essas informações permitem que o \textit{shader} determine como a luz deve influenciar os objetos presentes na cena.
 
@@ -165,7 +162,9 @@ struct BLASInstance {
     uint32_t pad0; //4
 }; //16
 \end{lstlisting}
-\fonte{Elaborado pelo autor (2026).}
+{\normalsize
+Fonte: Elaborado pelo autor (2026).
+}
 
 A estrutura armazena o índice do primeiro triângulo associado à instância, a quantidade de triângulos e o deslocamento utilizado para acessar as informações de material. O campo \textit{pad0} é utilizado como preenchimento, contribuindo para manter o tamanho e o alinhamento esperados para a estrutura.
 
@@ -181,7 +180,9 @@ struct BVHNode {
     uint32_t pad0;//4
 }; // 128 + 16 = 144
 \end{lstlisting}
-\fonte{Elaborado pelo autor (2026).}
+{\normalsize
+Fonte: Elaborado pelo autor (2026).
+}
 
 Nesse formato, cada nó armazena as caixas delimitadoras dos dois filhos, os índices utilizados para acessá-los e um campo que identifica a condição de folha. O campo \textit{pad0} é utilizado como preenchimento. Essa representação corresponde à estrutura binária utilizada pelas implementações que adotam o tipo \textit{BVHNode}; a \gls{bvh8}, por utilizar nós com maior quantidade de filhos, emprega uma estrutura específica.
 
@@ -210,7 +211,9 @@ struct TLASInstance {
     uint32_t instanceOffset; // 4
 };
 \end{lstlisting}
-\fonte{Elaborado pelo autor (2026).}
+{\normalsize
+Fonte: Elaborado pelo autor (2026).
+}
 
 A estrutura apresentada armazena a transformação inversa da instância, os endereços dos vértices e dos índices da geometria, além das informações necessárias para localizar a \gls{blas} correspondente e os nós associados à instância. O campo \textit{blasIndex} identifica a estrutura utilizada pela instância, enquanto \textit{nodeOffset} e \textit{nodeCount} permitem localizar os nós correspondentes. O campo \textit{instanceOffset} é utilizado para identificar o deslocamento da instância dentro dos dados associados à estrutura.
 
@@ -287,7 +290,9 @@ uint32_t pad0; //4
 uint32_t pad1; //4
 }; //256 + 32 + 16
 \end{lstlisting}
-\fonte{Elaborado pelo autor (2026).}
+{\normalsize
+Fonte: Elaborado pelo autor (2026).
+}
 
 No que diz respeito à construção (\textit{BVH8Builder}), a principal diferença em relação à \gls{bvh} binária é o fator de ramificação. Enquanto a árvore binária divide o intervalo de primitivas estritamente em duas metades, a \gls{bvh8} particiona o conjunto em até oito partes a cada nível. O algoritmo utiliza uma função recursiva que ordena as primitivas ao longo do eixo de maior dispersão e as distribui uniformemente entre os filhos disponíveis, calculando a \gls{aabb} correspondente para cada um deles. Além disso, as folhas da \gls{bvh8} suportam armazenar até oito primitivas diretamente (\textit{MAX\_LEAF\_PRIMS = 8}), reduzindo a profundidade total da árvore.
 
@@ -297,7 +302,7 @@ No caso específico da travessia, a \gls{bvh8} aproveita essa alta capacidade de
 
 Nesta seção são apresentados os procedimentos utilizados para a execução dos testes e o planejamento dos experimentos.
 
-\subsection{Configuração de Hardware e Software}
+\subsection{Configuração de \textit{Hardware} e \textit{Software}}
 
 Os testes foram executados em um ambiente pessoal operando sob o sistema operacional \textit{Arch Linux}, utilizando o \textit{kernel} \textit{Linux} 7.1.11-arch1-1 e o sistema de arquivos \textit{Btrfs} na partição raiz (\textit{/}). O ambiente gráfico utilizado foi o gerenciador de janelas \textit{KDE Plasma} 6.7.4, rodando sobre o protocolo \textit{Wayland}.
 
@@ -313,7 +318,7 @@ Esse marcador foi utilizado para isolar e medir precisamente o tempo de constru�
 
 \subsection{Cenas Utilizadas}
 
-A cena é a mesma para todos os experimentos. Ela foi construída de forma rápida, o que significa que não se trata de um cenário realista ou representativo de uma aplicação de produção. A cena consiste em uma junção de várias instâncias dispostas de forma um tanto desordenada, utilizando alguns modelos 3D que não são de autoria própria. A licença de uso estará disponível junto ao código-fonte. Esse modelos vieram dos usuários (Eveston - Elite Big Speakerman - Hugo) e (bean(alwayshasbean)), da plataforma \textit{Sketchfab}, utilizada para publicação e compartilhamento de modelos 3D.
+A cena é a mesma para todos os experimentos. Ela foi construída de forma rápida, o que significa que não se trata de um cenário realista ou representativo de uma aplicação de produção. A cena consiste em uma junção de várias instâncias dispostas de forma um tanto desordenada, utilizando alguns modelos 3D que não são de autoria própria. A licença de uso estará disponível junto ao código-fonte. Esse modelos foram produzidos pelos usuários (Eveston - Elite Big Speakerman - Hugo) e (bean(alwayshasbean)), da plataforma \textit{Sketchfab}, utilizada para publicação e compartilhamento de modelos 3D.
 
 Além das múltiplas instâncias, o sistema também conta com animação. A animação compreende o movimento, a rotação e a alteração de escala do modelo completo. A câmera também se movimenta, rotacionando e se afastando do centro da cena em um trajeto circular.
 
@@ -329,18 +334,17 @@ Para garantir a justiça na comparação de desempenho entre as diferentes estru
 
 \section{Coleta e Tratamento dos Dados}
 
-Nesta seção, descreve-se a metodologia adotada para a extração, o monitoramento e o processamento das métricas de desempenho das diferentes estruturas de aceleração avaliadas.
+Nesta seção é descrito a metodologia adotada para a extração, o monitoramento e o processamento das métricas de desempenho das diferentes estruturas de aceleração avaliadas.
 
-\subsection{Execução dos Experimentos}
+\subsection{Procedimento de Execução dos Experimentos}
 
-A execução dos testes foi estruturada em duas etapas complementares de perfilamento (\textit{profiling}) para contemplar tanto o comportamento dinâmico e temporal da aplicação quanto os detalhes da renderização gráfica:
+A execução dos experimentos foi organizada em duas etapas de perfilamento, utilizando o \textit{NVIDIA Nsight Systems} e o \textit{NVIDIA Nsight Graphics}. Essa divisão foi adotada para coletar tanto informações relacionadas ao comportamento geral da aplicação e do sistema quanto métricas detalhadas da execução dos quadros. Para reduzir possíveis interferências externas durante as coletas, os testes foram realizados com os demais aplicativos e serviços do sistema encerrados, mantendo apenas aqueles considerados essenciais ou de baixo impacto no desempenho.
 
-\begin{enumerate}
-    \item \textbf{Coletas de Longa Duração (\textit{Nsight Systems}):} Os testes voltados a capturar o consumo de recursos globais do sistema, uso de memória \gls{ram} (\textit{Peak RAM Usage}), temperatura, energia e atividades de filas do \textit{Vulkan} foram executados com uma janela de duração de 30 segundos contínuos para cada tipo de \gls{bvh}. Isso permitiu estabilizar as médias e registrar o comportamento da aplicação sob a animação contínua da cena e da câmera.
-    \item \textbf{Coletas de Quadros Detalhados (\textit{Nsight Graphics}):} Para a análise minuciosa do \textit{pipeline} gráfico, dos tempos de construção das estruturas de aceleração (\textit{BLAS/TLAS Build Time}) e da execução dos \textit{shaders}, as capturas foram realizadas em momentos específicos. O \textit{profiling} detalhado coletou amostras exatas no segundo quadro e em instantes distribuídos nos segundos 10 e 20 de execução.
-\end{enumerate}
+Inicialmente, foram realizadas as capturas utilizando o \textit{Nsight Systems}. Para cada estrutura de aceleração, a aplicação foi executada com a captura configurada para encerramento automático após 30 segundos. Durante esse intervalo, a cena e a câmera permaneceram em execução, permitindo registrar o comportamento da aplicação ao longo do período de captura. Os testes foram realizados sequencialmente, iniciando pela \gls{bvh} binária, seguida pelas demais estruturas avaliadas, com intervalos de poucos segundos entre o término de uma execução e o início da seguinte.
 
-Dessa forma, o isolamento dos dados de sistema por meio do \textit{Nsight Systems}, aliado à precisão temporal do \textit{Nsight Graphics}, permitiu mapear com alta fidelidade o impacto de cada variação estrutural de \gls{bvh} sobre a \gls{gpu} e a \gls{cpu}.
+Após a conclusão das capturas com o \textit{Nsight Systems}, foram realizados os testes utilizando o \textit{Nsight Graphics}. Nessa etapa, foram coletadas capturas de quadros específicos da execução da aplicação, sendo selecionado o segundo quadro e, posteriormente, quadros correspondentes a aproximadamente 10 e 20 segundos de execução. Essa seleção permitiu analisar tanto um quadro próximo ao início da execução quanto quadros em momentos posteriores, considerando o comportamento da renderização ao longo do tempo.
+
+Os arquivos gerados durante ambas as etapas de perfilamento foram armazenados para posterior extração, organização e análise das métricas. Dessa forma, o processamento dos dados não foi realizado diretamente durante as execuções, permitindo que as informações registradas pelas ferramentas fossem posteriormente examinadas por meio de scripts e procedimentos manuais, conforme a natureza de cada métrica.
 
 \subsection{Coleta das Métricas}
 

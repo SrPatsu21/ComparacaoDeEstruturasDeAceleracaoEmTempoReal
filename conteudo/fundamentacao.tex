@@ -1,9 +1,14 @@
 \chapter{FUNDAMENTAÇÃO TEÓRICA}
 
+Este capítulo apresenta os fundamentos teóricos necessários para a compreensão do trabalho, abrangendo a arquitetura de \textit{hardware} e \textit{APIs} gráficas, os conceitos e técnicas centrais de computação gráfica e as estruturas de aceleração baseadas em \gls{bvh}, além de discutir trabalhos correlatos na área.
+
 
 
 
 \section{Arquitetura de Hardware e APIs}
+
+Esta seção aborda os elementos de \textit{hardware} e as interfaces de programação que sustentam a execução de aplicações gráficas e de computação paralela, com foco em \glspl{gpu}, \textit{CUDA}, \textit{Vulkan}, arquitetura de \glspl{gpu} da NVIDIA e métricas de desempenho do sistema e do \textit{pipeline}.
+
 
 
 
@@ -374,6 +379,7 @@ Há ainda uma outra forma de gerar uma árvore com qualidade \gls{sbvh} que usa 
 \end{figure}
 
 \subsection{Estruturas de Aceleração no Vulkan}
+\label{subsec:aceleracao_vulkan}
 
 No \textit{Vulkan}, as estruturas de aceleração são divididas em dois níveis: \gls{blas} e \gls{tlas}. A \gls{blas} armazena a geometria utilizada para representar uma \textit{mesh}, sendo formada principalmente pelas primitivas geométricas, como triângulos. Dessa forma, diferentes \textit{meshes} ou partes de uma \textit{mesh} podem possuir suas próprias estruturas \gls{blas} \cite{vulkan_tutorial_acceleration_structures}.
 
